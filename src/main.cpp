@@ -7,6 +7,13 @@
 #include "imgui_impl_dx11.h"
 #include <d3d11.h>
 #include <tchar.h>
+#include "ui.h"
+#include <string>
+#include <format>
+#include <vector>
+#include <iostream>
+#include <memory>
+#include <string>
 
 // Data
 static ID3D11Device*            g_pd3dDevice = NULL;
@@ -14,12 +21,184 @@ static ID3D11DeviceContext*     g_pd3dDeviceContext = NULL;
 static IDXGISwapChain*          g_pSwapChain = NULL;
 static ID3D11RenderTargetView*  g_mainRenderTargetView = NULL;
 
+ImFont* _FontTitle = nullptr;
+ImFont* _FontText = nullptr;
+
 // Forward declarations of helper functions
 bool CreateDeviceD3D(HWND hWnd);
 void CleanupDeviceD3D();
 void CreateRenderTarget();
 void CleanupRenderTarget();
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+//Singleton
+class ImCategory {
+    protected:
+    std::string title;
+    std::string description;
+
+    public:
+    virtual ~ImCategory() = default;
+    virtual void Draw() {
+        ImGui::Text("No Content");
+    };
+
+    ImCategory() : title("Category"), description("Default description") {}
+
+    const std::string& GetTitle() {return title;}
+    const std::string& GetDescription() {return description;}
+
+
+};
+static std::vector<std::unique_ptr<ImCategory>> categories; 
+class ImCategoryManager {
+    private:
+    // Vector of smart pointers to categories
+    
+
+    public:
+    // Add a new category
+    void AddCategory(std::unique_ptr<ImCategory> category) {
+        categories.push_back(std::move(category));
+    }
+
+   static std::vector<std::unique_ptr<ImCategory>>& GetCategories()  {
+    return categories;
+   }
+
+};
+
+class CategoryGeneral : public ImCategory {
+    public:
+    CategoryGeneral(){
+        title = "General";
+        description = "General Settings";
+    }
+
+    void Draw() override {
+        ImGui::Text("[PH] Content for the General page goes here");
+    }
+};
+
+class CategoryInfo : public ImCategory {
+    public:
+    CategoryInfo(){
+        title = "Info";
+        description = "Show actor information";
+    }
+
+    void Draw() override {
+        ImGui::Text("[PH] Content for the Info page goes here");
+    }
+};
+
+class CategoryGameplay : public ImCategory {
+    public:
+    CategoryGameplay(){
+        title = "Gameplay";
+        description = "Gameplay Settings";
+    }
+
+    void Draw() override {
+        ImGui::Text("[PH] Content for the Gameplay page goes here");
+    }
+};
+
+static ImCategoryManager _categoryManager;
+
+
+void Setup(){
+    _categoryManager.AddCategory(std::make_unique<CategoryGeneral>());
+    _categoryManager.AddCategory(std::make_unique<CategoryInfo>());
+    _categoryManager.AddCategory(std::make_unique<CategoryGameplay>());
+}
+
+inline void DrawTitle(){
+
+    ImGui::PushFont(_FontTitle);  // Push larger font
+    ImGui::Text("Size Matters Configuration");
+    ImGui::PopFont();            // Restore the previous font
+
+}
+
+inline void DrawInfo(/*Actor* TargetActor */){
+
+    //Dummy Values
+    float _currentScale = 1.42f;
+    float _maxScale = 10.85f;
+    std::string res = std::format("{}/{}({}/{})",_currentScale,_maxScale,_currentScale * 1.82f,_maxScale * 1.82f);
+
+    float _aspectOfGTS = 43.0f;
+    float _weight = 243.43;
+
+    float _damageResist = 12.0f;
+    float _carryWeight = 220.0f;
+    float _speed = 113.0f;
+    float _jumpHeight = 103.0f;
+    float _damage = 141.0f;
+
+    ImGui::BeginGroup();
+
+    ImGui::ProgressBar(_currentScale/_maxScale);
+
+
+    ImGui::EndGroup();
+
+
+
+
+
+
+
+}
+
+
+
+void ShowSplitWindowWithChildWindows()
+{
+    bool open = true;
+    ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar;
+    ImGui::Begin("Main Window", &open, flags);
+
+    DrawTitle();
+
+    // Sidebar width (20% of the window width)
+    const float sidebarWidth = ImGui::GetWindowWidth() * 0.2f;
+
+    // Sidebar (Child Window)
+    ImGui::BeginChild("Sidebar", ImVec2(sidebarWidth, 0), true);
+    static int selectedCategory = 0;
+
+    // Fetch categories from ImCategoryManager
+    const auto& categories = _categoryManager.GetCategories();
+
+    // Display the categories in the sidebar
+    for (size_t i = 0; i < categories.size(); i++) {
+        ImCategory* category = categories[i].get();
+        if (ImGui::Selectable(category->GetTitle().c_str(), selectedCategory == static_cast<int>(i))) {
+            selectedCategory = static_cast<int>(i);
+        }
+    }
+
+    ImGui::EndChild();
+    ImGui::SameLine(); // Position the content area to the right of the sidebar
+
+    // Content Area (Child Window)
+    ImGui::BeginChild("Content", ImVec2(0, 0), true); // Remaining width
+
+    // Validate selectedCategory to ensure it's within bounds
+    if (selectedCategory >= 0 && selectedCategory < static_cast<int>(categories.size())) {
+        ImCategory* selected = categories[selectedCategory].get();
+        ImGui::Text("Content for %s", selected->GetTitle().c_str());
+        selected->Draw(); // Call the Draw method of the selected category
+    } else {
+        ImGui::Text("Invalid category selected.");
+    }
+
+    ImGui::EndChild();
+    ImGui::End();
+}
+
 
 // Main code
 int main(int, char**)
@@ -47,28 +226,13 @@ int main(int, char**)
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
-    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
-    //io.ConfigViewportsNoAutoMerge = true;
-    //io.ConfigViewportsNoTaskBarIcon = true;
-    //io.ConfigViewportsNoDefaultParent = true;
-    //io.ConfigDockingAlwaysTabBar = true;
-    //io.ConfigDockingTransparentPayload = true;
-    //io.ConfigFlags |= ImGuiConfigFlags_DpiEnableScaleFonts;     // FIXME-DPI: Experimental. THIS CURRENTLY DOESN'T WORK AS EXPECTED. DON'T USE IN USER APP!
-    //io.ConfigFlags |= ImGuiConfigFlags_DpiEnableScaleViewports; // FIXME-DPI: Experimental.
 
     // Setup Dear ImGui style
-    ImGui::StyleColorsDark();
-    //ImGui::StyleColorsLight();
 
-    // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
-    ImGuiStyle& style = ImGui::GetStyle();
-    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-    {
-        style.WindowRounding = 0.0f;
-        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-    }
+
+    SetupImGuiStyle();
 
     // Setup Platform/Renderer backends
     ImGui_ImplWin32_Init(hwnd);
@@ -82,21 +246,20 @@ int main(int, char**)
     // - Use '#define IMGUI_ENABLE_FREETYPE' in your imconfig file to use Freetype for higher quality font rendering.
     // - Read 'docs/FONTS.md' for more instructions and details.
     // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
-    //io.Fonts->AddFontDefault();
-    //io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\segoeui.ttf", 18.0f);
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
+    io.Fonts->AddFontDefault();
+    _FontTitle = io.Fonts->AddFontFromFileTTF("Futura Condensed.ttf", 28.0f); // Larger font size
+    _FontText = io.Fonts->AddFontFromFileTTF("arial.ttf", 16.0f); //
+
     //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
     //IM_ASSERT(font != NULL);
 
     // Our state
-    bool show_demo_window = true;
-    bool show_another_window = false;
+
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     // Main loop
     bool done = false;
+    Setup();
     while (!done)
     {
         // Poll and handle messages (inputs, window resize, etc.)
@@ -109,50 +272,33 @@ int main(int, char**)
             if (msg.message == WM_QUIT)
                 done = true;
         }
-        if (done)
-            break;
+
 
         // Start the Dear ImGui frame
         ImGui_ImplDX11_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
-        // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-        if (show_demo_window)
-            ImGui::ShowDemoWindow(&show_demo_window);
+        // // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
+        // {
+        //     static float f = 0.0f;
+        //     static int counter = 0;
+        //     bool open = true;
+        //     ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar;
+        //     ImGui::Begin("Main Window",&open, flags);
+        //     {
+        //         DrawTitle();
+        //         DrawInfo();
+        //     }
 
-        // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
-        {
-            static float f = 0.0f;
-            static int counter = 0;
 
-            ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
 
-            ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-            ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-            ImGui::Checkbox("Another Window", &show_another_window);
 
-            ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-            ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-
-            if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-                counter++;
-            ImGui::SameLine();
-            ImGui::Text("counter = %d", counter);
-
-            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-            ImGui::End();
-        }
-
-        // 3. Show another simple window.
-        if (show_another_window)
-        {
-            ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-            ImGui::Text("Hello from another window!");
-            if (ImGui::Button("Close Me"))
-                show_another_window = false;
-            ImGui::End();
-        }
+        //     ImGui::End();
+        // }
+        ImGui::PushFont(_FontText);
+        ShowSplitWindowWithChildWindows();
+        ImGui::PopFont();
 
         // Rendering
         ImGui::Render();

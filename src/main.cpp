@@ -14,6 +14,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include "imgui_internal.h"
 
 // Data
 static ID3D11Device*            g_pd3dDevice = NULL;
@@ -23,6 +24,11 @@ static ID3D11RenderTargetView*  g_mainRenderTargetView = NULL;
 
 ImFont* _FontTitle = nullptr;
 ImFont* _FontText = nullptr;
+ImFont* _FontSidebar = nullptr;
+
+//Predefined colors {R, G, B, A} (0.0 to 1.0f)
+constexpr ImVec4 _ColorRed = {1.0f, 0.15f, 0.15f, 1.0f};
+std::once_flag _CategoryInitFlag;
 
 // Forward declarations of helper functions
 bool CreateDeviceD3D(HWND hWnd);
@@ -39,33 +45,69 @@ class ImCategory {
 
     public:
     virtual ~ImCategory() = default;
+    ImCategory() : title("Category"), description("Default description") {}
+    
     virtual void Draw() {
         ImGui::Text("No Content");
     };
 
-    ImCategory() : title("Category"), description("Default description") {}
+    const std::string& GetTitle() {
+        return title;
+    }
 
-    const std::string& GetTitle() {return title;}
-    const std::string& GetDescription() {return description;}
-
+    const std::string& GetDescription() {
+        return description;
+    }
 
 };
-static std::vector<std::unique_ptr<ImCategory>> categories; 
+
+[[nodiscard]] static inline bool ImGuiValidState() noexcept {
+    ImGuiContext* ctx = ImGui::GetCurrentContext();
+    return ctx && ctx->WithinFrameScope;
+}
+
 class ImCategoryManager {
     private:
-    // Vector of smart pointers to categories
+    // List of categories
+    std::vector<std::shared_ptr<ImCategory>> categories;
     
-
     public:
+    ~ImCategoryManager() = default;
+
+    // Singleton accessor
+    [[nodiscard]] static inline ImCategoryManager& GetSingleton() noexcept {
+        static ImCategoryManager instance;
+        return instance;
+    }
+
+    // Access the list of categories
+    [[nodiscard]] inline std::vector<std::shared_ptr<ImCategory>>& GetCategories() {
+        return categories;
+    }
+
     // Add a new category
-    void AddCategory(std::unique_ptr<ImCategory> category) {
+    inline void AddCategory(std::shared_ptr<ImCategory> category) {
         categories.push_back(std::move(category));
     }
 
-   static std::vector<std::unique_ptr<ImCategory>>& GetCategories()  {
-    return categories;
-   }
+    [[nodiscard]] float GetLongestCategory(){
 
+        if(!ImGuiValidState()) return -1.0f;
+
+        float longest = 0.0f;
+
+        for(auto& category : categories){
+            auto len = ImGui::CalcTextSize(category.get()->GetTitle().c_str());
+            longest = std::max(len.x + len.y,longest);
+        }
+
+        return longest;
+    }
+
+    private:
+    ImCategoryManager() = default;
+    ImCategoryManager(const ImCategoryManager&) = delete;
+    ImCategoryManager& operator=(const ImCategoryManager&) = delete;
 };
 
 class CategoryGeneral : public ImCategory {
@@ -99,25 +141,25 @@ class CategoryGameplay : public ImCategory {
         description = "Gameplay Settings";
     }
 
-    void Draw() override {
-        ImGui::Text("[PH] Content for the Gameplay page goes here");
-    }
+    // void Draw() override {
+    //     ImGui::Text("[PH] Content for the Gameplay page goes here");
+    // }
 };
 
-static ImCategoryManager _categoryManager;
 
 
 void Setup(){
-    _categoryManager.AddCategory(std::make_unique<CategoryGeneral>());
-    _categoryManager.AddCategory(std::make_unique<CategoryInfo>());
-    _categoryManager.AddCategory(std::make_unique<CategoryGameplay>());
+    auto& CatMgr = ImCategoryManager::GetSingleton();
+    CatMgr.AddCategory(std::make_shared<CategoryGeneral>());
+    CatMgr.AddCategory(std::make_shared<CategoryInfo>());
+    CatMgr.AddCategory(std::make_shared<CategoryGameplay>());
 }
 
 inline void DrawTitle(){
+    {
 
-    ImGui::PushFont(_FontTitle);  // Push larger font
-    ImGui::Text("Size Matters Configuration");
-    ImGui::PopFont();            // Restore the previous font
+    }
+
 
 }
 
@@ -128,14 +170,14 @@ inline void DrawInfo(/*Actor* TargetActor */){
     float _maxScale = 10.85f;
     std::string res = std::format("{}/{}({}/{})",_currentScale,_maxScale,_currentScale * 1.82f,_maxScale * 1.82f);
 
-    float _aspectOfGTS = 43.0f;
-    float _weight = 243.43;
+    // float _aspectOfGTS = 43.0f;
+    // float _weight = 243.43;
 
-    float _damageResist = 12.0f;
-    float _carryWeight = 220.0f;
-    float _speed = 113.0f;
-    float _jumpHeight = 103.0f;
-    float _damage = 141.0f;
+    // float _damageResist = 12.0f;
+    // float _carryWeight = 220.0f;
+    // float _speed = 113.0f;
+    // float _jumpHeight = 103.0f;
+    // float _damage = 141.0f;
 
     ImGui::BeginGroup();
 
@@ -144,58 +186,83 @@ inline void DrawInfo(/*Actor* TargetActor */){
 
     ImGui::EndGroup();
 
-
-
-
-
-
-
 }
 
 
 
-void ShowSplitWindowWithChildWindows()
-{
+void ShowSplitWindowWithChildWindows() {
     bool open = true;
-    ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar;
+    constexpr ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar;
     ImGui::Begin("Main Window", &open, flags);
 
-    DrawTitle();
+    auto& CatMgr = ImCategoryManager::GetSingleton();
+    auto& categories = CatMgr.GetCategories();
+    static size_t selectedCategory = 0;
 
-    // Sidebar width (20% of the window width)
-    const float sidebarWidth = ImGui::GetWindowWidth() * 0.2f;
 
-    // Sidebar (Child Window)
-    ImGui::BeginChild("Sidebar", ImVec2(sidebarWidth, 0), true);
-    static int selectedCategory = 0;
+    {   // Title
 
-    // Fetch categories from ImCategoryManager
-    const auto& categories = _categoryManager.GetCategories();
-
-    // Display the categories in the sidebar
-    for (size_t i = 0; i < categories.size(); i++) {
-        ImCategory* category = categories[i].get();
-        if (ImGui::Selectable(category->GetTitle().c_str(), selectedCategory == static_cast<int>(i))) {
-            selectedCategory = static_cast<int>(i);
-        }
+        ImGui::PushFont(_FontTitle);  // Push larger font
+        ImGui::BeginChild("TitleBar", ImVec2(0,ImGui::GetTextLineHeight() + 20), true);
+        //ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(200, ImGui::GetStyle().FramePadding.y));
+        ImGui::Text("Size Matters Configuration");
+        ImGui::PopFont();            // Restore the previous font
+        //ImGui::PopStyleVar();
+        ImGui::EndChild();
     }
 
-    ImGui::EndChild();
+    {  // Sidebar
+
+        //Initialize the sidebar width
+        static float sidebarWidth = 100.0f;
+        std::call_once(_CategoryInitFlag, [](){
+            auto length = ImCategoryManager::GetSingleton().GetLongestCategory();
+            if(length > 0.0f){
+                sidebarWidth = length;
+            }
+        });
+        
+        //TODO Lenght Should be Slightly smaller to allow for a small box at the bottom containing mod version and stuff.
+        ImGui::BeginChild("Sidebar", ImVec2(sidebarWidth, 0), true);
+        ImGui::PushFont(_FontSidebar);
+        
+        // Display the categories in the sidebar
+        for (size_t i = 0; i < categories.size(); i++) {
+            ImCategory* category = categories[i].get();
+            if (ImGui::Selectable(category->GetTitle().c_str(), selectedCategory == i)) {
+                selectedCategory = i;
+            }
+        }
+
+        ImGui::PopFont();
+        ImGui::EndChild();
+
+    }
+
+    // { // Sidebar Info
+
+
+
+    // }
+
     ImGui::SameLine(); // Position the content area to the right of the sidebar
 
-    // Content Area (Child Window)
-    ImGui::BeginChild("Content", ImVec2(0, 0), true); // Remaining width
+    { // Content Area
 
-    // Validate selectedCategory to ensure it's within bounds
-    if (selectedCategory >= 0 && selectedCategory < static_cast<int>(categories.size())) {
-        ImCategory* selected = categories[selectedCategory].get();
-        ImGui::Text("Content for %s", selected->GetTitle().c_str());
-        selected->Draw(); // Call the Draw method of the selected category
-    } else {
-        ImGui::Text("Invalid category selected.");
+        ImGui::BeginChild("Content", ImVec2(0, 0), true); // Remaining width
+
+        // Validate selectedCategory to ensure it's within bounds
+        if (selectedCategory >= 0 && selectedCategory < categories.size()) {
+            ImCategory* selected = categories[selectedCategory].get();
+            selected->Draw(); // Call the Draw method of the selected category
+        } 
+        else {
+            ImGui::TextColored(_ColorRed,"Invalid category or no categories exist!");
+        }
+
+        ImGui::EndChild();
     }
 
-    ImGui::EndChild();
     ImGui::End();
 }
 
@@ -226,7 +293,6 @@ int main(int, char**)
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
 
     // Setup Dear ImGui style
@@ -247,8 +313,9 @@ int main(int, char**)
     // - Read 'docs/FONTS.md' for more instructions and details.
     // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
     io.Fonts->AddFontDefault();
-    _FontTitle = io.Fonts->AddFontFromFileTTF("Futura Condensed.ttf", 28.0f); // Larger font size
-    _FontText = io.Fonts->AddFontFromFileTTF("arial.ttf", 16.0f); //
+    _FontTitle = io.Fonts->AddFontFromFileTTF("Futura Condensed.ttf", 56.0f); // Larger font size
+    _FontSidebar = io.Fonts->AddFontFromFileTTF("Futura Condensed.ttf", 30.0f); // Larger font size
+    _FontText = io.Fonts->AddFontFromFileTTF("arial.ttf", 22.0f); //
 
     //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
     //IM_ASSERT(font != NULL);
@@ -279,23 +346,6 @@ int main(int, char**)
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
-        // // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
-        // {
-        //     static float f = 0.0f;
-        //     static int counter = 0;
-        //     bool open = true;
-        //     ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar;
-        //     ImGui::Begin("Main Window",&open, flags);
-        //     {
-        //         DrawTitle();
-        //         DrawInfo();
-        //     }
-
-
-
-
-        //     ImGui::End();
-        // }
         ImGui::PushFont(_FontText);
         ShowSplitWindowWithChildWindows();
         ImGui::PopFont();

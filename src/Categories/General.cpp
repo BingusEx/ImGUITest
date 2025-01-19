@@ -15,7 +15,7 @@ void CategoryGeneral::Draw(){
     auto& StyleMgr = ImStyleManager::GetSingleton();
     ImGui::SliderFloat("Scale",&f, 0.1f, 2.0f);
     
-    StyleMgr.sScale(f);
+    StyleMgr.SetScale(f);
 }
 
 bool CategoryGeneral::Load(){

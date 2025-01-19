@@ -10,6 +10,12 @@
         "win32-binding",
         "docking-experimental"
       ]
+    },
+    {
+      "name": "fmt"
+    },
+    {
+      "name": "magic-enum"
     }
   ]
 }

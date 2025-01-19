@@ -16,6 +16,9 @@
 class ImStyleManager {
 
     private:
+
+    float scale = 1.0f;
+
     ImGuiStyle GTSStyle = []() {
         ImGuiStyle style = {};
         auto& colors = style.Colors;
@@ -118,7 +121,7 @@ class ImStyleManager {
     }();
 
     public:
-    float scale = 1.0f;
+
 
     ~ImStyleManager() = default;
 
@@ -136,12 +139,17 @@ class ImStyleManager {
         style = customStyle;
     }
 
-    void sScale(float scale){
+    [[nodiscard]] inline float GetScale() const noexcept {
+        return scale;
+    }
+
+    void SetScale(float a_scale){
         auto& style = ImGui::GetStyle();
         auto customStyle = GTSStyle;
-        customStyle.ScaleAllSizes(exp2(scale));
+        customStyle.ScaleAllSizes(exp2(GetScale()));
+        customStyle.MouseCursorScale = 1.f;
         style = customStyle;
-        ImGui::GetIO().FontGlobalScale = scale;
+        ImGui::GetIO().FontGlobalScale = GetScale();
     }
 
 };

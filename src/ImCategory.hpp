@@ -42,9 +42,12 @@ class ImCategoryManager {
     private:
     // List of categories
     std::vector<std::shared_ptr<ImCategory>> categories;
-    
+
     public:
     ~ImCategoryManager() = default;
+    
+    //Would we need to keep track of more than 255 categories??
+    uint8_t activeIndex;
 
     // Singleton accessor
     [[nodiscard]] static inline ImCategoryManager& GetSingleton() noexcept {

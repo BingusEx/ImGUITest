@@ -14,17 +14,8 @@
 class ImFontManager {
     private:
 
-    template <typename... T>
-        bool IsAnyNull(T... args) {
-        return ((args == nullptr) || ...);
-    }
 
-    ImFont* _FontTitle;
-    ImFont* _FontText ;
-    ImFont* _FontSidebar;
-    ImFont* _FontSubscript;
-    ImFont* _FontFooter;
-
+    //TODO: All these consts need to be loaded from the toml
     const std::string _ext = ".ttf";
     const std::string _basePath = "GTSPlugin\\Fonts\\";
 
@@ -32,62 +23,63 @@ class ImFontManager {
     const std::string _SkyrimGUI_Medium = _basePath + "Futura Condensed Medium" + _ext;
     const std::string _SkyrimGUI_Console = _basePath + "Arial" + _ext;
 
+    typedef struct FontData {
+        std::string name;
+        std::string path;
+        float size;
+        FontData(const std::string& name, const std::string& path, float size) : name(name), path(path), size(size) {}
+    } FontData;
+
+    //std::unordered_map<FontData*, ImFont*> Fonts;
+    std::unordered_map<std::string, ImFont*> Fonts;
+
     public:
     ~ImFontManager() = default;
+
 
     [[nodiscard]] static inline ImFontManager& GetSingleton(){
         static ImFontManager instance;
         return instance;
     }
 
-    void Init(ImGuiIO& io){        
-        //Default
+    //TODO: Load Paths from config
+    void Init(){
+        
+        ImGuiIO& io = ImGui::GetIO();
+        ImFontAtlas* fontAtlas = io.Fonts;
+
         io.Fonts->AddFontDefault();
 
-        _FontSidebar =      io.Fonts->AddFontFromFileTTF(_SkyrimGUI_Light.c_str(), 28.0f);
+        //Initalzie default font data
+        // auto a = new FontData("sidebar",_SkyrimGUI_Light, 28.0f);
+        // auto a = new FontData("title",_SkyrimGUI_Medium, 56.0f);
+        // auto a = new FontData("footer",_SkyrimGUI_Medium, 20.0f);
+        // auto a = new FontData("text",_SkyrimGUI_Console, 18.0f);
+        // auto a = new FontData("subscript",_SkyrimGUI_Console, 12.0f);
 
-        _FontTitle =        io.Fonts->AddFontFromFileTTF(_SkyrimGUI_Medium.c_str(), 56.0f);
-        _FontFooter =       io.Fonts->AddFontFromFileTTF(_SkyrimGUI_Medium.c_str(), 20.0f);
 
-        _FontText =         io.Fonts->AddFontFromFileTTF(_SkyrimGUI_Console.c_str(), 18.0f);
-        _FontSubscript =    io.Fonts->AddFontFromFileTTF(_SkyrimGUI_Console.c_str(), 12.0f);
-        
-        if(IsAnyNull(_FontSidebar,_FontTitle,_FontFooter,_FontText,_FontSubscript)){
-            //logger::critical("Could load load some fonts");
-            //SKSE Report and fail
-            assert(false);
+        Fonts["sidebar"] =      fontAtlas->AddFontFromFileTTF(_SkyrimGUI_Light.c_str(), 28.0f);
+        Fonts["title"] =        fontAtlas->AddFontFromFileTTF(_SkyrimGUI_Medium.c_str(), 56.0f);
+        Fonts["footer"] =       fontAtlas->AddFontFromFileTTF(_SkyrimGUI_Medium.c_str(), 20.0f);
+        Fonts["text"] =         fontAtlas->AddFontFromFileTTF(_SkyrimGUI_Console.c_str(), 18.0f);
+        Fonts["subscript"] =    fontAtlas->AddFontFromFileTTF(_SkyrimGUI_Console.c_str(), 12.0f);
+
+
+        for(auto& [key, value] : Fonts){
+            if(value == nullptr){
+                //logger::critical("Could not load font: {}", key);
+                //SKSE Report and fail
+            }
         }
-
     }
 
-    inline void Title(){
-        if(_FontTitle) [[likely]]
-        ImGui::PushFont(_FontTitle);
-    }
-
-    inline void Footer(){
-        if(_FontFooter) [[likely]]
-        ImGui::PushFont(_FontFooter);
-    }
-
-    inline void Text(){
-        if(_FontText) [[likely]]
-        ImGui::PushFont(_FontText);
-    }
-
-    inline void Subscript(){
-        if(_FontSubscript) [[likely]]
-        ImGui::PushFont(_FontSubscript);
-    }
-
-    inline void Sidebar(){
-        if(_FontSidebar) [[likely]]
-        ImGui::PushFont(_FontSidebar);
-    }
-
-    //Pointless, but its here for completness' sake
-    inline void Pop(){
-        ImGui::PopFont();
+    // Utility function to get a font with fallback
+    ImFont* GetFont(const std::string& fontName) {
+        auto it = Fonts.find(fontName);
+        if (it != Fonts.end()) {
+            return it->second;  // Font found
+        }
+        return ImGui::GetIO().Fonts->Fonts[0];    // Fallback to default font
     }
 
 };

@@ -78,4 +78,11 @@ namespace ImUtil {
 
     }
 
+    [[nodiscard]] static ImVec2 ScaleToViewport(float a_paddingScale) {
+        ImVec2 viewportSize = ImGui::GetMainViewport()->Size;
+        return { viewportSize.x * (1.0f - a_paddingScale * 2), viewportSize.y * (1.0f - a_paddingScale * 2) };
+    }
+
+
 }
+

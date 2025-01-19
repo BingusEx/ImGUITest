@@ -1,20 +1,27 @@
 // Dear ImGui: standalone example application for DirectX 11
 // If you are new to Dear ImGui, read documentation from the docs/ folder + read the top of imgui.cpp.
 // Read online: https://github.com/ocornut/imgui/tree/master/docs
-
+//#include "MainWindow.hpp"
 #include "imgui.h"
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx11.h"
 #include <d3d11.h>
 #include <tchar.h>
-#include "ui.h"
 #include <string>
 #include <format>
 #include <vector>
 #include <iostream>
 #include <memory>
 #include <string>
-#include "imgui_internal.h"
+
+#include <functional> // For std::function
+
+#include "ImCategory.hpp"
+#include "ImUtil.hpp"
+#include "ImFont.hpp"
+#include "ImStyle.hpp"
+
+#include "MainWindow.hpp"
 
 // Data
 static ID3D11Device*            g_pd3dDevice = NULL;
@@ -22,13 +29,6 @@ static ID3D11DeviceContext*     g_pd3dDeviceContext = NULL;
 static IDXGISwapChain*          g_pSwapChain = NULL;
 static ID3D11RenderTargetView*  g_mainRenderTargetView = NULL;
 
-ImFont* _FontTitle = nullptr;
-ImFont* _FontText = nullptr;
-ImFont* _FontSidebar = nullptr;
-
-//Predefined colors {R, G, B, A} (0.0 to 1.0f)
-constexpr ImVec4 _ColorRed = {1.0f, 0.15f, 0.15f, 1.0f};
-std::once_flag _CategoryInitFlag;
 
 // Forward declarations of helper functions
 bool CreateDeviceD3D(HWND hWnd);
@@ -36,236 +36,6 @@ void CleanupDeviceD3D();
 void CreateRenderTarget();
 void CleanupRenderTarget();
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
-//Singleton
-class ImCategory {
-    protected:
-    std::string title;
-    std::string description;
-
-    public:
-    virtual ~ImCategory() = default;
-    ImCategory() : title("Category"), description("Default description") {}
-    
-    virtual void Draw() {
-        ImGui::Text("No Content");
-    };
-
-    const std::string& GetTitle() {
-        return title;
-    }
-
-    const std::string& GetDescription() {
-        return description;
-    }
-
-};
-
-[[nodiscard]] static inline bool ImGuiValidState() noexcept {
-    ImGuiContext* ctx = ImGui::GetCurrentContext();
-    return ctx && ctx->WithinFrameScope;
-}
-
-class ImCategoryManager {
-    private:
-    // List of categories
-    std::vector<std::shared_ptr<ImCategory>> categories;
-    
-    public:
-    ~ImCategoryManager() = default;
-
-    // Singleton accessor
-    [[nodiscard]] static inline ImCategoryManager& GetSingleton() noexcept {
-        static ImCategoryManager instance;
-        return instance;
-    }
-
-    // Access the list of categories
-    [[nodiscard]] inline std::vector<std::shared_ptr<ImCategory>>& GetCategories() {
-        return categories;
-    }
-
-    // Add a new category
-    inline void AddCategory(std::shared_ptr<ImCategory> category) {
-        categories.push_back(std::move(category));
-    }
-
-    [[nodiscard]] float GetLongestCategory(){
-
-        if(!ImGuiValidState()) return -1.0f;
-
-        float longest = 0.0f;
-
-        for(auto& category : categories){
-            auto len = ImGui::CalcTextSize(category.get()->GetTitle().c_str());
-            longest = std::max(len.x + len.y,longest);
-        }
-
-        return longest;
-    }
-
-    private:
-    ImCategoryManager() = default;
-    ImCategoryManager(const ImCategoryManager&) = delete;
-    ImCategoryManager& operator=(const ImCategoryManager&) = delete;
-};
-
-class CategoryGeneral : public ImCategory {
-    public:
-    CategoryGeneral(){
-        title = "General";
-        description = "General Settings";
-    }
-
-    void Draw() override {
-        ImGui::Text("[PH] Content for the General page goes here");
-    }
-};
-
-class CategoryInfo : public ImCategory {
-    public:
-    CategoryInfo(){
-        title = "Info";
-        description = "Show actor information";
-    }
-
-    void Draw() override {
-        ImGui::Text("[PH] Content for the Info page goes here");
-    }
-};
-
-class CategoryGameplay : public ImCategory {
-    public:
-    CategoryGameplay(){
-        title = "Gameplay";
-        description = "Gameplay Settings";
-    }
-
-    // void Draw() override {
-    //     ImGui::Text("[PH] Content for the Gameplay page goes here");
-    // }
-};
-
-
-
-void Setup(){
-    auto& CatMgr = ImCategoryManager::GetSingleton();
-    CatMgr.AddCategory(std::make_shared<CategoryGeneral>());
-    CatMgr.AddCategory(std::make_shared<CategoryInfo>());
-    CatMgr.AddCategory(std::make_shared<CategoryGameplay>());
-}
-
-inline void DrawTitle(){
-    {
-
-    }
-
-
-}
-
-inline void DrawInfo(/*Actor* TargetActor */){
-
-    //Dummy Values
-    float _currentScale = 1.42f;
-    float _maxScale = 10.85f;
-    std::string res = std::format("{}/{}({}/{})",_currentScale,_maxScale,_currentScale * 1.82f,_maxScale * 1.82f);
-
-    // float _aspectOfGTS = 43.0f;
-    // float _weight = 243.43;
-
-    // float _damageResist = 12.0f;
-    // float _carryWeight = 220.0f;
-    // float _speed = 113.0f;
-    // float _jumpHeight = 103.0f;
-    // float _damage = 141.0f;
-
-    ImGui::BeginGroup();
-
-    ImGui::ProgressBar(_currentScale/_maxScale);
-
-
-    ImGui::EndGroup();
-
-}
-
-
-
-void ShowSplitWindowWithChildWindows() {
-    bool open = true;
-    constexpr ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar;
-    ImGui::Begin("Main Window", &open, flags);
-
-    auto& CatMgr = ImCategoryManager::GetSingleton();
-    auto& categories = CatMgr.GetCategories();
-    static size_t selectedCategory = 0;
-
-
-    {   // Title
-
-        ImGui::PushFont(_FontTitle);  // Push larger font
-        ImGui::BeginChild("TitleBar", ImVec2(0,ImGui::GetTextLineHeight() + 20), true);
-        //ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(200, ImGui::GetStyle().FramePadding.y));
-        ImGui::Text("Size Matters Configuration");
-        ImGui::PopFont();            // Restore the previous font
-        //ImGui::PopStyleVar();
-        ImGui::EndChild();
-    }
-
-    {  // Sidebar
-
-        //Initialize the sidebar width
-        static float sidebarWidth = 100.0f;
-        std::call_once(_CategoryInitFlag, [](){
-            auto length = ImCategoryManager::GetSingleton().GetLongestCategory();
-            if(length > 0.0f){
-                sidebarWidth = length;
-            }
-        });
-        
-        //TODO Lenght Should be Slightly smaller to allow for a small box at the bottom containing mod version and stuff.
-        ImGui::BeginChild("Sidebar", ImVec2(sidebarWidth, 0), true);
-        ImGui::PushFont(_FontSidebar);
-        
-        // Display the categories in the sidebar
-        for (size_t i = 0; i < categories.size(); i++) {
-            ImCategory* category = categories[i].get();
-            if (ImGui::Selectable(category->GetTitle().c_str(), selectedCategory == i)) {
-                selectedCategory = i;
-            }
-        }
-
-        ImGui::PopFont();
-        ImGui::EndChild();
-
-    }
-
-    // { // Sidebar Info
-
-
-
-    // }
-
-    ImGui::SameLine(); // Position the content area to the right of the sidebar
-
-    { // Content Area
-
-        ImGui::BeginChild("Content", ImVec2(0, 0), true); // Remaining width
-
-        // Validate selectedCategory to ensure it's within bounds
-        if (selectedCategory >= 0 && selectedCategory < categories.size()) {
-            ImCategory* selected = categories[selectedCategory].get();
-            selected->Draw(); // Call the Draw method of the selected category
-        } 
-        else {
-            ImGui::TextColored(_ColorRed,"Invalid category or no categories exist!");
-        }
-
-        ImGui::EndChild();
-    }
-
-    ImGui::End();
-}
-
 
 // Main code
 int main(int, char**)
@@ -298,8 +68,6 @@ int main(int, char**)
     // Setup Dear ImGui style
 
 
-    SetupImGuiStyle();
-
     // Setup Platform/Renderer backends
     ImGui_ImplWin32_Init(hwnd);
     ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext);
@@ -312,10 +80,7 @@ int main(int, char**)
     // - Use '#define IMGUI_ENABLE_FREETYPE' in your imconfig file to use Freetype for higher quality font rendering.
     // - Read 'docs/FONTS.md' for more instructions and details.
     // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
-    io.Fonts->AddFontDefault();
-    _FontTitle = io.Fonts->AddFontFromFileTTF("Futura Condensed.ttf", 56.0f); // Larger font size
-    _FontSidebar = io.Fonts->AddFontFromFileTTF("Futura Condensed.ttf", 30.0f); // Larger font size
-    _FontText = io.Fonts->AddFontFromFileTTF("arial.ttf", 22.0f); //
+
 
     //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
     //IM_ASSERT(font != NULL);
@@ -326,7 +91,8 @@ int main(int, char**)
 
     // Main loop
     bool done = false;
-    Setup();
+    Setup(io);
+
     while (!done)
     {
         // Poll and handle messages (inputs, window resize, etc.)
@@ -346,9 +112,7 @@ int main(int, char**)
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
-        ImGui::PushFont(_FontText);
         ShowSplitWindowWithChildWindows();
-        ImGui::PopFont();
 
         // Rendering
         ImGui::Render();

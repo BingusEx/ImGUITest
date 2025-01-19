@@ -11,10 +11,10 @@ file(GLOB sources
 )
 
 file(GLOB headers
-	src/*.h
-	src/*/*.h
-	src/*/*/*.h
-	src/*/*/*/*.h
+	src/*.hpp
+	src/*/*.hpp
+	src/*/*/*.hpp
+	src/*/*/*/*.hpp
 )
 
 source_group(
@@ -23,7 +23,7 @@ source_group(
 	${headers}
 	${sources}
 )
-add_executable(${PROJECT_NAME} src/main.cpp)
+add_executable(${PROJECT_NAME} ${headers} ${sources})
 
 
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_23)

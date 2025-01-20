@@ -16,7 +16,6 @@
 class ImStyleManager {
 
     private:
-
     float scale = 1.0f;
 
     ImGuiStyle GTSStyle = []() {
@@ -135,21 +134,18 @@ class ImStyleManager {
         auto& style = ImGui::GetStyle();
         auto customStyle = GTSStyle;
         customStyle.ScaleAllSizes(exp2(scale));
-        customStyle.MouseCursorScale = 1.f;
+        customStyle.MouseCursorScale = 1.0f;
         style = customStyle;
+        ImGui::GetIO().FontGlobalScale = scale;
     }
 
-    [[nodiscard]] inline float GetScale() const noexcept {
+    [[nodiscard]] inline float GetScale() noexcept {
         return scale;
     }
 
-    void SetScale(float a_scale){
-        auto& style = ImGui::GetStyle();
-        auto customStyle = GTSStyle;
-        customStyle.ScaleAllSizes(exp2(GetScale()));
-        customStyle.MouseCursorScale = 1.f;
-        style = customStyle;
-        ImGui::GetIO().FontGlobalScale = GetScale();
+    inline void SetScale(float a_scale) noexcept {
+        scale = a_scale;
+        SetupStyle();
     }
 
 };

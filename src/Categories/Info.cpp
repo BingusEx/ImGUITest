@@ -2,9 +2,56 @@
 
 using namespace GTSUi;
 
-void CategoryInfo::Draw(){
+void CategoryInfo::DrawLeft(){
+    ImGui::Text("CategoryInfo");
+    ImGui::Text("CategoryInfo");
+    ImGui::Text("CategoryInfo");
+    ImGui::Text("CategoryInfo");
+        ImGui::Text("CategoryInfo");
+    ImGui::Text("CategoryInfo");
+    ImGui::Text("CategoryInfo");
+    ImGui::Text("CategoryInfo");
+        ImGui::Text("CategoryInfo");
+    ImGui::Text("CategoryInfo");
+    ImGui::Text("CategoryInfo");
+    ImGui::Text("CategoryInfo");
+        ImGui::Text("CategoryInfo");
+    ImGui::Text("CategoryInfo");
+    ImGui::Text("CategoryInfo");
+    ImGui::Text("CategoryInfo");
+        ImGui::Text("CategoryInfo");
+    ImGui::Text("CategoryInfo");
+    ImGui::Text("CategoryInfo");
     ImGui::Text("CategoryInfo");
 }
+
+void CategoryInfo::DrawRight(){
+    ImGui::Text("CategoryInfo");
+        ImGui::Text("CategoryInfo");
+    ImGui::Text("CategoryInfo");
+    ImGui::Text("CategoryInfo");
+    ImGui::Text("CategoryInfo");    ImGui::Text("CategoryInfo");
+    ImGui::Text("CategoryInfo");
+    ImGui::Text("CategoryInfo");
+    ImGui::Text("CategoryInfo");
+        ImGui::Text("CategoryInfo");
+    ImGui::Text("CategoryInfo");
+    ImGui::Text("CategoryInfo");
+    ImGui::Text("CategoryInfo");
+        ImGui::Text("CategoryInfo");
+    ImGui::Text("CategoryInfo");
+    ImGui::Text("CategoryInfo");
+    ImGui::Text("CategoryInfo");
+        ImGui::Text("CategoryInfo");
+    ImGui::Text("CategoryInfo");
+    ImGui::Text("CategoryInfo");
+    ImGui::Text("CategoryInfo");
+        ImGui::Text("CategoryInfo");
+    ImGui::Text("CategoryInfo");
+    ImGui::Text("CategoryInfo");
+    ImGui::Text("CategoryInfo");
+}
+
 
 bool CategoryInfo::Load(){
     return true;

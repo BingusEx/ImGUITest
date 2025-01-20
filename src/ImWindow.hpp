@@ -26,13 +26,9 @@ class ImWindow {
 
     enum WindowAnchor {
         kTopLeft,
-        kTopCenter,
         kTopRight,
-        kCenterLeft,
         kCenter,
-        kCenterRight,
         kBottomLeft,
-        kBottomCenter,
         kBottomRight,
         kTotal
     };
@@ -40,50 +36,60 @@ class ImWindow {
     bool Show = false;
     bool Focus = false;
     bool NeedsInput = true;
-    bool AllowMove = true;
-    bool AllowResize = true;
+    bool Fixed = false;
+    bool DoUpdate = true;
 
-    ImVec2 Size = ImVec2(100.f, 100.f);         //Window Size
-    ImVec2 Position = ImVec2(100.f, 100.f);     //Window Position
-    ImVec2 MinSize = ImVec2(100.f, 100.f);      //Minimum Window Size if AllowResize is true
-    ImVec2 CornerPadding = ImVec2(30.f, 30.f);  //Padding from the corner of the screen does nothin if AllowMove is true
-    float FixedPadding = 0.0f;                  //Padding from the corner of the screen does nothin if AllowMove is true
+    ImVec2 Position = ImVec2(100.f, 100.f);      //Window Position
+    //TODO Auto Calculate Based On Contents
+    ImVec2 MinSize = ImVec2(400.f, 400.f);      //Minimum Window Size if AllowResize is true
+    ImVec2 CornerPadding = ImVec2(30.f, 30.f);  //Padding from the corner of the screen does nothing if AllowMove is true
+    float FixedScale = 80.0f;                   //Window scale relative to the viewport
     
     WindowAnchor AnchorPos = WindowAnchor::kCenter;
 
-    std::string Name = "Default";
-    std::string Title = "Default";
+    std::string Name = "Default";   //Imgui Window Name
+    std::string Title = "Default";  //Window Title
     ImGuiWindowFlags flags = ImGuiWindowFlags_None;
 
     virtual ~ImWindow() noexcept = default;
 
     virtual void Draw() = 0;
 
-    static ImVec2 GetAnchorPos(WindowAnchor a_position, ImVec2 a_padding) {
-        ImVec2 viewportSize = ImGui::GetMainViewport()->Size;
+    ImVec2 GetAnchorPos(WindowAnchor a_position, ImVec2 a_padding) {
+        auto v = ImGui::GetMainViewport();
+        auto s = ImGui::GetWindowSize();
+
+        //Get Total size first then subtract the viewport position to cancel out any offsets
+        ImVec2 Origin = v->Size;
+        Origin.x -= v->Pos.x;
+        Origin.y -= v->Pos.y;
+
+        //Subtract the window size to get the top left corner of the window
+        Origin.x -= s.x;
+        Origin.y -= s.y;
+
         switch (a_position) {
             case WindowAnchor::kTopLeft:
                 return {a_padding.x, a_padding.y};
             case WindowAnchor::kTopRight:
-                return {viewportSize.x - a_padding.x, a_padding.y};
+                return {Origin.x - a_padding.x, a_padding.y};
             case WindowAnchor::kBottomLeft:
-                return {a_padding.x, viewportSize.y - a_padding.y};
+                return {a_padding.x, Origin.y - a_padding.y};
             case WindowAnchor::kBottomRight:
-                return {viewportSize.x - a_padding.x, viewportSize.y - a_padding.y};
-            case WindowAnchor::kTopCenter:
-                return {viewportSize.x * 0.5f, a_padding.y};
-            case WindowAnchor::kCenterLeft:
-                return {a_padding.x, viewportSize.y * 0.5f};
-            case WindowAnchor::kCenterRight:
-                return {viewportSize.x - a_padding.x, viewportSize.y * 0.5f};
-            case WindowAnchor::kBottomCenter:
-                return {viewportSize.x * 0.5f, viewportSize.y - a_padding.y};
+                return {Origin.x - a_padding.x, Origin.y - a_padding.y};
+            // case WindowAnchor::kTopCenter:
+            //     return {Origin.x * 0.5f, a_padding.y};
+            // case WindowAnchor::kCenterLeft:
+            //     return {a_padding.x, Origin.y * 0.5f};
+            // case WindowAnchor::kCenterRight:
+            //     return {Origin.x - a_padding.x, Origin.y * 0.5f};
+            // case WindowAnchor::kBottomCenter:
+            //     return {Origin.x * 0.5f, Origin.y - a_padding.y};
             case WindowAnchor::kCenter: default:
-                return {viewportSize.x * 0.5f, viewportSize.y * 0.5f};
+                return {Origin.x * 0.5f, Origin.y * 0.5f};
         }
     }
 };
-
 
 class ImWindowManager {
 
@@ -91,6 +97,8 @@ class ImWindowManager {
     std::vector<std::unique_ptr<ImWindow>> windows;
     ImFontManager& FontMgr = ImFontManager::GetSingleton();
     ImStyleManager& StyleMgr = ImStyleManager::GetSingleton();
+
+    constexpr static std::string WMName = "GTSPluginWM";
 
     ~ImWindowManager() = default;
 
@@ -119,23 +127,22 @@ class ImWindowManager {
         if (HasWindows()) {
 			for (const auto& window : windows) {
 				if (window->Show) {
-                    ImGui::Begin(window->Name.c_str(), &window->Show, window->flags);
+                    ImGui::Begin((WMName + "##" + window->Name).c_str(), &window->Show, window->flags);
                     ImGui::PushFont(FontMgr.GetFont("text")); //Default font
 
-                    window->flags = (!window->AllowResize ? (window->flags | ImGuiWindowFlags_NoResize) : (window->flags & ~ImGuiWindowFlags_NoResize));
-                    window->flags = (!window->AllowMove ? (window->flags | ImGuiWindowFlags_NoMove) : (window->flags & ~ImGuiWindowFlags_NoMove));
+                    window->flags = (window->Fixed ? (window->flags | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove) : (window->flags & ~ImGuiWindowFlags_NoResize & ~ImGuiWindowFlags_NoMove));
                     
-                    if(!window->AllowResize){
-                        //ImGui::SetNextWindowSizeConstraints(window->MinSize, ImVec2(FLT_MAX, FLT_MAX));
-                        window->Size = ImUtil::ScaleToViewport(0.1f);
 
-                        ImGui::SetWindowSize(window->Size);
-                        ImGui::SetWindowPos(window->GetAnchorPos((ImWindow::WindowAnchor)window->AnchorPos, ImVec2(50.f, 50.f)));
-                    }
 
                     //DoBackgroundBlur();
 
 					window->Draw();
+
+
+                    if(window->Fixed && !ImGui::GetIO().MouseDown[0]){
+                        ImGui::SetWindowSize(ImUtil::ScaleToViewport(window->FixedScale));
+                        ImGui::SetWindowPos(window->GetAnchorPos(window->AnchorPos, window->CornerPadding));
+                    }
 
                     ImGui::PopFont();
                     ImGui::End();

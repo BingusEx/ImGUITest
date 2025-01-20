@@ -12,6 +12,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <strstream>
 
 #include <functional> // For std::function
 
@@ -52,37 +53,74 @@ namespace ImUtil {
     //  Button
     //---------------------
 
-    static inline void ButtonSimple(const char* a_label, const std::function<void()>& a_callback = nullptr, const float a_padding = 1.0f){
+    static bool Button(const char* a_label, const char* a_Tooltip = nullptr, const bool a_disabled = false, const float a_padding = 1.0f){
     
         const float paddingX = ImGui::GetStyle().FramePadding.x;
         const float paddingY = ImGui::GetStyle().FramePadding.y;
         const ImVec2 textSize = ImGui::CalcTextSize(a_label);
         const ImVec2 buttonSize = ImVec2(textSize.x + a_padding * (paddingX * 2), textSize.y + a_padding * (paddingY * 2));
 
-        if(ImGui::Button(a_label, buttonSize) && a_callback) {
-            a_callback();
+        ImGui::BeginDisabled(a_disabled);
+        const bool res = ImGui::Button(a_label, buttonSize);
+        if (ImGui::IsItemHovered() && a_Tooltip){
+            ImGui::SetTooltip(a_Tooltip);
         }
-
+        ImGui::EndDisabled();
+        return res;
     }
 
-    static inline void ButtonColor(const char* a_label, const ImVec4 a_color, const std::function<void()>& a_callback = nullptr, const float a_padding = 1.0f){
-    
-        const float paddingX = ImGui::GetStyle().FramePadding.x;
-        const float paddingY = ImGui::GetStyle().FramePadding.y;
-        const ImVec2 textSize = ImGui::CalcTextSize(a_label);
-        const ImVec2 buttonSize = ImVec2(textSize.x + a_padding * (paddingX * 2), textSize.y + a_padding * (paddingY * 2));
-
-        if(ImGui::ColorButton(a_label, a_color, ImGuiColorEditFlags_Float, buttonSize) && a_callback) {
-            a_callback();
+    static bool CheckBox(const char* a_label, bool* a_state, const char* a_Tooltip = nullptr, const bool a_disabled = false){
+        ImGui::BeginDisabled(a_disabled);
+        const bool res = ImGui::Checkbox(a_label,a_state);
+        if (ImGui::IsItemHovered() && a_Tooltip){
+            ImGui::SetTooltip(a_Tooltip);
         }
-
+        ImGui::EndDisabled();
+        return res;
     }
 
-    [[nodiscard]] static ImVec2 ScaleToViewport(float a_paddingScale) {
+    static bool SliderF(const char* a_label, float* a_value, float a_min, float a_max, const char* a_Tooltip = nullptr, const bool a_disabled = false){
+        ImGui::BeginDisabled(a_disabled);
+        const bool res = ImGui::SliderFloat(a_label, a_value, a_min, a_max, "%.2f", ImGuiSliderFlags_NoInput);
+
+        if (ImGui::IsItemHovered() && a_Tooltip){
+            ImGui::SetTooltip(a_Tooltip);
+        }
+        ImGui::EndDisabled();
+        return res;
+    }
+
+    static bool SliderF2(const char* a_label, float* a_value, float a_min, float a_max, const char* a_Tooltip = nullptr, const bool a_disabled = false){
+        ImGui::BeginDisabled(a_disabled);
+        const bool res = ImGui::SliderFloat2(a_label, a_value, a_min, a_max, "%.2f", ImGuiSliderFlags_NoInput);
+
+        if (ImGui::IsItemHovered() && a_Tooltip){
+            ImGui::SetTooltip(a_Tooltip);
+        }
+        ImGui::EndDisabled();
+        return res;
+    }
+
+    // static inline bool SliderFS(const char* a_label, float* a_value, float a_min, float a_max, float a_step, const char* a_Tooltip = nullptr, const bool a_disabled = false){
+        
+    //     const int _NumSteps = (a_max - a_min) / a_step;
+    //     int _Stepped = *a_value / a_step;
+
+    //     std::ostream ss = std::format("{:.2f}", *a_value);
+        
+    //     if (ImGui::SliderInt(a_label, &_Stepped, (int)a_min, (int)a_max, , ImGuiSliderFlags_NoInput)) {
+    //         height = heightSliderValue * heightSliderStep;
+    //     }
+
+    //     a_value = heightSliderValue;
+    // }
+
+
+    [[nodiscard]] static inline ImVec2 ScaleToViewport(float a_Percentage) {
         ImVec2 viewportSize = ImGui::GetMainViewport()->Size;
-        return { viewportSize.x * (1.0f - a_paddingScale * 2), viewportSize.y * (1.0f - a_paddingScale * 2) };
+        //std::clamp(a_Percentage, 10.0f, 100.0f);
+        return { viewportSize.x * (a_Percentage / 100.f), viewportSize.y * (a_Percentage / 100.f) };
     }
-
 
 }
 

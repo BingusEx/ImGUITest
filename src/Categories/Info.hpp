@@ -2,17 +2,19 @@
 #pragma once
 
 #include "src/ImCategory.hpp"
+#include "src/Imsplitter.hpp"
 
 namespace GTSUi{
 
-    class CategoryInfo : public ImCategory {
+    class CategoryInfo : public ImCategorySplitter {
         public:
         CategoryInfo(){
             title = "Info";
             description = "Info";
         }
+        void DrawLeft() override;
+        void DrawRight() override;
 
-        void Draw() override;
         bool Load() override;
         bool Save() override;
     };

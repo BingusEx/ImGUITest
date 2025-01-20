@@ -56,35 +56,7 @@ int pos = 0;
 
 inline void Footer(){
 
-    {   //Footer
-
-        ImGui::BeginChild("Info",ImVec2(150,0),true);
-
-        ImGui::PushFont(FontMgr.GetFont("subscript"));
-        ImGui::TextColored(ImUtil::ColorSubscript,"GTSPlugin v2.0.0");
-        ImGui::TextColored(ImUtil::ColorSubscript,"Build 22/01/25");
-        ImGui::PopFont();
-
-        ImGui::EndChild();
-
-    }
-
-    ImGui::SameLine();
-   
-    {   // Footer Buttons [Right Aligned]
-
-        ImGui::BeginChild("Footer",ImVec2(0,0),true);
-        ImGui::PushFont(FontMgr.GetFont("footer"));
-        ImUtil::ButtonSimple("Load");
-
-        ImGui::SameLine();
-        
-        ImUtil::ButtonSimple("Save");
-
-        ImGui::PopFont();
-        //ImGui::PopStyleVar();
-        ImGui::EndChild();
-    }
+    
 
 }
 
@@ -104,7 +76,7 @@ void WConfig::Draw() {
 
     {  // Sidebar
 
-        ImGui::BeginChild("Sidebar", ImVec2(CatMgr.GetLongestCategory(), -footer_height), true);
+        ImGui::BeginChild((Name + "##Sidebar").c_str(), ImVec2(CatMgr.GetLongestCategory(), -footer_height), true);
         ImGui::PushFont(FontMgr.GetFont("sidebar"));
 
         
@@ -125,7 +97,7 @@ void WConfig::Draw() {
 
     { // Content Area
 
-        ImGui::BeginChild("Content", ImVec2(0, -footer_height), true); // Remaining width
+        ImGui::BeginChild((Name + "##Content").c_str(), ImVec2(0, -footer_height), true); // Remaining width
 
         // Validate selectedCategory to ensure it's within bounds
         if (CatMgr.activeIndex >= 0 && CatMgr.activeIndex < categories.size()) {
@@ -143,7 +115,34 @@ void WConfig::Draw() {
 
     ImUtil::SeperatorH();
 
-    Footer();
+    {   //Footer
+
+        ImGui::BeginChild((Name + "##Info").c_str(),ImVec2(150,0),true);
+
+        ImGui::PushFont(FontMgr.GetFont("subscript"));
+        ImGui::TextColored(ImUtil::ColorSubscript,"GTSPlugin v2.0.0");
+        ImGui::TextColored(ImUtil::ColorSubscript,"Build 22/01/25");
+        ImGui::PopFont();
+
+        ImGui::EndChild();
+
+    }
+
+    ImGui::SameLine();
+   
+    {   // Footer Buttons [Right Aligned]
+
+        ImGui::BeginChild((Name + "##Footer").c_str(),ImVec2(0,0),true);
+        ImGui::PushFont(FontMgr.GetFont("footer"));
+        //ImUtil::ButtonSimple("Load");
+
+        ImGui::SameLine();
+        
+        //ImUtil::ButtonSimple("Save");
+
+        ImGui::PopFont();
+        ImGui::EndChild();
+    }
 
 }
 

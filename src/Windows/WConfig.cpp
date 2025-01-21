@@ -10,6 +10,9 @@
 #include <memory>
 #include <string>
 #include <functional> // For std::function
+#include <unordered_map>
+#include <algorithm>
+#include "magic_enum/magic_enum.hpp"
 
 #include "WConfig.hpp"
 
@@ -26,6 +29,8 @@
 #include "src/Categories/Widget.hpp"
 #include "src/Categories/Interface.hpp"
 
+#include "git.h"
+
 auto& CatMgr = ImCategoryManager::GetSingleton();
 auto& FontMgr = ImFontManager::GetSingleton();
 auto& StyleMgr = ImStyleManager::GetSingleton();
@@ -40,7 +45,7 @@ WConfig::WConfig() {
     Name = "ConfigWindow";
     Show = true;
     flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar;
-
+    //flags = true;
 
     //Add Categories
     CatMgr.AddCategory(std::make_shared<CategoryGeneral>());
@@ -50,17 +55,19 @@ WConfig::WConfig() {
     CatMgr.AddCategory(std::make_shared<CategoryInfo>());
 
 }
-float padding = 0.1f;
-int pos = 0;
-//
-
-inline void Footer(){
-
-    
-
-}
 
 void WConfig::Draw() {
+
+    //Handle Fixed Position and Size
+    if(Fixed){
+        ImGui::SetWindowSize(ImUtil::ScaleToViewport(FixedScale));
+
+        //Mousedown Check Prevents the window from moving around and messing with the slider while dragging
+        if(!std::any_of(ImGui::GetIO().MouseDown, ImGui::GetIO().MouseDown + IM_ARRAYSIZE(ImGui::GetIO().MouseDown), [](bool v) { return v; })){
+            ImGui::SetWindowPos(GetAnchorPos(AnchorPos, CornerPadding));
+        }
+    }
+    
 
     {  // Title
 
@@ -72,7 +79,7 @@ void WConfig::Draw() {
 
     ImUtil::SeperatorH();
     auto& categories = CatMgr.GetCategories();
-    float footer_height = ImGui::GetFrameHeightWithSpacing() + ImGui::GetStyle().ItemSpacing.y * 3 + 26.0f;  // text + separator
+    const float footer_height = ImGui::GetFrameHeightWithSpacing() + ImGui::GetStyle().ItemSpacing.y * 3 + 30.0f;  // text + separator
 
     {  // Sidebar
 
@@ -83,6 +90,7 @@ void WConfig::Draw() {
         // Display the categories in the sidebar
         for (uint8_t i = 0; i < categories.size(); i++) {
             ImCategory* category = categories[i].get();
+            if(!category->IsVisible()) continue;
             if (ImGui::Selectable(category->GetTitle().c_str(), CatMgr.activeIndex == i)) {
                 CatMgr.activeIndex = i;
             }
@@ -116,14 +124,15 @@ void WConfig::Draw() {
     ImUtil::SeperatorH();
 
     {   //Footer
-
-        ImGui::BeginChild((Name + "##Info").c_str(),ImVec2(150,0),true);
+        ImGui::BeginChild((Name + "##Info").c_str(),ImVec2((ImGui::GetWindowWidth() * 0.3) * StyleMgr.GetScale() ,0), true);
 
         ImGui::PushFont(FontMgr.GetFont("subscript"));
-        ImGui::TextColored(ImUtil::ColorSubscript,"GTSPlugin v2.0.0");
-        ImGui::TextColored(ImUtil::ColorSubscript,"Build 22/01/25");
-        ImGui::PopFont();
 
+        ImGui::TextColored(ImUtil::ColorSubscript,"GTSPlugin v2.0.0");
+        ImGui::TextColored(ImUtil::ColorSubscript,"Build Date: %s %s", __DATE__, __TIME__);
+        ImGui::TextColored(ImUtil::ColorSubscript,"Git SHA1: %s", git::AnyUncommittedChanges() ? "Custom" : git::CommitSHA1().c_str());
+
+        ImGui::PopFont();
         ImGui::EndChild();
 
     }
@@ -133,12 +142,30 @@ void WConfig::Draw() {
     {   // Footer Buttons [Right Aligned]
 
         ImGui::BeginChild((Name + "##Footer").c_str(),ImVec2(0,0),true);
+
         ImGui::PushFont(FontMgr.GetFont("footer"));
-        //ImUtil::ButtonSimple("Load");
+
+        // Align buttons to the right
+        //TODO Fix this AAAAAAAAAAA
+        float button_width = ImGui::CalcTextSize("AAAAA").x + ImGui::GetStyle().FramePadding.x * 2.0f;
+        float spacing = ImGui::GetStyle().ItemSpacing.x;
+        float total_width = button_width * 3 + spacing;
+
+        ImGui::SetCursorPosX(ImGui::GetWindowWidth() - total_width);
+
+        ImUtil::Button("Load", "(Re)Load the values stored in GtsPlugin.toml");
 
         ImGui::SameLine();
         
-        //ImUtil::ButtonSimple("Save");
+        ImUtil::Button("Save", "Save changes to GtsPlugin.toml");
+
+        ImGui::SameLine();
+
+        ImUtil::SeperatorV();
+        
+        ImUtil::Button("Reset", "Load the default values, this does not save them to the config file");
+
+        ImGui::SameLine();
 
         ImGui::PopFont();
         ImGui::EndChild();

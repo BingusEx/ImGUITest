@@ -7,8 +7,7 @@
       "name": "imgui",
       "features": [
         "dx11-binding",
-        "win32-binding",
-        "docking-experimental"
+        "win32-binding"
       ]
     },
     {
@@ -16,6 +15,20 @@
     },
     {
       "name": "magic-enum"
+    },
+    {
+      "name": "toml11"
     }
-  ]
+  ],
+  "overrides": [
+    {
+      "name" : "imgui",
+      "version": "1.90"
+    },
+	  {
+      "name" : "toml11",
+      "version": "3.8.1"
+    }
+  ],
+  "builtin-baseline": "96dbba1e03d1ecc7c7096e97d5a09ff3c58e21df"
 }

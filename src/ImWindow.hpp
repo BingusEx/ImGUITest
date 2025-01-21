@@ -33,21 +33,25 @@ class ImWindow {
         kTotal
     };
 
+
+    //TODO All of this should be in a struct
     bool Show = false;
-    bool Focus = false;
-    bool NeedsInput = true;
+    bool ConsumeInput = true;
     bool Fixed = false;
     bool DoUpdate = true;
 
     ImVec2 Position = ImVec2(100.f, 100.f);      //Window Position
-    //TODO Auto Calculate Based On Contents
+    //TODO Auto Calculate Based On Contents calling setwindowsize(0,0) does this need to find a way to do it without applying the size
     ImVec2 MinSize = ImVec2(400.f, 400.f);      //Minimum Window Size if AllowResize is true
     ImVec2 CornerPadding = ImVec2(30.f, 30.f);  //Padding from the corner of the screen does nothing if AllowMove is true
-    float FixedScale = 80.0f;                   //Window scale relative to the viewport
+    float FixedScale = 75.0f;                   //Window scale relative to the viewport
+    
+    float FixedScaleMax = 95.0f;                //Max scale for the window
+    float FixedScaleMin = 40.0f;                //Min scale for the window
     
     WindowAnchor AnchorPos = WindowAnchor::kCenter;
 
-    std::string Name = "Default";   //Imgui Window Name
+    std::string Name = "Default";   //Imgui Window Name (Must be unique)
     std::string Title = "Default";  //Window Title
     ImGuiWindowFlags flags = ImGuiWindowFlags_None;
 
@@ -77,14 +81,6 @@ class ImWindow {
                 return {a_padding.x, Origin.y - a_padding.y};
             case WindowAnchor::kBottomRight:
                 return {Origin.x - a_padding.x, Origin.y - a_padding.y};
-            // case WindowAnchor::kTopCenter:
-            //     return {Origin.x * 0.5f, a_padding.y};
-            // case WindowAnchor::kCenterLeft:
-            //     return {a_padding.x, Origin.y * 0.5f};
-            // case WindowAnchor::kCenterRight:
-            //     return {Origin.x - a_padding.x, Origin.y * 0.5f};
-            // case WindowAnchor::kBottomCenter:
-            //     return {Origin.x * 0.5f, Origin.y - a_padding.y};
             case WindowAnchor::kCenter: default:
                 return {Origin.x * 0.5f, Origin.y * 0.5f};
         }
@@ -119,6 +115,18 @@ class ImWindowManager {
 
 
     void AddWindow(std::unique_ptr<ImWindow> a_window){
+
+        assert(a_window != nullptr);
+
+        if(HasWindows()){
+            for(const auto& window : windows){
+                if(window->Name == a_window->Name){
+                    //logger::warn("UIWindowManager::AddWindow: Window with name {} already exists, Not Adding New Window", a_window->Name);
+                    return;
+                }
+            }
+        }
+
         windows.push_back(std::move(a_window));
 		//logger::info("UIWindowManager::AddWindow {}", windows.back().get()->GetWindowData()->Name);
     }
@@ -138,12 +146,10 @@ class ImWindowManager {
 
 					window->Draw();
 
+                    /*Hardcode dimentions and position if fixed, Checking for mouse down prevents
+                        the window losing its shit during resizing*/
 
-                    if(window->Fixed && !ImGui::GetIO().MouseDown[0]){
-                        ImGui::SetWindowSize(ImUtil::ScaleToViewport(window->FixedScale));
-                        ImGui::SetWindowPos(window->GetAnchorPos(window->AnchorPos, window->CornerPadding));
-                    }
-
+                    //Anchoring is 
                     ImGui::PopFont();
                     ImGui::End();
 				}
@@ -151,6 +157,9 @@ class ImWindowManager {
 		}
     }
 
+    //Gets a ptr to the window which fully matches the "Name" var.
+    //Name var gets set in the ctor of the child window, otherwise its "Default"
+    //If 2 Or more default windows exist only the earliest one will be returned
     [[nodiscard]] inline ImWindow* GetWindowByName(const std::string& a_name) {
         for (const auto& window : windows) {
             if (window->Name == a_name) {
@@ -164,15 +173,8 @@ class ImWindowManager {
         return windows.size() > 0;
     }
 
-    void SetWindowDimentions();
-
-    //void SetDimensions(float a_offsetX /*= 0.f*/, float a_offsetY /*= 0.f*/, float a_sizeX /*= -1.f*/, float a_sizeY /*= -1.f*/, WindowAlignment a_alignment /*= WindowAlignment::kTopLeft*/, ImVec2 a_sizeMin /*= ImVec2(0, 0)*/, ImVec2 a_sizeMax /*= ImVec2(0, 0)*/, ImGuiCond_ a_cond /*= ImGuiCond_FirstUseEver*/);
-
     private:
     ImWindowManager() = default;
     ImWindowManager(const ImWindowManager&) = delete;
     ImWindowManager& operator=(const ImWindowManager&) = delete;
-
-
-
 };

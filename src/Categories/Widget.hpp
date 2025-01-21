@@ -10,6 +10,7 @@ namespace GTSUi{
         CategoryWidget(){
             title = "Widget";
             description = "Widget";
+            visible = false;
         }
 
         void Draw() override;

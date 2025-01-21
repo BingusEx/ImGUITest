@@ -82,10 +82,9 @@ class ImStyleManager {
 		colors[ImGuiCol_FrameBgHovered] = colors[ImGuiCol_FrameBg];
 		colors[ImGuiCol_FrameBgActive] = colors[ImGuiCol_FrameBg];
 
-		colors[ImGuiCol_DockingEmptyBg] = {1.0,1.0,1.0,1.0};//Fix
-		colors[ImGuiCol_DockingPreview] = {1.0,1.0,1.0,1.0};//Fix
-
-		colors[ImGuiCol_PlotHistogram] = {1.0,1.0,1.0,1.0};
+        //TODO Make some of these configurable
+        //TODO Uppon doing this add a way to calc the inverse text color
+		colors[ImGuiCol_PlotHistogram] = {0.0f,0.6f,0.6f,1.0f};
 
 		colors[ImGuiCol_SliderGrab] = sliderGrab;
 		colors[ImGuiCol_SliderGrabActive] = sliderGrabActive;

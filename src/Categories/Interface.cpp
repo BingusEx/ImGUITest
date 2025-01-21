@@ -8,11 +8,42 @@
 
 using namespace GTSUi;
 
+//Template function for configuring windows
+void ConfigureWindow(const std::string& a_WindowName, const std::string& a_Friendlyname){
 
+    ///Options For Configuring the Window Size/Pos
+
+    const char* _cFriendly = a_Friendlyname.c_str();
+    ImGui::SeparatorText(_cFriendly);
+    
+    //Push ID to prevent conflicts
+    ImGui::PushID(a_WindowName.c_str());
+    if(auto window = ImWindowManager::GetSingleton().GetWindowByName(a_WindowName)){
+
+        ImUtil::CheckBox("Lock Window", &window->Fixed, "Lock the position and size of this window. You can can change the position and size below.");
+        
+        ImGui::BeginDisabled(!window->Fixed);
+        {
+            ImUtil::SliderF("Window Scale", &window->FixedScale, 50.0f, 95.0f, "Change the size of this window");
+            ImGui::Combo("Anchor", (int*)&window->AnchorPos, "Top Left\0Top Right\0Center\0Bottom Left\0Bottom Right\0");
+            ImGui::BeginDisabled(window->AnchorPos == ImWindow::WindowAnchor::kCenter);
+            {
+                ImUtil::SliderF("Offset (Left/Right)", &window->CornerPadding.x, 0.0f, 50.0f, "Offset the window to the left or right depending on which anchor position you choose");
+                ImUtil::SliderF("Offset (Up/Down)", &window->CornerPadding.y, 0.0f, 50.0f, "Offset the window up or down depending on which anchor position you choose");
+            }
+            ImGui::EndDisabled();
+        }
+        ImGui::EndDisabled();
+    }
+    else{
+        ImGui::TextColored(ImUtil::ColorError,"Can't find window with name: %s", a_WindowName.c_str());
+    }
+    ImGui::PopID();
+}
 
 void CategoryInterface::DrawLeft(){
 
-    ImWindowManager& WinMgr = ImWindowManager::GetSingleton();
+    //ImWindowManager& WinMgr = ImWindowManager::GetSingleton();
 
     {   //Global UI Settings
         auto& StyleMgr = ImStyleManager::GetSingleton();
@@ -25,45 +56,21 @@ void CategoryInterface::DrawLeft(){
             StyleMgr.SetScale(_gScale);
         }
 
+        
+
     }
 
-    {   ///Options For Configuring the Config Window Size/Pos
 
-        ImGui::SeparatorText("Configuration Window");
 
-        if(auto configwindow = WinMgr.GetWindowByName("ConfigWindow")){
+    ConfigureWindow("ConfigWindow", "Configuration Window Settings");
+    ConfigureWindow("WidgetWindow", "Widget Window Settings");
 
-            ImUtil::CheckBox("Lock Window", &configwindow->Fixed, "Lock the position and size of this window. You can can change the position and size below.");
-            
-            ImGui::BeginDisabled(!configwindow->Fixed);
-            {
-                ImUtil::SliderF("Window Scale", &configwindow->FixedScale, 50.0f, 95.0f, "Change the size of this window");
-                ImGui::Combo("Anchor", (int*)&configwindow->AnchorPos, "Top Left\0Top Right\0Center\0Bottom Left\0Bottom Right\0");
-                ImGui::BeginDisabled(configwindow->AnchorPos == ImWindow::WindowAnchor::kCenter);
-                {
-                    ImUtil::SliderF("Offset (Left/Right)", &configwindow->CornerPadding.x, 0.0f, 50.0f, "Offset the window to the left or right depending on which anchor position you choose");
-                    ImUtil::SliderF("Offset (Up/Down)", &configwindow->CornerPadding.y, 0.0f, 50.0f, "Offset the window up or down depending on which anchor position you choose");
-                }
-                ImGui::EndDisabled();
-            }
-            ImGui::EndDisabled();
-        }
-        else{
-            ImGui::TextColored(ImUtil::ColorError,"Can't find the reference to the config window!");
-        }
-    }   
 
     if(ImUtil::Button("Close Program", "Close the program", false, 1.0f)){
         //Call Win32 API to close the program
         PostQuitMessage(0);
     }
 }
-
-
-
-
-
-
 
 void CategoryInterface::DrawRight(){
 
@@ -86,3 +93,5 @@ bool CategoryInterface::Load(){
 bool CategoryInterface::Save(){
     return true;
 }
+
+

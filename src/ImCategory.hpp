@@ -20,6 +20,7 @@ class ImCategory {
     protected:
     std::string title = "Default";
     std::string description = "Default";
+    bool visible = true;
 
     public:
     virtual ~ImCategory() = default;
@@ -28,12 +29,16 @@ class ImCategory {
     virtual bool Save() = 0;
     virtual bool Load() = 0;
 
-    const std::string& GetTitle() {
+    [[nodiscard]] const inline std::string& GetTitle() {
         return title;
     }
 
-    const std::string& GetDescription() {
+    [[nodiscard]] const inline std::string& GetDescription() {
         return description;
+    }
+
+    [[nodiscard]] const inline bool IsVisible() {
+        return visible;
     }
 
 };
@@ -74,6 +79,7 @@ class ImCategoryManager {
         const float paddingX = (ImGui::GetStyle().FramePadding.x + 64.f) * scale;
 
         for(auto& category : categories){
+            if(!category.get()->IsVisible()) continue;
             auto len = ImGui::CalcTextSize(category.get()->GetTitle().c_str());
             longest = std::max(len.x + paddingX ,longest);
         }

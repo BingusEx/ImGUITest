@@ -60,9 +60,12 @@ class ImFontManager {
 
         Fonts["sidebar"] =      fontAtlas->AddFontFromFileTTF(_SkyrimGUI_Light.c_str(), 28.0f);
         Fonts["title"] =        fontAtlas->AddFontFromFileTTF(_SkyrimGUI_Medium.c_str(), 56.0f);
-        Fonts["footer"] =       fontAtlas->AddFontFromFileTTF(_SkyrimGUI_Medium.c_str(), 20.0f);
+        Fonts["footer"] =       fontAtlas->AddFontFromFileTTF(_SkyrimGUI_Medium.c_str(), 28.0f);
         Fonts["text"] =         fontAtlas->AddFontFromFileTTF(_SkyrimGUI_Console.c_str(), 18.0f);
         Fonts["subscript"] =    fontAtlas->AddFontFromFileTTF(_SkyrimGUI_Console.c_str(), 12.0f);
+
+        Fonts["widgetbody"] =    fontAtlas->AddFontFromFileTTF(_SkyrimGUI_Light.c_str(), 18.0f);
+        Fonts["widgettitle"] =   fontAtlas->AddFontFromFileTTF(_SkyrimGUI_Light.c_str(), 22.0f);
 
 
         for(auto& [key, value] : Fonts){

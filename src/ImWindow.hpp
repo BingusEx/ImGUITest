@@ -94,7 +94,7 @@ class ImWindowManager {
     ImFontManager& FontMgr = ImFontManager::GetSingleton();
     ImStyleManager& StyleMgr = ImStyleManager::GetSingleton();
 
-    constexpr static std::string WMName = "GTSPluginWM";
+    const std::string WMName = "GTSPluginWM";
 
     ~ImWindowManager() = default;
 

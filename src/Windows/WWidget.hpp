@@ -5,6 +5,8 @@
 class WWidget : public ImWindow {
 
     public:
+    
     WWidget();
+
     void Draw() override;
 };

@@ -5,9 +5,9 @@
 class WConfig : public ImWindow {
 
     public:
+    
     WConfig();
-    void Draw() override;
-    //void Init() override;
 
+    void Draw() override;
 
 };

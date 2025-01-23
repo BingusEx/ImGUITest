@@ -92,8 +92,12 @@ void WConfig::Draw() {
             ImCategory* category = categories[i].get();
             if(!category->IsVisible()) continue;
             if (ImGui::Selectable(category->GetTitle().c_str(), CatMgr.activeIndex == i)) {
+                if (ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip(category->GetDescription().c_str());
+                }
                 CatMgr.activeIndex = i;
             }
+
         }
 
         ImGui::PopFont();
@@ -153,11 +157,23 @@ void WConfig::Draw() {
 
         ImGui::SetCursorPosX(ImGui::GetWindowWidth() - total_width);
 
-        ImUtil::Button("Load", "(Re)Load the values stored in GtsPlugin.toml");
+        if(ImUtil::Button("Load", "(Re)Load the values stored in GtsPlugin.toml")){
+            for(auto& category : categories){
+                if(!category->Load()){
+                    //logger::error("Failed to load category: {}", category->GetTitle());
+                }
+            }
+        }
 
         ImGui::SameLine();
         
-        ImUtil::Button("Save", "Save changes to GtsPlugin.toml");
+        if(ImUtil::Button("Save", "Save changes to GtsPlugin.toml")){
+            for(auto& category : categories){
+                if(!category->Save()){
+                    //logger::error("Failed to save category: {}", category->GetTitle());
+                }
+            }
+        }
 
         ImGui::SameLine();
 

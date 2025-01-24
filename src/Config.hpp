@@ -1,9 +1,12 @@
-#ifndef TOML11_REFLECT_HPP
-#define TOML11_REFLECT_HPP
+#pragma once
 
 #include <reflect> // boost-ext/reflect
-
 #include <toml.hpp>
+
+/*
+    TOML11 Reflection Macro & Templates. Based on https://github.com/ToruNiina/toml11/blob/main/examples/reflect/reflect.hpp
+*/
+
 int dawd();
 namespace toml {
     namespace refl {
@@ -53,6 +56,3 @@ namespace toml {
         }                                                  \
     };                                                     \
 } /* toml */
-
-
-#endif // TOML11_REFLECT_HPP

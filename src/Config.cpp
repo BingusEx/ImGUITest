@@ -6,21 +6,15 @@
 #include <stdio.h>
 #include "imgui.h"
 
+#include "imgui.h"
 
-//Note Complex types are not supported. They will not compile.
-//Unless you add explicit definitions to the template functions.
-struct TestStruct {
-    std::string nameofthisvar3 = "DefaultDataOfTestStruct";
-    int interger1 = 222;
-    float float1 = 111.0;
-    float float2;
-    double aaath;
-    uint8_t smol;
-    uint64_t beeg;
-    //char aeugh[32];
-
-};
-TOML11_REFLECT(TestStruct)
+//Due to a lack of propper reflection in c++...
+//Serializing Structs to Toml tables and vise-versa has some limitations.
+//Only basic data type support. ie Float bool std::string.... etc...
+//"Arrays" are supported in the form of vectors of a basic type.
+//Nested structs are supported as long as the child struct also has been processed by the reflect macro.
+//Nested structs will be serialized as a dot table.
+//structs can only contain a maxium of 64 values. This is due to the reflect library only implementing 64 visit macros
 
 struct TestStruct2 {
     std::string nameofthisvar1 = "TestStruct2dddwad";
@@ -29,8 +23,23 @@ struct TestStruct2 {
     int interger13 = 222222;
     int interger14 = 333;
     int interger15 = 444;
+    std::vector<int> dddd = {1,2,3,4,5,6};
 };
 TOML11_REFLECT(TestStruct2)
+
+struct TestStruct {
+    std::string nameofthisvar3 = "DefaultDataOfTestStruct";
+    int interger1 = 222;
+    float float1 = 111.0;
+    float float2;
+    double aaath;
+    uint8_t smol;
+    uint64_t beeg;
+    TestStruct2 Aeugh;
+};
+TOML11_REFLECT(TestStruct)
+
+
 
 struct TestStruct3 {
     std::string nameofthisvar2 = "TestStruct3";
@@ -50,7 +59,7 @@ TOML11_REFLECT(TestStruct4)
 
 
 template<typename T>
-T TomlReadStruct(const auto& a_toml, T& a_data) {
+void TomlReadStruct(const auto& a_toml, T& a_data) {
     static_assert(std::is_class_v<T>, "a_data must be a struct or class type");
 
     // Reflect: name of struct
@@ -73,12 +82,12 @@ T TomlReadStruct(const auto& a_toml, T& a_data) {
     // //else return a new struct.
     // //Note the order of the contents does not matter. Only that they're all present.
 
-    const T st = toml::find_or<T>(a_toml, x, T{});
+    a_data = toml::find_or<T>(a_toml, x, T{});
 
     // reflect::for_each([a_data](auto I) {
 
         
-    return st;
+    //return st;
     // });
 
 }
@@ -98,7 +107,6 @@ void TomlUpdate(auto& a_toml, T& a_data) {
         for (const auto& [key, value] : table.as_table()) {
             existing_table[key] = value;
         }
-        //a_toml.insert
     } else {
         a_toml.as_table()[std::string(x)] = table;
     }
@@ -125,19 +133,20 @@ void TomlRead(){
 
 
     TestStruct a = {};
-    TestStruct2 b = {};
+    //TestStruct2 b = {};
     TestStruct3 c = {};
     TestStruct4 d = {};
 
     TomlReadStruct(x,a);
-    TomlReadStruct(x,b);
+    //TomlReadStruct(x,b);
     TomlReadStruct(x,c);
     TomlReadStruct(x,d);
 
     d.nameofthisvar4 = "d22";
+    a.Aeugh.nameofthisvar1 = "All of this just works.";
 
     TomlUpdate(x,a);
-    TomlUpdate(x,b);
+    //TomlUpdate(x,b);
     TomlUpdate(x,c);
     TomlUpdate(x,d);
 
@@ -149,47 +158,6 @@ int dawd()
    
 
     TomlRead();
-
-    return 0;
-    TestStruct empty {};
-    auto x = toml::parse("data.toml");
-
-    const TestStruct h = toml::find_or<TestStruct>(x,"TestStruct",empty);
-
-    //const Hoge h = toml::get<Hoge>(y);
-
-    TestStruct h2;
-    // h2.name = "aeugh";
-    // h2.age = 69;
-    // h2.score = 420.69;
-
-    toml::value v2(h2);
-
-    std::cout << toml::format(v2);
-
-    // Read the existing data from the file
-    std::ifstream inFile("data.toml");
-    std::string existingData;
-    if (inFile.is_open()) {
-        std::stringstream buffer;
-        buffer << inFile.rdbuf();
-        existingData = buffer.str();
-        inFile.close();
-    }
-
-    // Check if the new data already exists in the file
-    if (existingData.find(toml::format(v2)) == std::string::npos) {
-        // Append the new data to the file
-        std::ofstream outFile("data.toml", std::ios_base::app);
-        if (outFile.is_open()) {
-            outFile << toml::format(v2);
-            outFile.close();
-        } else {
-            std::cerr << "Unable to open file for writing" << std::endl;
-        }
-    } else {
-        std::cout << "Data already exists in the file" << std::endl;
-    }
 
     return 0;
 }

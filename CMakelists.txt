@@ -47,26 +47,17 @@ add_executable(${PROJECT_NAME} ${headers} ${sources})
 
 include(FetchContent)
 
-
-
-
-
-
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_23)
 target_link_options(${PROJECT_NAME} PUBLIC "/SUBSYSTEM:WINDOWS" "/ENTRY:mainCRTStartup")
 
 find_package(Boost REQUIRED)
 find_package(imgui CONFIG REQUIRED)
-find_package(magic_enum CONFIG REQUIRED)
 find_package(toml11 CONFIG REQUIRED)
-find_package(reflectcpp CONFIG REQUIRED)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC 
 	
 	Boost::headers
 	imgui::imgui d3d11.lib
-	reflectcpp::reflectcpp
-	magic_enum::magic_enum
 	toml11::toml11
 	cmake_git_version_tracking
 )

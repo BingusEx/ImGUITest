@@ -10,7 +10,6 @@ file(GLOB sources
 	src/*/*.cpp
 	src/*/*/*.cpp
 	src/*/*/*/*.cpp
-
 )
 
 include(FetchContent)
@@ -55,7 +54,6 @@ find_package(imgui CONFIG REQUIRED)
 find_package(toml11 CONFIG REQUIRED)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC 
-	
 	Boost::headers
 	imgui::imgui d3d11.lib
 	toml11::toml11
@@ -63,5 +61,5 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
 )
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${boost_ext_reflect_SOURCE_DIR}
-    )
+)
 target_include_directories(${PROJECT_NAME} PUBLIC BEFORE ${CMAKE_CURRENT_SOURCE_DIR})

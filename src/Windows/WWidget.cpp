@@ -22,8 +22,6 @@
 //categories
 #include "src/Categories/Gameplay.hpp"
 #include "src/Categories/Info.hpp"
-#include "src/Categories/General.hpp"
-#include "src/Categories/Widget.hpp"
 #include "src/Categories/Interface.hpp"
 
 using namespace GTSUi;

@@ -25,9 +25,13 @@
 //categories
 #include "src/Categories/Gameplay.hpp"
 #include "src/Categories/Info.hpp"
-#include "src/Categories/General.hpp"
-#include "src/Categories/Widget.hpp"
 #include "src/Categories/Interface.hpp"
+#include "src/Categories/Audio.hpp"
+#include "src/Categories/AI.hpp"
+#include "src/Categories/Advanced.hpp"
+#include "src/Categories/Audio.hpp"
+#include "src/Categories/Camera.hpp"
+
 
 #include "git.h"
 
@@ -48,11 +52,12 @@ WConfig::WConfig() {
     //flags = true;
 
     //Add Categories
-    CatMgr.AddCategory(std::make_shared<CategoryGeneral>());
-    CatMgr.AddCategory(std::make_shared<CategoryGameplay>());
-    CatMgr.AddCategory(std::make_shared<CategoryInterface>());
-    CatMgr.AddCategory(std::make_shared<CategoryWidget>());
     CatMgr.AddCategory(std::make_shared<CategoryInfo>());
+    CatMgr.AddCategory(std::make_shared<CategoryGameplay>());
+    CatMgr.AddCategory(std::make_shared<CategoryAudio>());
+    CatMgr.AddCategory(std::make_shared<CategoryAI>());
+    CatMgr.AddCategory(std::make_shared<CategoryCamera>());
+    CatMgr.AddCategory(std::make_shared<CategoryInterface>());
 
 }
 

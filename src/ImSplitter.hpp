@@ -5,7 +5,7 @@
 //Interface for a splitter window
 class ImCategorySplitter : public ImCategory {
     private:
-    const ImGuiChildFlags flags = ImGuiChildFlags_AlwaysAutoResize;
+    const ImGuiChildFlags flags = ImGuiChildFlags_AlwaysAutoResize | ImGuiChildFlags_AutoResizeX | ImGuiChildFlags_AutoResizeY;
     const float splitRatio = 2.2f;
 
     public:

@@ -6,17 +6,23 @@
 
 namespace GTSUi{
 
-    class CategoryInfo : public ImCategorySplitter {
+    class CategoryInfo : public ImCategory {
         public:
         CategoryInfo(){
             title = "Info";
             description = "Info";
         }
-        void DrawLeft() override;
-        void DrawRight() override;
+        void Draw() override;
 
-        bool Load() override;
-        bool Save() override;
+
+
+        ///Unused
+        bool Load() override {
+            return true;
+        }
+        bool Save() override {
+            return true;
+        }
     };
 
 }

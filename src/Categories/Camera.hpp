@@ -1,16 +1,14 @@
-
 #pragma once
 
 #include "src/ImCategory.hpp"
 
 namespace GTSUi{
 
-    class CategoryWidget: public ImCategory {
+    class CategoryCamera: public ImCategory {
         public:
-        CategoryWidget(){
-            title = "Widget";
-            description = "Widget";
-            visible = false;
+        CategoryCamera(){
+            title = "Camera";
+            description = "Change how the camera behaves";
         }
 
         void Draw() override;

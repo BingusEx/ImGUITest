@@ -84,8 +84,7 @@ ImWindowManager& WinMgr = ImWindowManager::GetSingleton();
 
 // Main code
 int main(int, char**) {
-
-    dawd();
+    TomlTest();
     // Create application window
     //ImGui_ImplWin32_EnableDpiAwareness();
     WNDCLASSEXW wc = { sizeof(wc), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, L"ImGui Example", NULL };

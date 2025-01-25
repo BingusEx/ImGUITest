@@ -10,4 +10,9 @@ class WConfig : public ImWindow {
 
     void Draw() override;
 
+    void LoadAll();
+
+    void SaveAll();
+
+    
 };

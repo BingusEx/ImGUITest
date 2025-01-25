@@ -2,66 +2,27 @@
 
 using namespace GTSUi;
 
-void CategoryInfo::DrawLeft(){
-    ImGui::Text("CategoryInfo");
-    ImGui::Text("CategoryInfo");
-    ImGui::Text("CategoryInfo");
-    ImGui::Text("CategoryInfo");
-        ImGui::Text("CategoryInfo");
-    ImGui::Text("CategoryInfo");
-    ImGui::Text("CategoryInfo");
-    ImGui::Text("CategoryInfo");
-        ImGui::Text("CategoryInfo");
-    ImGui::Text("CategoryInfo");
-    ImGui::Text("CategoryInfo");
-    ImGui::Text("CategoryInfo");
-        ImGui::Text("CategoryInfo");
-    ImGui::Text("CategoryInfo");
-    ImGui::Text("CategoryInfo");
-    ImGui::Text("CategoryInfo");
-        ImGui::Text("CategoryInfo");
-    ImGui::Text("CategoryInfo");
-    ImGui::Text("CategoryInfo");
-    ImGui::Text("CategoryInfo");
-}
+void CategoryInfo::Draw(){
 
-void CategoryInfo::DrawRight(){
-    ImGui::Text("CategoryInfo");
-        ImGui::Text("CategoryInfo");
-    ImGui::Text("CategoryInfo");
-    ImGui::Text("CategoryInfo");
-    ImGui::Text("CategoryInfo");    ImGui::Text("CategoryInfo");
-    ImGui::Text("CategoryInfo");
-    ImGui::Text("CategoryInfo");
-    ImGui::Text("CategoryInfo");
-        ImGui::Text("CategoryInfo");
-    ImGui::Text("CategoryInfo");
-    ImGui::Text("CategoryInfo");
-    ImGui::Text("CategoryInfo");
-        ImGui::Text("CategoryInfo");
-    ImGui::Text("CategoryInfo");
-    ImGui::Text("CategoryInfo");
-    ImGui::Text("CategoryInfo");
-        ImGui::Text("CategoryInfo");
-    ImGui::Text("CategoryInfo");
-    ImGui::Text("CategoryInfo");
-    ImGui::Text("CategoryInfo");
-        ImGui::Text("CategoryInfo");
-    ImGui::Text("CategoryInfo");
-    ImGui::Text("CategoryInfo");
-    ImGui::Text("CategoryInfo");
-}
-
-
-bool CategoryInfo::Load(){
-    return true;
-}
-
-bool CategoryInfo::Save(){
-    return true;
 }
 
 inline void DrawInfo(/*Actor* TargetActor */){
+
+    //Animations Installed <--- Make a fancy colored checkmark out of it
+
+    //---- Base Values
+    //Current Size (Scale / Height)
+    //Max Size (Scale / Height)
+    //Aspect Of Giantess%
+    //CurrentWeight
+
+    //---- Stat Bonuses
+    //DamageResist%
+    //BonucCarryWeight
+    //BonusSpeed%
+    //BonusJumpHeight%
+    //BonusDamage%
+
 
     //Dummy Values
     float _currentScale = 1.42f;

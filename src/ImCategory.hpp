@@ -87,14 +87,6 @@ class ImCategoryManager {
         return longest;
     }
 
-    [[nodiscard]] bool LoadSettings(){
-        return true;
-    }
-
-    [[nodiscard]] bool SaveSettings(){
-        return true;
-    }
-
     private:
     ImCategoryManager() = default;
     ImCategoryManager(const ImCategoryManager&) = delete;

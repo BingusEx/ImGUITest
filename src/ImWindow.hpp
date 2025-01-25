@@ -33,7 +33,6 @@ class ImWindow {
         kTotal
     };
 
-
     //TODO All of this should be in a struct
     bool Show = false;
     bool ConsumeInput = true;

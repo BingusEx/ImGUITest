@@ -2,6 +2,8 @@
 
 #include "TOMLUtil.hpp"
 #include <string>
+#include <mutex>
+#include <filesystem>
 
 int TomlTest();
 
@@ -40,10 +42,10 @@ Since all of this is just one big hack, there are some limitations present namel
 //-------------------------------------------------------------------------------------------------------------------
 //This Struct does not get saved only loaded. Enables the debug category in the ConfWindow.
 //If this bool is false the SettingsAdvanced struct does not get saved/loaded from the toml. Its default values are used.
-struct Hidden {
+struct SettingsHidden {
     bool IKnowWhatImDoing = false;
 };
-TOML_SERIALIZABLE(Hidden);
+TOML_SERIALIZABLE(SettingsHidden);
 
 //-------------------------------------------------------------------------------------------------------------------
 //  DEBUG
@@ -196,7 +198,7 @@ struct SettingsBalance {
     float fSpellEfficiency = 0.55f;     
     float fStatBonusDamageMult = 1.0f;  //What does this do?
     bool bPlayerFriendlyImmunity = false;
-    bool bOthersFriednlyImmunity = false;
+    bool bOthersFriendlyImmunity = false;
     bool bAllowStagger = true;
     
     //Balance mode vars
@@ -265,34 +267,33 @@ TOML_SERIALIZABLE(SettingsAI);
 //-------------------------------------------------------------------------------------------------------------------
 //  UI
 //-------------------------------------------------------------------------------------------------------------------
-struct UIWData {
+struct WindowConfStatus {
     bool bLock = true;
     std::array<float, 2> f2Offset = {30.0f, 30.0f};
-    float fWindowScale = 50.f;
-    std::string sAnchor = "Center";
+    std::string sAnchor = "kTopRight";
     bool bVisible = false;
+    float fAlpha = 0.8f;
 };
-TOML_SERIALIZABLE(UIWData);
+TOML_SERIALIZABLE(WindowConfStatus);
+
+struct WindowConfSettings {
+    bool bLock = true;
+    std::array<float, 2> f2Offset = {30.0f, 30.0f};
+    float fWindowScale = 75.f;
+    std::string sAnchor = "kCenter";
+};
+TOML_SERIALIZABLE(WindowConfSettings);
 
 struct SettingsUI {
     float fFontScale = 1.0f;
-    std::array<float, 3> f3AccentColor = {0.486f, 0.431f, 0.529f}; //TODO Change later
-    UIWData WConfig = {
-        .bLock = true,
-        .fWindowScale = 80.0f,
-        .sAnchor = "Center",
-    };
-    UIWData WWidget = {
-        .bLock = true,
-        .fWindowScale = 0.0f,
-        .sAnchor = "TopRight",
-    };
+    std::array<float, 3> f3AccentColor = {0.486f, 0.431f, 0.529f};
+    WindowConfSettings wSettings {};
+    WindowConfStatus wStatus {};
 };
 TOML_SERIALIZABLE(SettingsUI);
 
 class Config {
-
-public:
+    public:
     //Create structs with default values.
     //These act as sane defaults in case new data is loaded or the toml itself is corrupted.
     SettingsActions Actions = {};
@@ -303,31 +304,40 @@ public:
     SettingsCamera Camera = {};
     SettingsGameplay Gameplay {};
     SettingsUI UI = {};
+    SettingsHidden Hidden = {}; 
 
     [[nodiscard]] static inline Config& GetSingleton() {
         static Config instance;
         return instance;
     }
 
-    [[nodiscard]] bool TomlLoad();
+    [[nodiscard]] bool LoadSettings();
 
-    [[nodiscard]] bool TomlUpdate();
+    [[nodiscard]] bool SaveSettings();
 
-    [[nodiscard]] bool TomlSave();
+    void ResetToDefaults();
+        
+    private:
+    
+    const std::string _ConfigFile = "Settings.toml";
+    //Should be a relative path to the dll. Combined this should be \\Data\\SKSE\\Plugins\\GTSPlugin
+    const std::string _Subfolder = "GTSPlugin"; 
 
-    void ResetToDefaults() {
-        Actions = SettingsActions{};
-        Advanced = SettingsAdvanced{};
-        AI = SettingsAI{};
-        Audio = SettingsAudio{};
-        Balance = SettingsBalance{};
-        Camera = SettingsCamera{};
-        Gameplay = SettingsGameplay{};
-        UI = SettingsUI{};
-    }
+    std::mutex _ReadWriteLock;
 
-private:
+    template<typename T>
+    [[nodiscard]] bool LoadStructFromTOML(const auto& a_toml, T& a_data);
+
+    template<typename T>
+    [[nodiscard]] bool UpdateTOMLFromStruct(auto& a_toml, T& a_data);
+
+    [[nodiscard]] bool SaveTOMLToFile(const auto& a_toml, const std::filesystem::path& a_file);
+
+    [[nodiscard]] bool CheckFile(const std::filesystem::path& a_file);
+
+    toml::basic_value<toml::ordered_type_config> TomlData;
+
     Config() = default;
     Config(const Config&) = delete;
     Config& operator=(const Config&) = delete;
-};;
+};

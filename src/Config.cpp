@@ -1,113 +1,202 @@
-#include <iostream>
-#include <fstream>
-#include <reflect>
 #include "TOMLUtil.hpp"
 #include "boost/pfr.hpp"
-#include <stdio.h>
-#include "imgui.h"
-#include <filesystem>
 #include "imgui.h"
 
 #include "Config.hpp"
 
-//Due to a lack of propper reflection in c++...
-//Serializing Structs to Toml tables and vise-versa has some limitations.
-//Only basic data type support. ie Float bool std::string.... etc...
-//"Arrays" are supported in the form of vectors of a basic type.
-//Nested structs are supported as long as the child struct also has been processed by the reflect macro.
-//Nested structs will be serialized as a dot table.
-//structs can only contain a maxium of 64 values. This is due to the reflect library only implementing 64 visit macros
-
-
-/// @brief Given a parsed toml file and struct, tries to update the structs contents from the loaded toml table. If one or more elements can't be loaded. The
+/// @brief Given a parsed toml file and struct, tries to update the structs contents from the loaded toml table. If one or more elements can't be loaded it defaults to the default value found in the struct.
 /// @tparam T Type of struct
 /// @param a_toml Parsed TOML File.
 /// @param a_data Reference to a data only struct.
+/// @return true on success, false on failure.
 template<typename T>
-static void LoadStruct(const auto& a_toml, T& a_data) {
+bool Config::LoadStructFromTOML(const auto& a_toml, T& a_data) {
     static_assert(std::is_class_v<T>, "a_data must be a struct or class type");
-    a_data = toml::find_or<T>(a_toml, reflect::type_name<T&>(a_data), T{});
+    try{
+        std::lock_guard<std::mutex> lock(_ReadWriteLock);
+        a_data = toml::find_or<T>(a_toml, std::string(reflect::type_name<T&>(a_data)), T{});
+        return true;
+    }
+    catch(toml::exception e){
+        //logger::error("Could not parse the toml table into a struct: {}",e.what());
+        return false;
+    }
 }
 
-
+/// @brief 
+/// @tparam T Given a parsed toml file and struct, tries to update the contents of the toml table/value with the data found in the stuct.
+/// @param a_toml Parsed TOML File.
+/// @param a_data Reference to a data only struct.
+/// @return true on success, false on failure.
 template<typename T>
-void UpdateTOMLFromStruct(auto& a_toml, T& a_data) {
+bool Config::UpdateTOMLFromStruct(auto& a_toml, T& a_data) {
     static_assert(std::is_class_v<T>, "a_data must be a struct or class type");
-    auto _StructName = reflect::type_name<T&>(a_data);
+    try{
+        std::lock_guard<std::mutex> lock(_ReadWriteLock);
+        std::string _StructName = std::string(reflect::type_name<T&>(a_data));
 
-    // Convert the struct to a toml::value
-    toml::value table = a_data;
+        // Convert the struct to a toml::value... which is basically a toml table in this case.
+        toml::ordered_value table = a_data;
 
-    // Merge the new data with the existing data while preserving comments
-    if (a_toml.contains(std::string(_StructName))) {
-        auto& existing_table = a_toml.as_table()[std::string(_StructName)].as_table();
-        for (const auto& [key, value] : table.as_table()) {
-            existing_table[key] = value;
+        // Merge the new data with the existing data
+        // If a table with the struct name exists, update the table, otherwise create a new one.
+        if (a_toml.contains(_StructName)) {
+            auto& existing_table = a_toml.as_table()[_StructName].as_table();
+            for (const auto& [key, value] : table.as_table()) {
+                existing_table[key] = value;
+            }
+        } 
+        else {
+            a_toml.as_table()[_StructName] = table;
+            //logger::info("Struct {} does not exist in the toml, created a new table for it",_StructName);
         }
-    } else {
-        a_toml.as_table()[std::string(_StructName)] = table;
+        return true;
+    }
+    catch(toml::exception e){
+        //logger::error("Could not parse the toml table into a struct: {}",e.what());
+        return false;
     }
 }
 
-void TomlSave(auto& a_toml){
-    // Write the updated data to a temporary file
-    std::string tempFileName = "data.toml";
-    std::ofstream outFile(tempFileName);
-    if (outFile.is_open()) {
-        outFile << toml::format(a_toml);
-        outFile.close();
-        // // Atomically replace the original file with the temporary file
-        // std::filesystem::write(tempFileName, "data.toml");
-    } else {
-        std::cerr << "Unable to open temporary file for writing" << std::endl;
-    }
-}
-
-void TomlRead(){
-
-    auto& Config = Config::GetSingleton(); 
-
-    auto x = toml::parse("data.toml");
+/// @brief 
+/// @param a_toml TOML data.
+/// @param a_file path to the file to write to.
+/// @return true on success, false on failure.
+bool Config::SaveTOMLToFile(const auto& a_toml, const std::filesystem::path& a_file){
     
-    LoadStruct(x,Config.Actions);
-    LoadStruct(x,Config.Advanced);
-    LoadStruct(x,Config.AI);
-    LoadStruct(x,Config.Audio);
-    LoadStruct(x,Config.Balance);
-    LoadStruct(x,Config.Camera);
-    LoadStruct(x,Config.Gameplay);
-    LoadStruct(x,Config.UI);
+    try{
+        std::lock_guard<std::mutex> lock(_ReadWriteLock);
+        // Write the updated data to a file
+        CheckFile(a_file);
 
+        //Create a output file stream and enable exceptions for it.
+        std::ofstream file(a_file);
+        file.exceptions(std::ofstream::failbit);
 
-    UpdateTOMLFromStruct(x,Config.Actions);
-    UpdateTOMLFromStruct(x,Config.Advanced);
-    UpdateTOMLFromStruct(x,Config.AI);
-    UpdateTOMLFromStruct(x,Config.Audio);
-    UpdateTOMLFromStruct(x,Config.Balance);
-    UpdateTOMLFromStruct(x,Config.Camera);
-    UpdateTOMLFromStruct(x,Config.Gameplay);
-    UpdateTOMLFromStruct(x,Config.UI);
+        if (file.is_open()) {
+            file << toml::format(a_toml);
+            file.close();
+            return true;
+        }
+       
+        //logger::error("Could not open configuration file to save it. Settings not saved!");
+        return false;
+        
+    }
+    catch(toml::exception e){
+        //logger::error("Could not parse the toml table when trying to save: {}",e.what());
+        return false;
+    }
 
-    TomlSave(x);
-
-
-
-    // d.nameofthisvar4 = "d22";
-    // a.Aeugh.nameofthisvar1 = "All of this just works.";
-
-    // TomlUpdate(x,a);
-    // //TomlUpdate(x,b);
-    // TomlUpdate(x,c);
-    // TomlUpdate(x,d);
-
-    // TomlSave(x);
-
+    catch(const std::ios_base::failure& e){
+        //logger::error("Could not parse the toml table when trying to save: {}",e.what());
+        return false;
+    }
 }
+
+bool Config::CheckFile(const std::filesystem::path& a_file) {
+    try {
+        // Check if the file exists
+        if (std::filesystem::exists(a_file)) {
+            return true;
+        }
+        else {
+            // Try to create the file
+            std::ofstream file(a_file);
+            file.exceptions(std::ofstream::failbit);
+            if (file) {
+                file.close();
+                //logger::warn("Configuration file did not exist but was successfully created");
+                return true;
+            }
+        }
+        return false;
+        
+    } catch (const std::filesystem::filesystem_error& e) {
+        //logger::error("CheckFile() Filesystem error: {}", e.what());
+        return false;
+    } 
+    catch (const std::exception& e) {
+        //logger::error("CheckFile() Exception: {}", e.what());
+        return false;
+    }
+}
+
+/// @brief Reinit all data to defaults.
+void Config::ResetToDefaults(){
+    Actions = SettingsActions{};
+    Advanced = SettingsAdvanced{};
+    AI = SettingsAI{};
+    Audio = SettingsAudio{};
+    Balance = SettingsBalance{};
+    Camera = SettingsCamera{};
+    Gameplay = SettingsGameplay{};
+    UI = SettingsUI{};
+}
+
+bool Config::LoadSettings() {
+    const std::filesystem::path ConfigFile = std::filesystem::current_path() / _Subfolder / _ConfigFile;
+
+    if (!CheckFile(ConfigFile)) {
+        return false;
+    }
+
+    try {
+        TomlData = toml::parse<toml::ordered_type_config>(ConfigFile.string());
+        LoadStructFromTOML(TomlData, Actions);
+        LoadStructFromTOML(TomlData, AI);
+        LoadStructFromTOML(TomlData, Audio);
+        LoadStructFromTOML(TomlData, Balance);
+        LoadStructFromTOML(TomlData, Camera);
+        LoadStructFromTOML(TomlData, Gameplay);
+        LoadStructFromTOML(TomlData, UI);
+        LoadStructFromTOML(TomlData, Hidden);
+
+        //If Enabled Allow Loading Advanced Settings from TOML.
+        if(Hidden.IKnowWhatImDoing){
+            LoadStructFromTOML(TomlData, Advanced);
+        }
+
+        return true;
+    } 
+    catch (const toml::exception& e) {
+        // logger::error("Could not parse {}: {}",_ConfigFile, e.what());
+        return false;
+    }
+}
+
+bool Config::SaveSettings() {
+    const std::filesystem::path ConfigFile = std::filesystem::current_path() / _Subfolder / _ConfigFile;
+
+    if (!CheckFile(ConfigFile)) {
+        return false;
+    }
+    
+    try {
+        //UpdateTOMLFromStruct(TomlData, Hidden); <- does not get saved on purpose.
+        UpdateTOMLFromStruct(TomlData, Actions);
+        UpdateTOMLFromStruct(TomlData, AI);
+        UpdateTOMLFromStruct(TomlData, Audio);
+        UpdateTOMLFromStruct(TomlData, Balance);
+        UpdateTOMLFromStruct(TomlData, Camera);
+        UpdateTOMLFromStruct(TomlData, Gameplay);
+        UpdateTOMLFromStruct(TomlData, UI);
+
+        //If Enabled Allow Saving Advanced Settings
+        if(Hidden.IKnowWhatImDoing){
+            UpdateTOMLFromStruct(TomlData, Advanced);
+        }
+        
+        SaveTOMLToFile(TomlData,ConfigFile);
+
+        return true;
+    } 
+    catch (const toml::exception& e) {
+        // logger::error("Could not update one ore more structs: {}",_ConfigFile, e.what());
+        return false;
+    }
+}
+
 int TomlTest(){
-   
-
-    TomlRead();
-
     return 0;
 }
-

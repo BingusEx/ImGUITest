@@ -15,7 +15,8 @@
 // standard library headers, so it's impractical to leave them on.
 #pragma  warning( disable: 4619 )   // there is no warning number 'XXXX'
 #pragma  warning( disable: 4668 )   // XXX is not defined as a preprocessor macro
-
+extern volatile double rendertime;
+extern volatile double renderloop;
 // The following are pure sillywarnings:
 #pragma warning( disable: 4061 )    // enum value is not *explicitly* handled in switch
 #pragma warning( disable: 4063 )    // case 'nn' is not a valid value for switch of enum 'Name'
@@ -77,7 +78,9 @@ ImWindowManager& WinMgr = ImWindowManager::GetSingleton();
 
 // Main code
 int main(int, char**) {
-    TomlTest();
+    Test();
+    return 0;
+
     // Create application window
     //ImGui_ImplWin32_EnableDpiAwareness();
     WNDCLASSEXW wc = { sizeof(wc), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, L"ImGui Example", NULL };
@@ -121,9 +124,10 @@ int main(int, char**) {
     Config::GetSingleton().LoadSettings(); //Pretend this is the kDataLoaded SKSE Message
     WinMgr.Init();
     WinMgr.AddWindow(std::make_unique<WindowConfig>());
-    //WinMgr.AddWindow(std::make_unique<WindowStatus>());
+    WinMgr.AddWindow(std::make_unique<WindowStatus>());
 
     while (!done) {
+        auto start1 = std::chrono::steady_clock::now();
         // Poll and handle messages (inputs, window resize, etc.)
         // See the WndProc() function below for our to dispatch events to the Win32 backend.
         MSG msg;
@@ -138,10 +142,12 @@ int main(int, char**) {
         ImGui_ImplDX11_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
-
+        auto start = std::chrono::steady_clock::now();
         WinMgr.Draw();
-
+        auto end = std::chrono::steady_clock::now();
         // Rendering
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+        rendertime = duration.count()/1000.f;
         ImGui::Render();
 
         const float clear_color_with_alpha[4] = { clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w };
@@ -149,10 +155,19 @@ int main(int, char**) {
         g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, clear_color_with_alpha);
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
-        g_pSwapChain->Present(1, 0); // Present with vsync
+        g_pSwapChain->Present(0, 0); // Present
+
 
         //Process Queued FontManager Actions
         ImFontManager::GetSingleton().ProcessActions();
+        using namespace std::chrono_literals;
+        std::this_thread::sleep_for(12ms);
+        auto end1 = std::chrono::steady_clock::now();
+        auto duration1 = std::chrono::duration_cast<std::chrono::microseconds>(end1 - start1);
+        
+        renderloop = duration1.count()/1000.f;
+
+        
     }
 
     // Cleanup

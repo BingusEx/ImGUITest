@@ -9,7 +9,7 @@
 
 namespace UI {
 
-    class WindowStatus : ImWindow {
+    class WindowStatus : public ImWindow {
 
         public:
         
@@ -22,5 +22,13 @@ namespace UI {
         ImFontManager& FontMgr = ImFontManager::GetSingleton();
         ImStyleManager& StyleMgr = ImStyleManager::GetSingleton();
         Config& Settings = Config::GetSingleton();
+
+        inline bool ShouldShow() override {
+            return Settings.UI.wStatus.bVisible;
+        }
+
+        inline float GetAlpha() override {
+            return Settings.UI.wStatus.fAlpha;
+        }
     };
 }

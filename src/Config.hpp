@@ -1,11 +1,43 @@
 #pragma once
 
+#include "toml.hpp"
 #include "TOMLUtil.hpp"
-#include <string>
-#include <mutex>
-#include <filesystem>
+#include "magic_enum/magic_enum.hpp"
 
-int TomlTest();
+void Test();
+//TODO Move/Replace this eventually
+
+enum class CameraTrackingUsr {
+    kNone,
+    kSpine,
+    kClavicle,
+    kBreasts_01,
+    kBreasts_02,
+    kBreasts_03, // 3BBB tip
+    kNeck,
+    kButt,
+};
+
+enum class CameraModeTP {
+    kDisabled,
+    kNormal,
+    kAlternative,
+    kFootLeft,
+    kFootRight,
+    kFeetCenter
+};
+
+enum class CameraModeFP {
+    kNormal,
+    kCombat,
+    kLoot
+};
+
+enum class DisplayUnit {
+    kMetric,
+    kImperial,
+    kMammoth
+};
 
 
 /* 
@@ -31,11 +63,36 @@ Since all of this is just one big hack, there are some limitations present namel
 */
 
 /* Naming Convention
+* i(x) -> integer(Ammount of elements if array)
 * f(x) -> float(Ammount of elements if array)
 * b(x) -> bool(Ammount of elements if array)
 * s(x) -> string(Ammount of elements if array)
 * t -> struct
 */
+
+struct InputEvent {
+    //     InputEvent(const toml::value& v)
+    //     :   Event(toml::find<std::string>(v, "Event")),
+    //         Keys(toml::find<std::vector<std::string>>(v, "Keys")),
+    //         Exclusive(toml::find<bool>(v, "Exclusive")),
+    //         Duration(toml::find<float>(v, "Duration")),
+    //         Trigger(toml::find<std::string>(v, "Trigger")),
+    //         BlockInput(toml::find<bool>(v, "BlockInput"))
+    // {}
+
+
+
+    std::string Event;
+    std::vector<std::string> Keys;
+    bool Exclusive;
+    float Duration;
+    std::string Trigger;
+    bool BlockInput;
+};
+//TOML11_DEFINE_CONVERSION_NON_INTRUSIVE(InputEvent, Event, Keys, Exclusive, Duration, BlockInput)
+TOML_SERIALIZABLE(InputEvent);
+
+
 
 //-------------------------------------------------------------------------------------------------------------------
 //  HIDDEN
@@ -56,6 +113,8 @@ struct SettingsAdvanced {
     bool bProfile = false;
     bool bShowOverlay = false;
     bool bAllActorSizeEffects = false;
+    bool bDamageAV = true;
+    bool bCooldowns = true;
 };
 TOML_SERIALIZABLE(SettingsAdvanced);
 
@@ -64,10 +123,14 @@ TOML_SERIALIZABLE(SettingsAdvanced);
 //  AUDIO
 //-------------------------------------------------------------------------------------------------------------------
 struct SettingsAudio {
-    float fMaxVoiceFrequency = 1.0f;
+    // Footstep
     bool bFootstepSounds = true;
     bool bUseOldSounds = false;
+
+    //Voice
+    bool bSlowGrowMoans = true;
     bool bEnableVoiceOverride = true;
+    float fMaxVoiceFrequency = 1.0f;
 };
 TOML_SERIALIZABLE(SettingsAudio);
 
@@ -76,7 +139,7 @@ TOML_SERIALIZABLE(SettingsAudio);
 //-------------------------------------------------------------------------------------------------------------------
 struct GameplayActorSettings {
     float fRandomGrowthDelay = 1.0f;
-    std::string sGameMode = "None";
+    std::string sGameMode = "kNone";
     float fGrowthRate = 0.001f;
     float fShrinkRate = 0.001f;
     float fGrowthSizeLimit = 25.0f;
@@ -84,10 +147,8 @@ struct GameplayActorSettings {
 };
 TOML_SERIALIZABLE(GameplayActorSettings);
 
-struct SettingsGameplay {
-    // ---------- Other
-    bool bEnableMales = false;
 
+struct SettingsGeneral {
     // ---------- Visuals
     bool bLessGore = false;
     bool bUseMetric = true;
@@ -95,6 +156,10 @@ struct SettingsGameplay {
     // ---------- Compatibility
     bool bDevourmentCompat = false;
     bool bConversationCamCompat = false;
+};
+TOML_SERIALIZABLE(SettingsGeneral);
+
+struct SettingsGameplay {
 
     // ---------- Protect
     bool bProtectEssentials = true;
@@ -122,7 +187,7 @@ struct SettingsGameplay {
     bool bEnableCrushGrowth = true;
     bool bEnableFOVEdits = false;
     bool bEnableGrowthOnHit = false;
-    bool bSlowGrowMoans = true;
+
 
     //----------- Other
     bool bDynamicSize = true;
@@ -131,6 +196,7 @@ struct SettingsGameplay {
     bool bHighheelsFurniture = true;
     bool bLaunchObjects = false;
     bool bLaunchAllCells = false;
+    bool bEnableMales = false;
 
 };
 TOML_SERIALIZABLE(SettingsGameplay);
@@ -139,20 +205,16 @@ TOML_SERIALIZABLE(SettingsGameplay);
 //  CAMERA
 //-------------------------------------------------------------------------------------------------------------------
 struct CameraOffsets {
-    std::string sCenterOnBone = "None";
+    std::string sCenterOnBone = "kNone";
 
-    //LeftRight //UpDown //BackForth
+    //LeftRight //BackForth //UpDown
     //Normal Cam
-    std::array<float, 3> f3Normal = {0.0f, 0.0f, 0.0f};  
-    std::array<float, 3> f3Combat = {0.0f, 0.0f, 0.0f};
+    std::array<float, 3> f3NormalStand = {0.0f, 0.0f, 0.0f};  
+    std::array<float, 3> f3CombatStand = {0.0f, 0.0f, 0.0f};
 
     //Sneak / Crawl
     std::array<float, 3> f3NormalSneak = {0.0f, 0.0f, 0.0f}; 
     std::array<float, 3> f3CombatSneak = {0.0f, 0.0f, 0.0f};
-
-    //Prone
-    std::array<float, 3> f3NormalProne = {0.0f, 0.0f, 0.0f}; 
-    std::array<float, 3> f3CombatProne = {0.0f, 0.0f, 0.0f};
 
 };
 TOML_SERIALIZABLE(CameraOffsets);
@@ -164,12 +226,18 @@ struct SettingsCamera {
     float fFPCrawlHeightMult = 0.40f;
     float fTPCrawlHeightMult = 0.40f;
     
+    int ActiveCamera = 0;
+    
     CameraOffsets tCONormal = {};
     CameraOffsets tCOAlt = {};
-    CameraOffsets tCOFeet = {};
 
+    float fFootCameraFBOffset = 0.0;
+    
     bool bAutomaticCamera = true;
+    std::string sAutoCameraModeFP = "kNormal";
+    std::string sAutoCameraModeTP = "kDisabled";
 
+    //TODO These Should be Hooks Not Ini Settings
     float fCameraDistMin = 6.0f;
     float fCameraDistMax = 400.0f;
     float fCameraZoom = 20.0f;
@@ -190,7 +258,7 @@ TOML_SERIALIZABLE(SettingsCamera);
 //-------------------------------------------------------------------------------------------------------------------
 struct SettingsBalance {
 
-    std::string sSizeFormula = "Normal";
+    std::string sSizeFormula = "kNormal";
     float fSizeDamageMult = 1.0f;
     float fExpMult = 1.0f;
     float fShrinkOnHitMult = 1.0f;      //Is this a mult?
@@ -245,22 +313,103 @@ TOML_SERIALIZABLE(SettingsActions);
 //-------------------------------------------------------------------------------------------------------------------
 //  AI
 //-------------------------------------------------------------------------------------------------------------------
+
+struct AIStatelessAction {
+    bool bEnableAction = true;
+    float fProbability = 50.0f;
+};
+TOML_SERIALIZABLE(AIStatelessAction);
+
+struct AIStatefullAction {
+    bool bEnableAction = true;
+    float fProbability = 50.0f;
+
+    float fProbabilityLight = 50.0f;
+    float fProbabilityHeavy = 50.0f;
+
+    float fInterval = 2.0f;
+
+};
+
+TOML_SERIALIZABLE(AIStatefullAction);
+
+struct AIHugAction {
+    bool bEnableAction = true;
+    float fProbability = 50.0f;
+
+    bool bStopAtFullHP = true;
+    bool bKillFriendlies = true;
+    bool bKillFollowers = false;
+    
+    float fHealProb = 50.0f;
+    float fShrinkProb = 50.0f;
+    float fKillProb = 50.0f;
+    float fInterval = 4.0f;
+};
+TOML_SERIALIZABLE(AIHugAction);
+
+struct AIButtAction {
+    bool bEnableAction = true;
+    float fProbability = 50.0f;
+
+    float fFastProb = 50.0f;
+    float fTargetedProb = 50.0f;
+    float fGrowProb = 80.0f;
+    float fInterval = 2.0f;
+};
+TOML_SERIALIZABLE(AIButtAction);
+
+struct AIGrabAction {
+    bool bEnableAction = true;
+    float fProbability = 50.0f;
+
+    //TODO Add Values
+};
+TOML_SERIALIZABLE(AIGrabAction);
+
 struct SettingsAI {
     //Action Toggles
-    bool bAllowVore = true;
-    bool bAllowStomp = true;
-    bool bAllowSwipe = true;
-    bool bAllowKick = true;
-    bool bAllowHugs = true;
-    bool bAllowButtCrush = true;
-    bool bAllowThighCrush = true;
-    bool bAllowThighSandwich = true;
+
+    //Main Time Interval for Selecting an Action.
+    float fMasterTimer = 3.0f;
+
+    //Stateless Actions
+    AIStatelessAction tVore = {
+        .bEnableAction = true,
+        .fProbability = 20.0f,
+    };
+
+    AIStatelessAction tStomp = {
+        .bEnableAction = true,
+        .fProbability = 20.0f,
+    };
+
+    AIStatelessAction tKickSwipe = {
+        .bEnableAction = true,
+        .fProbability = 20.0f,
+    };
+
+    //Statefull Actions
+    AIStatefullAction tThighCrush = {
+        .bEnableAction = true,
+        .fProbability = 20.0f,
+    };
+
+    AIStatefullAction tThighSandwich = {
+        .bEnableAction = true,
+        .fProbability = 20.0f,
+    };
+
+    //Complex Actions
+    AIHugAction tHugs = {};
+    AIButtAction tButtCrush = {};
+    AIButtAction t = {};
 
     //Other Values
     bool bPanic = true;
     bool bCombatOnly = true;
-    bool bIgnorePlayer = true;
-    bool bIgnoreFollowers = true;
+    bool bAllowPlayer = true;
+    bool bAllowFollowers = true;
 };
 TOML_SERIALIZABLE(SettingsAI);
 
@@ -269,23 +418,25 @@ TOML_SERIALIZABLE(SettingsAI);
 //-------------------------------------------------------------------------------------------------------------------
 struct WindowConfStatus {
     bool bLock = true;
-    std::array<float, 2> f2Offset = {30.0f, 30.0f};
+    std::array<float, 2> f2Offset = {20.0f, 20.0f};
     std::string sAnchor = "kTopRight";
     bool bVisible = false;
-    float fAlpha = 0.8f;
+    float fAlpha = 1.0f;
+    uint32_t iDisplayItems = UINT32_MAX;
 };
 TOML_SERIALIZABLE(WindowConfStatus);
 
 struct WindowConfSettings {
     bool bLock = true;
-    std::array<float, 2> f2Offset = {30.0f, 30.0f};
-    float fWindowScale = 75.f;
+    std::array<float, 2> f2Offset = {0.0f, 0.0f};
     std::string sAnchor = "kCenter";
+    float fWindowSize = 80.f;
 };
 TOML_SERIALIZABLE(WindowConfSettings);
 
 struct SettingsUI {
-    float fFontScale = 1.0f;
+    std::string sDisplayUnits = "kMetric";
+    float fScale = 1.0f;
     std::array<float, 3> f3AccentColor = {0.486f, 0.431f, 0.529f};
     WindowConfSettings wSettings {};
     WindowConfStatus wStatus {};
@@ -316,7 +467,17 @@ class Config {
     [[nodiscard]] bool SaveSettings();
 
     void ResetToDefaults();
-        
+
+    template<typename Enum>
+    static Enum StringToEnum(const std::string& name) {
+        auto value = magic_enum::enum_cast<Enum>(name);
+        if (value.has_value()) {
+            return *value;
+        } else {
+            throw std::invalid_argument("Invalid enum name: " + name);
+        }
+    }
+            
     private:
     
     const std::string _ConfigFile = "Settings.toml";

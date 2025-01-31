@@ -1,19 +1,19 @@
 #include "ImFontManager.hpp"
+#include "imgui_impl_dx11.h"
 
 using namespace UI;
 
 void ImFontManager::Init(){
-    //Default
-    ImGui::GetIO().Fonts->AddFontDefault();
-
     //Initalzie font data, add any new font defines here.
-    AddFont( new FontData("sidebar",_SkyrimGUI_Light, 28.0f));
-    AddFont( new FontData("title",_SkyrimGUI_Medium, 56.0f));
-    AddFont( new FontData("footer",_SkyrimGUI_Medium, 20.0f));
-    AddFont( new FontData("text",_SkyrimGUI_Console, 18.0f));
+    AddFont( new FontData("sidebar",_SkyrimGUI_Light, 34.0f));
+    AddFont( new FontData("title",_SkyrimGUI_Medium, 58.0f));
+    AddFont( new FontData("footer",_SkyrimGUI_Medium, 28.0f));
+    AddFont( new FontData("text",_SkyrimGUI_Console, 17.0f));
     AddFont( new FontData("subscript",_SkyrimGUI_Console, 12.0f));
-    AddFont( new FontData("widgetbody",_SkyrimGUI_Light, 18.0f));
-    AddFont( new FontData("widgettitle",_SkyrimGUI_Light, 22.0f));
+    AddFont( new FontData("widgetbody",_SkyrimGUI_Light, 22.0f));
+    AddFont( new FontData("widgettitle",_SkyrimGUI_Light, 40.0f));
+
+    BuildFontsInt();
 
     for(auto& [key, value] : Fonts){
         if(value->font == nullptr){
@@ -24,12 +24,18 @@ void ImFontManager::Init(){
 }
 
 void ImFontManager::AddFont(FontData* a_font){
-    ImGuiIO& io = ImGui::GetIO();
-    ImFontAtlas* fontAtlas = io.Fonts;
-
     if(a_font) {
         Fonts[a_font->name] = a_font;
-        a_font->font = fontAtlas->AddFontFromFileTTF(a_font->path.c_str(), a_font->size, a_font->conf);
+    }
+}
+
+void ImFontManager::BuildFontsInt(){
+    ImGuiIO& io = ImGui::GetIO();
+    ImFontAtlas* fontAtlas = io.Fonts;
+    fontAtlas->Clear();
+    fontAtlas->AddFontDefault();
+    for(auto& font : Fonts){
+        font.second->font = fontAtlas->AddFontFromFileTTF(font.second->path.c_str(), font.second->size * Settings.UI.fScale, font.second->conf);
     }
 }
 
@@ -54,6 +60,11 @@ void ImFontManager::ProcessActions(){
                 break;
             }
 
+            case kRebuildAtlas:{
+                RebuildFontAtlasImpl();
+                break;
+            }
+
             default:{
                 //logger::warn("ImFontmanager: Unimplemented Action!")
                 break;
@@ -65,23 +76,25 @@ void ImFontManager::ProcessActions(){
     }
 }
 
-
 void ImFontManager::ChangeRasterizerScaleImpl(float a_scale) {
     for(auto [key, value] : Fonts){
         if(value->font != nullptr){
             value->conf->RasterizerDensity = a_scale;
         }
     }
-    RebuildFontAtlas();
+    RebuildFontAtlasImpl();
 }
 
-void ImFontManager::RebuildFontAtlas(){
-    ImGui::GetIO().Fonts->Build();
+void ImFontManager::RebuildFontAtlasImpl(){
 
+    BuildFontsInt();
+    ImGui::GetIO().Fonts->ClearTexData();
+    ImGui::GetIO().Fonts->Build();
+    
     //Causes a complete reinit of the imgui context
     //Idealy we'd only want to invalidate the font related stuff
     //That requires a modification to ImGuiDX11, which we can't do... :(
     //As long as you dont spam this it's fine.
-    //Even if you did it doesn't cause a memleak. It just lags for ~100ms on each call
+    //Even if you did it doesn't cause a memleak. It just lags for ~300ms on each call
     ImGui_ImplDX11_InvalidateDeviceObjects();
 }

@@ -19,6 +19,8 @@
 
 #include "src/UI/ImGui/ImUtil.hpp"
 
+volatile double rendertime;
+volatile double renderloop;
 using namespace UI;
 
 //Do All your Init Stuff here
@@ -44,17 +46,17 @@ WindowConfig::WindowConfig() {
 
 void WindowConfig::Draw() {
 
-    this->flags = (Settings.UI.wStatus.bLock ? (this->flags | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove) : (this->flags & ~ImGuiWindowFlags_NoResize & ~ImGuiWindowFlags_NoMove));
+    flags = (Settings.UI.wSettings.bLock ? (flags | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove) : (flags & ~ImGuiWindowFlags_NoResize & ~ImGuiWindowFlags_NoMove));
 
     //Handle Fixed Position and Size
-    if(Settings.UI.wStatus.bLock){
-        ImGui::SetWindowSize(ImUtil::ScaleToViewport(Settings.UI.wSettings.fWindowScale));
+    if(Settings.UI.wSettings.bLock){
+        ImGui::SetWindowSize(ImUtil::ScaleToViewport(Settings.UI.wSettings.fWindowSize));
 
         //Mousedown Check Prevents the window from moving around and messing with the slider while dragging
-        if(!std::any_of(ImGui::GetIO().MouseDown, ImGui::GetIO().MouseDown + IM_ARRAYSIZE(ImGui::GetIO().MouseDown), [](bool v) { return v; })){
+        if(!ImGui::GetIO().MouseDown[0]){
             //X,Y
-            const ImVec2 Offset {Settings.UI.wStatus.f2Offset[0], Settings.UI.wStatus.f2Offset[1]};
-            ImGui::SetWindowPos(GetAnchorPos(AnchorPos, Offset));
+            const ImVec2 Offset {Settings.UI.wSettings.f2Offset[0], Settings.UI.wSettings.f2Offset[1]};
+            ImGui::SetWindowPos(GetAnchorPos(Config::StringToEnum<ImWindow::WindowAnchor>(Settings.UI.wSettings.sAnchor), Offset));
         }
     }
     
@@ -63,6 +65,14 @@ void WindowConfig::Draw() {
 
         ImGui::PushFont(FontMgr.GetFont("title"));
         ImGui::Text(Title.c_str());
+        ImGui::PopFont();
+    }
+
+    {  // Debug Draw Window Manager total time
+
+        ImGui::PushFont(FontMgr.GetFont("subscript"));
+        ImGui::Text("Window Manager: %.3f ms",rendertime);
+        ImGui::Text("Render Loop: %.3f ms",renderloop);
         ImGui::PopFont();
 
     }
@@ -93,7 +103,6 @@ void WindowConfig::Draw() {
 
         ImGui::PopFont();
         ImGui::EndChild();
-
     }
 
     ImUtil::SeperatorV();
@@ -154,10 +163,12 @@ void WindowConfig::Draw() {
                 //TODO Use Gts' task class to make a 10 second single fire task that displays an error message in the footer
                 //logger::error("Failed to settings category: {}");
             }
+            StyleMgr.LoadStyle();
+            FontMgr.RebuildFonts();
         }
 
         ImGui::SameLine();
-        
+
         if(ImUtil::Button("Save", "Save changes to Settings.toml")){
             if(!Settings.SaveSettings()){
                 //TODO Use Gts' task class to make a 10 second single fire task that displays an error message in the footer
@@ -169,8 +180,10 @@ void WindowConfig::Draw() {
         
         if(ImUtil::Button("Reset", "Load the default values, this does not save them to the config file")){
             Settings.ResetToDefaults();
+            StyleMgr.LoadStyle();
+            FontMgr.RebuildFonts();
             //logger::info("Settings reset");
-                //TODO Use Gts' task class to make a 10 second single fire task that displays an error message in the footer
+            //TODO Use Gts' task class to make a 10 second single fire task that displays an error message in the footer
         };
 
         ImGui::PopFont();

@@ -28,16 +28,16 @@ void ImWindowManager::AddWindow(std::unique_ptr<ImWindow> a_window){
 void ImWindowManager::Draw(){
     if (HasWindows()) {
         for (const auto& window : windows) {
-            if (window->Show) {
-                
-                //Begin Window
-                ImGui::Begin((wmName + "##" + window->Name).c_str(), &window->Show, window->flags);
+            if (window->ShouldShow()) {
+                ImGui::PushStyleVar(ImGuiStyleVar_Alpha, window->GetAlpha());
                 ImGui::PushFont(FontMgr.GetFont("text")); //Default font
-
+            
+                ImGui::Begin((wmName + "##" + window->Name).c_str(), &window->Show, window->flags);
                 window->Draw();
 
-                ImGui::PopFont();
                 ImGui::End();
+                ImGui::PopStyleVar();
+                ImGui::PopFont();
             }
         }
     }

@@ -7,7 +7,7 @@ void ImCategorySplit::Draw() {
 
     {   //Left
         const std::string SpltNam = title + "##SLeft";
-        ImGui::BeginChild(SpltNam.c_str(), ImVec2(ImGui::GetContentRegionAvail().x / splitRatio, 0), flags);
+        ImGui::BeginChild(SpltNam.c_str(), ImVec2(ImGui::GetContentRegionAvail().x / splitRatio, 0), true);
         DrawLeft();
         ImGui::EndChild();
     }
@@ -16,7 +16,7 @@ void ImCategorySplit::Draw() {
     
     {   //Right
         const std::string SpltNam = title + "##SRight";
-        ImGui::BeginChild(SpltNam.c_str(), ImVec2(0, 0), flags);
+        ImGui::BeginChild(SpltNam.c_str(), ImVec2(0, 0), true);
         DrawRight();
         ImGui::EndChild();
     }

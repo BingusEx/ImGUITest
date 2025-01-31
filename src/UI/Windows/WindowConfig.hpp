@@ -17,6 +17,14 @@ namespace UI {
 
         void Draw() override;
 
+        inline bool ShouldShow() override {
+            return true;
+        }
+
+        inline float GetAlpha() override {
+            return 1.0f;
+        }
+
 
         private:
         void ShowFooterMessage();

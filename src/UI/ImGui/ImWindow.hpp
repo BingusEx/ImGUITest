@@ -21,7 +21,6 @@ namespace UI {
             kCenter,
             kBottomLeft,
             kBottomRight,
-            kTotal
         };
 
         enum WindowMessage {
@@ -44,6 +43,8 @@ namespace UI {
         virtual ~ImWindow() noexcept = default;
 
         virtual void Draw() = 0;
+        virtual inline bool ShouldShow() = 0;
+        virtual inline float GetAlpha() = 0;
 
         ImVec2 GetAnchorPos(WindowAnchor a_position, ImVec2 a_padding);
     };

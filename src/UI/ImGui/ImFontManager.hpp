@@ -3,9 +3,12 @@
 #include "imgui.h"
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx11.h"
+#include "imgui_internal.h"
+
+
+#include "src/Config.hpp"
 
 namespace UI {
-
     class ImFontManager {
         private:
 
@@ -17,6 +20,8 @@ namespace UI {
         const std::string _SkyrimGUI_Medium = _basePath + "Futura Condensed Medium" + _ext;
         const std::string _SkyrimGUI_Console = _basePath + "Arial" + _ext;
 
+        Config& Settings = Config::GetSingleton();
+
         //Structs
         typedef struct FontData {
             std::string name;
@@ -25,14 +30,17 @@ namespace UI {
             ImFontConfig* conf = new ImFontConfig();
             ImFont* font;
             FontData(const std::string& name, const std::string& path, float size) : name(name), path(path), size(size) {
-                //This is probably overkill...
-                conf->OversampleH = 8;
-                conf->OversampleV = 8;
+                //8 is probably overkill...
+                //By directly chaning the font scale this hack is no longer needed.
+                //Decrease from default to save a bit of VRAM.
+                conf->OversampleH = 2;
+                conf->OversampleV = 1;
             }
         } FontData;
 
         enum AQueueType {
-            kRasterizerScale
+            kRasterizerScale,
+            kRebuildAtlas
         };
 
         //Lists
@@ -41,7 +49,8 @@ namespace UI {
 
         //Funcs
         void ChangeRasterizerScaleImpl(float a_scale);
-        void RebuildFontAtlas();
+        void RebuildFontAtlasImpl();
+        void BuildFontsInt();
 
         public:
         ~ImFontManager() = default;
@@ -51,12 +60,17 @@ namespace UI {
             return instance;
         }
 
-        inline void PushAction(AQueueType a_type, float a_value){
+        inline void PushAction(AQueueType a_type, const float a_value){
             ActionQueue.push(std::make_pair(a_type, a_value));
         }
 
-        inline void ChangeRasterizerScale(float a_scale) {
+        //Queuable Actions
+        inline void ChangeRasterizerScale(const float a_scale) {
             PushAction(AQueueType::kRasterizerScale,a_scale);
+        }
+
+        inline void RebuildFonts() {
+            PushAction(AQueueType::kRebuildAtlas,1.0);
         }
 
         void Init();

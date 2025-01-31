@@ -3,6 +3,7 @@
 #include "imgui.h"
 
 #include "Config.hpp"
+#include "magic_enum/magic_enum.hpp"
 
 /// @brief Given a parsed toml file and struct, tries to update the structs contents from the loaded toml table. If one or more elements can't be loaded it defaults to the default value found in the struct.
 /// @tparam T Type of struct
@@ -141,6 +142,7 @@ bool Config::LoadSettings() {
         return false;
     }
 
+
     try {
         TomlData = toml::parse<toml::ordered_type_config>(ConfigFile.string());
         LoadStructFromTOML(TomlData, Actions);
@@ -197,6 +199,48 @@ bool Config::SaveSettings() {
     }
 }
 
-int TomlTest(){
-    return 0;
+void Test() {
+
+    toml::ordered_value Root = toml::parse("binds.toml");
+    toml::ordered_array InputEventArray;
+    toml::ordered_table RootTable;
+
+    std::vector<InputEvent> Binds;
+
+    Binds.push_back({
+        .Event = "Test",
+        .Keys = {"A", "B", "C"},
+        .Exclusive = true,
+        .Duration = 0.0,
+        .BlockInput = false,
+    });
+
+    Binds.push_back({
+        .Event = "Test2",
+        .Keys = {"E", "F", "G"},
+        .Exclusive = false,
+        .Duration = 1.0,
+        .BlockInput = true
+    });
+
+    // Create a TOML array containing tables
+
+    for (const auto& bind : Binds) {
+        toml::ordered_value InputEvent = bind;
+        InputEventArray.push_back(InputEvent);
+    }
+
+    // Create root table with the array of tables
+    RootTable["InputEvent"] = InputEventArray;
+    Root = RootTable;
+
+
+    // Write to file
+    std::ofstream ofs("binds.toml");
+    if (!ofs.is_open()) {
+        return;
+    }
+    
+    ofs << toml::format(Root);
 }
+

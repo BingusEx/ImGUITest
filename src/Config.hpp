@@ -84,10 +84,10 @@ struct InputEvent {
 
     std::string Event;
     std::vector<std::string> Keys;
-    bool Exclusive;
-    float Duration;
-    std::string Trigger;
-    bool BlockInput;
+    bool Exclusive = false;
+    float Duration = 0.0;
+    std::string Trigger = "once";
+    bool BlockInput = false;
 };
 //TOML11_DEFINE_CONVERSION_NON_INTRUSIVE(InputEvent, Event, Keys, Exclusive, Duration, BlockInput)
 TOML_SERIALIZABLE(InputEvent);

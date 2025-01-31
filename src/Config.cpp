@@ -123,6 +123,25 @@ bool Config::CheckFile(const std::filesystem::path& a_file) {
     }
 }
 
+    // Define the new binds to potentially add
+std::vector<InputEvent> Binds = {
+    {
+        .Event = "Test",
+        .Keys = {"A", "B", "C"},
+        .Exclusive = true,
+        .Duration = 0.0,
+        .BlockInput = false,
+    },
+    {
+        .Event = "Test2",
+        .Keys = {"E", "F", "G"},
+        .Exclusive = false,
+        .Duration = 1.0,
+        .BlockInput = true
+    }
+};
+
+
 /// @brief Reinit all data to defaults.
 void Config::ResetToDefaults(){
     Actions = SettingsActions{};
@@ -200,47 +219,122 @@ bool Config::SaveSettings() {
 }
 
 void Test() {
+    toml::ordered_value Root;
 
-    toml::ordered_value Root = toml::parse("binds.toml");
-    toml::ordered_array InputEventArray;
-    toml::ordered_table RootTable;
+    // 1. Load existing TOML data
+    try {
+        //std::ifstream ifs("binds.toml");
+        //if (ifs.good()) {
+            Root = toml::parse("binds.toml");
+        //}
+    } catch (const std::exception& e) {
+        std::cerr << "TOML parse error: " << e.what() << "\n";
+        Root = toml::ordered_table();
+    }
 
-    std::vector<InputEvent> Binds;
+    // 2. Ensure root is a table
+    if (!Root.is_table()) {
+        Root = toml::ordered_table();
+    }
+    auto& rootTable = Root.as_table();
 
-    Binds.push_back({
-        .Event = "Test",
-        .Keys = {"A", "B", "C"},
-        .Exclusive = true,
-        .Duration = 0.0,
-        .BlockInput = false,
-    });
+    // 3. Get or create InputEvent array
+    toml::ordered_array& inputEventArray = [&]() -> auto& {
+        if (rootTable.count("InputEvent") && rootTable["InputEvent"].is_array()) {
+            return rootTable["InputEvent"].as_array();
+        }
+        rootTable["InputEvent"] = toml::ordered_array();
+        return rootTable["InputEvent"].as_array();
+    }();
 
-    Binds.push_back({
-        .Event = "Test2",
-        .Keys = {"E", "F", "G"},
-        .Exclusive = false,
-        .Duration = 1.0,
-        .BlockInput = true
-    });
+    // 4. Define reference binds
+    const std::vector<InputEvent> Binds = {
+        {
+            .Event = "Test",
+            .Keys = {"A", "B", "C"},
+            .Exclusive = true,
+            .Duration = 0.0,
+            .BlockInput = false,
+        },
+        {
+            .Event = "Test2",
+            .Keys = {"E", "F", "G"},
+            .Exclusive = false,
+            .Duration = 1.0,
+            .BlockInput = true
+        }
+    };
 
-    // Create a TOML array containing tables
-
+    // 5. Create set of valid events for quick lookup
+    std::unordered_set<std::string> validEvents;
     for (const auto& bind : Binds) {
-        toml::ordered_value InputEvent = bind;
-        InputEventArray.push_back(InputEvent);
+        validEvents.insert(bind.Event);
     }
 
-    // Create root table with the array of tables
-    RootTable["InputEvent"] = InputEventArray;
-    Root = RootTable;
+    // 6. Remove entries not in Binds (reverse iteration)
+    for (int i = inputEventArray.size() - 1; i >= 0; --i) {
+        const auto& entry = inputEventArray[i];
+        if (!entry.is_table()) {
+            inputEventArray.erase(inputEventArray.begin() + i);
+            continue;
+        }
 
+        const auto& table = entry.as_table();
+        const auto it = table.find("Event");
+        if (it == table.end() || !it->second.is_string()) {
+            inputEventArray.erase(inputEventArray.begin() + i);
+            continue;
+        }
 
-    // Write to file
+        const std::string& event = it->second.as_string();
+        if (!validEvents.count(event)) {
+            inputEventArray.erase(inputEventArray.begin() + i);
+        }
+    }
+
+    // 7. Add missing binds and update existing ones
+    for (const auto& bind : Binds) {
+        bool exists = false;
+        
+        // Check for existing entry
+        for (auto& entry : inputEventArray) {
+            if (!entry.is_table()) continue;
+            
+            auto& table = entry.as_table();
+            const auto it = table.find("Event");
+            
+            if (it != table.end() && 
+                it->second.is_string() && 
+                it->second.as_string() == bind.Event) {
+                exists = true;
+
+                //TODO Check if keys are valid
+
+                //TODO Create new binds use default as base then overlay loaded data into binds vector
+                
+            
+                // Update existing entry with current bind data
+                break;
+            }
+        }
+
+        // Add new entry if missing
+        if (!exists) {
+            toml::ordered_table newEntry;
+            newEntry["Event"] = bind.Event;
+            newEntry["Keys"] = bind.Keys;
+            newEntry["Exclusive"] = bind.Exclusive;
+            newEntry["Duration"] = bind.Duration;
+            newEntry["Trigger"] = bind.Trigger;;
+            newEntry["BlockInput"] = bind.BlockInput;
+            
+            inputEventArray.push_back(newEntry);
+        }
+    }
+
+    // 8. Write updated TOML
     std::ofstream ofs("binds.toml");
-    if (!ofs.is_open()) {
-        return;
+    if (ofs) {
+        ofs << toml::format(Root);
     }
-    
-    ofs << toml::format(Root);
 }
-

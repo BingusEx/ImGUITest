@@ -9,23 +9,27 @@ void ImStyleManager::InitializeDefaultStyle(ImGuiStyle& style) {
     style.ChildRounding     = 1.5f;
     style.FrameRounding     = 1.5f;
     style.ScrollbarRounding = 1.5f;
-    style.GrabRounding      = 0.5f;
+    style.GrabRounding      = 1.5f;
     style.TabRounding       = 1.5f;
+
+    style.GrabMinSize = 6.0f;
 
     // Anti-Aliasing
     style.AntiAliasedLines = true;
-    style.AntiAliasedFill  = true;
+    //style.AntiAliasedFill  = true;
 
     // Border Sizes
     style.WindowBorderSize  = 0.0f;
     style.ChildBorderSize   = 0.0f;
     style.FrameBorderSize   = 0.1f;
-    style.ScrollbarSize     = 8.0f;
+    style.ScrollbarSize     = 7.0f;
 
     // Spacing & Padding
     style.ItemSpacing.y     = 5.0f;
     style.FramePadding      = {4.0f, 4.0f};
     style.CellPadding       = {4.0f, 4.0f};
+
+
 }
 
 void ImStyleManager::ApplyAccentColor(ImGuiStyle& style) {
@@ -33,14 +37,14 @@ void ImStyleManager::ApplyAccentColor(ImGuiStyle& style) {
     const auto& accent = Settings.UI.f3AccentColor;
     const ImVec4 accentColor{accent[0], accent[1], accent[2], 1.0f};
 
+
     // Base color definitions
-    const ImVec4 resizeGripHovered{1.0f, 1.0f, 1.0f, 0.1f};
-    const ImVec4 textDisabled{0.0f, 0.0f, 0.0f, 1.0f};
+    const ImVec4 textDisabled{0.0f, 0.0f, 0.0f, 0.0f};
     const ImVec4 headerHovered{1.0f, 1.0f, 1.0f, 0.1f};
     const ImVec4 tabHovered{0.2f, 0.2f, 0.2f, 1.0f};
 
     // Backgrounds
-    colors[ImGuiCol_WindowBg]        = {0.0f, 0.0f, 0.0f, 0.9f};
+    colors[ImGuiCol_WindowBg]        = {0.0f, 0.0f, 0.0f, 0.85f};
     colors[ImGuiCol_ScrollbarBg]     = ImVec4{};
     colors[ImGuiCol_ChildBg]         = ImVec4{};
     colors[ImGuiCol_TableHeaderBg]   = ImVec4{};
@@ -50,9 +54,9 @@ void ImStyleManager::ApplyAccentColor(ImGuiStyle& style) {
     // Borders & Separators
     colors[ImGuiCol_Border]          = {0.50f, 0.50f, 0.50f, 0.7f};
     colors[ImGuiCol_Separator]       = colors[ImGuiCol_Border];
-    colors[ImGuiCol_ResizeGrip]      = colors[ImGuiCol_Border];
-    colors[ImGuiCol_ResizeGripHovered] = resizeGripHovered;
-    colors[ImGuiCol_ResizeGripActive] = resizeGripHovered;
+    colors[ImGuiCol_ResizeGrip]      = AdjustAlpha(accentColor, 0.4f);
+    colors[ImGuiCol_ResizeGripHovered] = AdjustAlpha(accentColor, 0.6f);
+    colors[ImGuiCol_ResizeGripActive] = AdjustAlpha(accentColor, 1.0f);
 
     // Text
     colors[ImGuiCol_Text]            = {1.0f, 1.0f, 1.0f, 1.0f};

@@ -1,17 +1,21 @@
 #pragma once
 
-#include "src/UI/ImGUI/ImCategory.hpp"
+#include "src/UI/ImGUI/ImCategorySplit.hpp"
+#include "src/Config.hpp"
 
 namespace UI{
 
-    class CategoryAdvanced: public ImCategory {
+    class CategoryAdvanced: public ImCategorySplit {
         public:
         CategoryAdvanced(){
-            title = "Debug";
-            description = "Advanced Settings";
+            title = "Advanced";
         }
 
-        void Draw() override;
+        void DrawLeft() override;
+        void DrawRight() override;
+
+        private:
+        Config& Settings = Config::GetSingleton();
     };
 
 }

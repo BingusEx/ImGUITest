@@ -67,7 +67,7 @@ bool Config::SaveTOMLToFile(const auto& a_toml, const std::filesystem::path& a_f
     
     try{
         std::lock_guard<std::mutex> lock(_ReadWriteLock);
-        // Write the updated data to a file
+
         CheckFile(a_file);
 
         //Create a output file stream and enable exceptions for it.
@@ -122,25 +122,6 @@ bool Config::CheckFile(const std::filesystem::path& a_file) {
         return false;
     }
 }
-
-    // Define the new binds to potentially add
-std::vector<InputEvent> Binds = {
-    {
-        .Event = "Test",
-        .Keys = {"A", "B", "C"},
-        .Exclusive = true,
-        .Duration = 0.0,
-        .BlockInput = false,
-    },
-    {
-        .Event = "Test2",
-        .Keys = {"E", "F", "G"},
-        .Exclusive = false,
-        .Duration = 1.0,
-        .BlockInput = true
-    }
-};
-
 
 /// @brief Reinit all data to defaults.
 void Config::ResetToDefaults(){
@@ -223,12 +204,9 @@ void Test() {
 
     // 1. Load existing TOML data
     try {
-        //std::ifstream ifs("binds.toml");
-        //if (ifs.good()) {
-            Root = toml::parse("binds.toml");
-        //}
-    } catch (const std::exception& e) {
-        std::cerr << "TOML parse error: " << e.what() << "\n";
+        Root = toml::parse("binds.toml");
+    } 
+    catch (const std::exception& e) {
         Root = toml::ordered_table();
     }
 

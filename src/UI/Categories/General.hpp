@@ -1,15 +1,14 @@
 #pragma once
 
 #include "src/UI/ImGUI/ImCategorySplit.hpp"
-
 #include "src/Config.hpp"
 
 namespace UI{
 
-    class CategoryAI: public ImCategorySplit {
+    class CategoryGeneral: public ImCategorySplit {
         public:
-        CategoryAI(){
-            title = "AI";
+        CategoryGeneral(){
+            title = "General";
         }
 
         void DrawLeft() override;

@@ -55,7 +55,7 @@ WindowStatus::WindowStatus() {
 
     Title = "Player Info";
     Name = "WidgetWindow";
-    this->flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar;
+    this->flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoNavInputs;
     AnchorPos = ImWindow::WindowAnchor::kTopRight;
 }
 

@@ -31,6 +31,12 @@ void CategoryInterface::DrawLeft(){
             FontMgr.RebuildFonts();
         }
 
+        ImUtil::SliderF("Item Width", &Settings.UI.fItemWidth, 0.4f, 0.7f, "Change the width of the imGui controls","%.2fx");
+        // if (ImGui::IsItemDeactivatedAfterEdit()) {
+        //     StyleMgr.LoadStyle();
+        //     FontMgr.RebuildFonts();
+        // }
+
         ImGui::ColorEdit3("Accent Color", Settings.UI.f3AccentColor.data(), ImGuiColorEditFlags_DisplayHSV);
         if (ImGui::IsItemDeactivatedAfterEdit() || (ImGui::IsItemActive() && ImGui::GetIO().MouseDown[0])) {
             StyleMgr.LoadStyle();
@@ -75,13 +81,13 @@ void CategoryInterface::DrawRight(){
     if(ImGui::CollapsingHeader("Status Widget",ImUtil::HeaderFlags)){ 
         ImGui::PushID("UISettings##Stats");
 
-        ImUtil::CheckBox("Show status widget", &Settings.UI.wStatus.bVisible, "Show/hide the status widget");
+        ImUtil::CheckBox("Show Stats Widget", &Settings.UI.wStatus.bVisible, "Show/hide the status widget");
 
         ImUtil::SliderF("Widget Alpha", &Settings.UI.wStatus.fAlpha, 0.1f, 1.0f, "Increase/Decrease the alpha (visibility) of the stats window",("%.1fx"));
         
         ImGui::Spacing();
         
-        ImUtil::CheckBox("Lock Stats Window Position", &Settings.UI.wStatus.bLock, "Prevents the stats window from being movable/resizable");
+        ImUtil::CheckBox("Lock Widget Position", &Settings.UI.wStatus.bLock, "Prevents the stats window from being movable/resizable");
         ImGui::BeginDisabled(!Settings.UI.wStatus.bLock);
         {   
             ImUtil::ComboEx<ImWindow::WindowAnchor>("Anchor", Settings.UI.wStatus.sAnchor, "Select where the window should be aligned/anchored at");

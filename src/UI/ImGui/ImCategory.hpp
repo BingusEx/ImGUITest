@@ -22,10 +22,6 @@ namespace UI {
             return title;
         }
 
-        [[nodiscard]] const inline std::string& GetDescription(){
-            return description;
-        }
-
         [[nodiscard]] const inline bool IsVisible(){
             return visible;
         }

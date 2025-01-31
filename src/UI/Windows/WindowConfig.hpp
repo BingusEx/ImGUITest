@@ -1,7 +1,7 @@
 #pragma once
 
 #include "src/UI/ImGUI/ImWindow.hpp"
-#include "src/UI/ImGUI/ImCategoryManager.hpp"
+#include "src/UI/ImGUI/ImCategoryContainer.hpp"
 #include "src/UI/ImGUI/ImFontManager.hpp"
 #include "src/UI/ImGUI/ImStyleManager.hpp"
 

@@ -92,16 +92,16 @@ void CategoryCamera::DrawLeft(){
         ImUtil::CheckBox("Collide With Terrain",&Settings.Camera.bCamCollideTerrain);
         ImUtil::CheckBox("Collide With Statics",&Settings.Camera.bCamCollideStatics);
 
-        ImUtil::SliderF("Apply at Scale",&Settings.Camera.fModifyCamCollideAt, 1.0f, 50.0f ,"Change the scale at which the above collision options should start applying","%.1fx");
+        ImUtil::SliderF("Apply at Scale",&Settings.Camera.fModifyCamCollideAt, 1.0f, 50.0f ,"Change the scale at which the above colission options should start to be applied at","%.1fx");
         ImGui::Spacing();
     }
 
     if(ImGui::CollapsingHeader("Skyrim Camera Settings",ImUtil::HeaderFlags)){ 
         //TODO Fix MinMax for the sliders
-        ImUtil::SliderF("Minimum Distance",&Settings.Camera.fCameraDistMin, -10.0f, 100.0f ,"Change the minimum zoom distance","%.0f Unit(s)");
-        ImUtil::SliderF("Maximum Distance",&Settings.Camera.fCameraDistMax, 200.0f, 700.0f ,"Change the maximum zoom distance","%.0f Unit(s)");
-        ImUtil::SliderF("Zoom Speed",&Settings.Camera.fCameraZoom, 5.0f, 40.0f ,"Change the minimum zoom distance","%.0f Unit(s)");
-        ImUtil::SliderF("Zoom Step",&Settings.Camera.fCameraStep, 0.0f, 0.3f ,"Change the minimum zoom distance","%.04f Unit(s)");
+        ImUtil::SliderF("Minimum Distance",&Settings.Camera.fCameraDistMin, -10.0f, 100.0f ,"Change the minimum zoom distance","%.0f");
+        ImUtil::SliderF("Maximum Distance",&Settings.Camera.fCameraDistMax, 200.0f, 700.0f ,"Change the maximum zoom distance","%.0f");
+        ImUtil::SliderF("Zoom Speed",&Settings.Camera.fCameraZoom, 5.0f, 40.0f ,"Change the zoom speed","%.0f");
+        ImUtil::SliderF("Zoom Step",&Settings.Camera.fCameraStep, 0.0f, 0.3f ,"Change zoom step","%.3f");
         ImGui::Spacing();
     }
 
@@ -110,17 +110,19 @@ void CategoryCamera::DrawLeft(){
 void CategoryCamera::DrawRight(){
     if(ImGui::CollapsingHeader("Automatic Camera",ImUtil::HeaderFlags)){ 
         ImUtil::CheckBox("Enable Automatic Camera",&Settings.Camera.bAutomaticCamera,"Enables the automatic camera");
-        ImUtil::ComboEx<CameraModeTP>("TP Camera Mode", Settings.Camera.sAutoCameraModeTP,"Change the 3rd person camera mode");
-        ImUtil::ComboEx<CameraModeFP>("FP Camera Mode", Settings.Camera.sAutoCameraModeFP,"Change the 1st person camera mode");
+        ImUtil::ComboEx<CameraModeTP>("TP Camera Mode", Settings.Camera.sAutoCameraModeTP,"Change the 3rd person camera mode",!Settings.Camera.bAutomaticCamera);
+        ImUtil::ComboEx<CameraModeFP>("FP Camera Mode", Settings.Camera.sAutoCameraModeFP,"Change the 1st person camera mode",!Settings.Camera.bAutomaticCamera);
         ImGui::Spacing();
     }
+    ImGui::BeginDisabled(!Settings.Camera.bAutomaticCamera);
    
     DrawCameraSettings(&Settings.Camera.tCONormal, "CameraSettings##Normal", "Normal Camera");
     DrawCameraSettings(&Settings.Camera.tCOAlt, "CameraSettings##Alt", "Alt Camera");
     
     if(ImGui::CollapsingHeader("Foot Camera",ImGuiTreeNodeFlags_Bullet)){ 
-        ImUtil::SliderF("Forward - Back", &Settings.Camera.fFootCameraFBOffset ,-100.f, 100.f,nullptr,"%.0f");
+        ImUtil::SliderF("Forward - Back", &Settings.Camera.fFootCameraFBOffset ,-200.f, 200.f,nullptr,"%.1f");
         ImGui::Spacing();
     }
+    ImGui::EndDisabled();
 
 }

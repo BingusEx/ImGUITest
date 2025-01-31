@@ -1,17 +1,20 @@
 #pragma once
 
-#include "src/UI/ImGUI/ImCategory.hpp"
+#include "src/UI/ImGUI/ImCategorySplit.hpp"
+#include "src/Config.hpp"
 
 namespace UI{
 
-    class CategoryAudio: public ImCategory {
+    class CategoryAudio: public ImCategorySplit {
         public:
         CategoryAudio(){
             title = "Audio";
-            description = "Change the mod's audio settings";
         }
 
-        void Draw() override;
-    };
+        void DrawLeft() override;
+        void DrawRight() override;
 
+        private:
+        Config& Settings = Config::GetSingleton();
+    };
 }

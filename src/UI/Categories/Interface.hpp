@@ -13,7 +13,6 @@ namespace UI {
         public:
         CategoryInterface(){
             title = "Interface";
-            description = "Interface";
         }
 
         void DrawLeft() override;

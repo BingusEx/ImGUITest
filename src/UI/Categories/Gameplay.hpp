@@ -9,7 +9,6 @@ namespace UI{
         public:
         CategoryGameplay(){
             title = "Gameplay";
-            description = "Gameplay Settings";
         }
 
         void DrawLeft() override;

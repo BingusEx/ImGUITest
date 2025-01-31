@@ -78,8 +78,8 @@ ImWindowManager& WinMgr = ImWindowManager::GetSingleton();
 
 // Main code
 int main(int, char**) {
-    Test();
-    return 0;
+    //Test();
+    //return 0;
 
     // Create application window
     //ImGui_ImplWin32_EnableDpiAwareness();

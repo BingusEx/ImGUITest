@@ -15,6 +15,8 @@
 #include "src/UI/Categories/Advanced.hpp"
 #include "src/UI/Categories/Audio.hpp"
 #include "src/UI/Categories/Camera.hpp"
+#include "src/UI/Categories/Keybinds.hpp"
+#include "src/UI/Categories/General.hpp"
 
 
 #include "src/UI/ImGui/ImUtil.hpp"
@@ -30,15 +32,17 @@ WindowConfig::WindowConfig() {
     Title = "Configuration";
     Name = "ConfigWindow";
     Show = true;
-    flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar;
+    flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoNavInputs;
 
     //Add Categories
     CatMgr.AddCategory(std::make_shared<CategoryInfo>());
+    CatMgr.AddCategory(std::make_shared<CategoryGeneral>());
     CatMgr.AddCategory(std::make_shared<CategoryGameplay>());
     CatMgr.AddCategory(std::make_shared<CategoryAudio>());
     CatMgr.AddCategory(std::make_shared<CategoryAI>());
     CatMgr.AddCategory(std::make_shared<CategoryCamera>());
     CatMgr.AddCategory(std::make_shared<CategoryInterface>());
+    CatMgr.AddCategory(std::make_shared<CategoryKeybinds>());
     CatMgr.AddCategory(std::make_shared<CategoryAdvanced>());
 }
 
@@ -91,11 +95,10 @@ void WindowConfig::Draw() {
         // Display the categories in the sidebar
         for (uint8_t i = 0; i < categories.size(); i++) {
             ImCategory* category = categories[i].get();
+            if(!category) continue;
+            if(!Settings.Hidden.IKnowWhatImDoing && category->GetTitle() == "Advanced") continue;
             if(!category->IsVisible()) continue;
             if (ImGui::Selectable(category->GetTitle().c_str(), CatMgr.activeIndex == i)) {
-                if (ImGui::IsItemHovered()) {
-                    ImGui::SetTooltip(category->GetDescription().c_str());
-                }
                 CatMgr.activeIndex = i;
             }
 

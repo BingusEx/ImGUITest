@@ -1,13 +1,16 @@
 #include "Info.hpp"
 #include "imgui.h"
 
+#include "src/UI/imGui/ImUtil.hpp"
+
 using namespace UI;
 
 void CategoryInfo::Draw(){
-
+    ImUtil::CheckBox("IKnowWhatImDoing",&Settings.Hidden.IKnowWhatImDoing, "Only Enable if you know what you're doing ;)");
 }
 
 inline void DrawInfo(/*Actor* TargetActor */){
+
 
     //Animations Installed <--- Make a fancy colored checkmark out of it
 

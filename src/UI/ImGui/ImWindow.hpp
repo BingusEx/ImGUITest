@@ -38,7 +38,7 @@ namespace UI {
 
         std::string Name = "Default";   //Imgui Window Name (Must be unique)
         std::string Title = "Default";  //Window Title
-        ImGuiWindowFlags flags = ImGuiWindowFlags_None;
+        ImGuiWindowFlags flags = ImGuiWindowFlags_None | ImGuiWindowFlags_NavFlattened;
 
         virtual ~ImWindow() noexcept = default;
 

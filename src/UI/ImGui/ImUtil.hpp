@@ -32,7 +32,7 @@ namespace ImUtil {
 
     inline void SeperatorV(){
         ImGui::SameLine();
-        ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical, 2.0f);
+        ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical, 2.f);
         ImGui::SameLine();
     }
 
@@ -52,14 +52,15 @@ namespace ImUtil {
     void Bitfield(const char* a_label, uint32_t* a_bitfield);
 
     template <typename T>
-    bool ComboEx(const char* label, std::string& currentValue, const char* a_Tooltip = nullptr, bool a_disabled = false) {
+    bool ComboEx(const char* label, std::string& currentValue, const char* a_Tooltip = nullptr, bool a_disabled = false, bool a_hasTotal = false) {
         // Retrieve enum metadata
         constexpr auto enumNames = magic_enum::enum_names<T>();
         constexpr auto enumValues = magic_enum::enum_values<T>();
 
         // Build the items string with pretty-printed names
         std::ostringstream itemsStream;
-        for (size_t i = 0; i <= enumNames.size() - 1; i++) {
+        const int offset = a_hasTotal ? 2 : 1;
+        for (size_t i = 0; i <= enumNames.size() - offset; i++) {
             itemsStream << HumanizeEnum(enumNames[i]) << '\0';
         }
         std::string items = itemsStream.str();

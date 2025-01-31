@@ -6,10 +6,10 @@
 
 namespace UI{
 
-    class CategoryInfo : public ImCategory {
+    class CategoryKeybinds : public ImCategory {
         public:
-        CategoryInfo(){
-            title = "Info";
+        CategoryKeybinds(){
+            title = "Keybinds";
         }
         void Draw() override;
 

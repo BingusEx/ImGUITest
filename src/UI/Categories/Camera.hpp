@@ -9,7 +9,6 @@ namespace UI{
         public:
         CategoryCamera(){
             title = "Camera";
-            description = "Change how the camera behaves";
         }
 
         void DrawLeft() override;

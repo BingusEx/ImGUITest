@@ -1,7 +1,6 @@
 #pragma once
 
 #include "src/UI/ImGUI/ImWindow.hpp"
-#include "src/UI/ImGUI/ImCategoryManager.hpp"
 #include "src/UI/ImGUI/ImFontManager.hpp"
 #include "src/UI/ImGUI/ImStyleManager.hpp"
 
@@ -18,7 +17,6 @@ namespace UI {
         void Draw() override;
 
         private:
-        ImCategoryManager& CatMgr = ImCategoryManager::GetSingleton();
         ImFontManager& FontMgr = ImFontManager::GetSingleton();
         ImStyleManager& StyleMgr = ImStyleManager::GetSingleton();
         Config& Settings = Config::GetSingleton();

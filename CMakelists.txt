@@ -54,11 +54,13 @@ target_link_options(${PROJECT_NAME} PUBLIC "/SUBSYSTEM:WINDOWS" "/ENTRY:mainCRTS
 find_package(Boost REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 find_package(toml11 CONFIG REQUIRED)
+find_package(spdlog CONFIG REQUIRED)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC 
 	Boost::headers
 	imgui::imgui d3d11.lib
 	toml11::toml11
+	spdlog::spdlog
 	cmake_git_version_tracking
 )
 

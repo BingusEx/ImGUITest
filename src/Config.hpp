@@ -97,7 +97,7 @@ TOML_SERIALIZABLE(InputEvent);
 //-------------------------------------------------------------------------------------------------------------------
 //  HIDDEN
 //-------------------------------------------------------------------------------------------------------------------
-//This Struct does not get saved only loaded. Enables the debug category in the ConfWindow.
+//This Struct does not get saved only loaded. Enables the advanced category in the ConfWindow.
 //If this bool is false the SettingsAdvanced struct does not get saved/loaded from the toml. Its default values are used.
 struct SettingsHidden {
     bool IKnowWhatImDoing = false;
@@ -108,13 +108,14 @@ TOML_SERIALIZABLE(SettingsHidden);
 //  DEBUG
 //-------------------------------------------------------------------------------------------------------------------
 struct SettingsAdvanced {
-    std::string sLogLevel = "error";
+    std::string sLogLevel = "err";
     std::string sFlushLevel = "trace";
     bool bProfile = false;
     bool bShowOverlay = false;
     bool bAllActorSizeEffects = false;
     bool bDamageAV = true;
     bool bCooldowns = true;
+    bool bAllocConsole = false;
 };
 TOML_SERIALIZABLE(SettingsAdvanced);
 
@@ -131,6 +132,12 @@ struct SettingsAudio {
     bool bSlowGrowMoans = true;
     bool bEnableVoiceOverride = true;
     float fMaxVoiceFrequency = 1.0f;
+
+    float fVolumeVoice = 1.0f;
+    float fVolumeEffects = 1.0f;
+    float fVolumeFootstep = 1.0f;
+    float fVolumeFootstepEffects = 1.0f;
+    float fVolumeImpacts = 1.0f;
 };
 TOML_SERIALIZABLE(SettingsAudio);
 
@@ -232,7 +239,7 @@ struct SettingsCamera {
     CameraOffsets tCOAlt = {};
 
     float fFootCameraFBOffset = 0.0;
-    
+
     bool bAutomaticCamera = true;
     std::string sAutoCameraModeFP = "kNormal";
     std::string sAutoCameraModeTP = "kDisabled";
@@ -330,7 +337,6 @@ struct AIStatefullAction {
     float fInterval = 2.0f;
 
 };
-
 TOML_SERIALIZABLE(AIStatefullAction);
 
 struct AIHugAction {
@@ -356,20 +362,33 @@ struct AIButtAction {
     float fTargetedProb = 50.0f;
     float fGrowProb = 80.0f;
     float fInterval = 2.0f;
+
+    float fGrowUntilScale = 30.0f;
 };
 TOML_SERIALIZABLE(AIButtAction);
 
 struct AIGrabAction {
     bool bEnableAction = true;
-    float fProbability = 50.0f;
+    float fProbability = 10.0f;
 
-    //TODO Add Values
+    float fThrowProb = 50.0f;
+    float fVoreProb = 50.0f;
+    float fCrushProb = 50.0f;
+    
+    float fCleavageProb = 50.0f;
+    float fCleavageAttackProb = 50.0f;
+    float fCleavageAbsorbProb = 50.0f;
+    float fCleavageSuffocateProb = 50.0f;
+
+    float fInterval = 2.0f;
+
 };
 TOML_SERIALIZABLE(AIGrabAction);
 
 struct SettingsAI {
     //Action Toggles
 
+    bool bEnableActionAI = true;
     //Main Time Interval for Selecting an Action.
     float fMasterTimer = 3.0f;
 
@@ -403,13 +422,14 @@ struct SettingsAI {
     //Complex Actions
     AIHugAction tHugs = {};
     AIButtAction tButtCrush = {};
-    AIButtAction t = {};
+    AIGrabAction tGrab = {};
 
     //Other Values
     bool bPanic = true;
     bool bCombatOnly = true;
     bool bAllowPlayer = true;
     bool bAllowFollowers = true;
+    bool bDisableAttacks = true;
 };
 TOML_SERIALIZABLE(SettingsAI);
 
@@ -437,6 +457,7 @@ TOML_SERIALIZABLE(WindowConfSettings);
 struct SettingsUI {
     std::string sDisplayUnits = "kMetric";
     float fScale = 1.0f;
+    float fItemWidth = 0.55f;
     std::array<float, 3> f3AccentColor = {0.486f, 0.431f, 0.529f};
     WindowConfSettings wSettings {};
     WindowConfStatus wStatus {};

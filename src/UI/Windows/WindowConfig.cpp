@@ -17,6 +17,7 @@
 #include "src/UI/Categories/Camera.hpp"
 #include "src/UI/Categories/Keybinds.hpp"
 #include "src/UI/Categories/General.hpp"
+#include "src/UI/Categories/Balance.hpp"
 
 
 #include "src/UI/ImGui/ImUtil.hpp"
@@ -38,6 +39,7 @@ WindowConfig::WindowConfig() {
     CatMgr.AddCategory(std::make_shared<CategoryInfo>());
     CatMgr.AddCategory(std::make_shared<CategoryGeneral>());
     CatMgr.AddCategory(std::make_shared<CategoryGameplay>());
+    CatMgr.AddCategory(std::make_shared<CategoryBalance>());
     CatMgr.AddCategory(std::make_shared<CategoryAudio>());
     CatMgr.AddCategory(std::make_shared<CategoryAI>());
     CatMgr.AddCategory(std::make_shared<CategoryCamera>());

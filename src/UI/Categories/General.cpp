@@ -17,6 +17,14 @@ void CategoryGeneral::DrawLeft(){
         ImGui::PopID();
     }
 
+    if(ImGui::CollapsingHeader("Visuals",ImUtil::HeaderFlags)){ 
+        ImUtil::CheckBox("Less Gore",&Settings.Advanced.bProfile);
+        ImUtil::CheckBox("Allocate Console",&Settings.Advanced.bAllocConsole,"Open/Close a Console Window Showing Debug Information. Needs Restart To Apply");
+        ImUtil::CheckBox("Show Debug Overlay",&Settings.Advanced.bShowOverlay);
+        
+    
+        ImGui::Spacing();
+    }
 
 
 

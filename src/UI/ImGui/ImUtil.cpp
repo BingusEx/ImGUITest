@@ -77,6 +77,34 @@ namespace ImUtil {
         }
     }
 
+    // Helper to display a little (?) mark which shows a tooltip when hovered.
+    void HelpMarker(const char* a_desc) {
+
+        ImGui::Text("[?]");
+        if (ImGui::BeginItemTooltip()){
+
+            ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+            ImGui::TextUnformatted(a_desc);
+            ImGui::PopTextWrapPos();
+            ImGui::EndTooltip();
+        }
+    }
+
+    bool ConditionalHeader(const std::string a_label, const std::string a_ConditionText, const bool a_condition){
+        ImGui::BeginDisabled(!a_condition);
+        auto flags = ImGuiTreeNodeFlags_Bullet | (a_condition ? ImGuiTreeNodeFlags_DefaultOpen : 0);
+        
+        //TODO Optimize this POS;
+        const std::string _FullText = (a_label + (a_condition ? "##" : (" [" + a_ConditionText + "]")));
+        
+        bool Res = ImGui::CollapsingHeader(_FullText.c_str(),flags);
+
+        ImGui::EndDisabled();
+
+        return Res;
+    }
+
+
 
     //------------------------------------
     //  Misc

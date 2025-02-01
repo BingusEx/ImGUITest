@@ -29,9 +29,9 @@ void CategoryAudio::DrawRight(){
     if(ImGui::CollapsingHeader("Volume Settings",ImUtil::HeaderFlags)){ 
         ImUtil::SliderF("Voices",&Settings.Audio.fVolumeVoice, 0.0f, 1.0f, "TODO: Describe me","%.2fx");
         ImUtil::SliderF("Effects",&Settings.Audio.fVolumeEffects, 0.0f, 1.0f, "TODO: Describe me","%.2fx");
-        ImUtil::SliderF("Footsteps",&Settings.Audio.fVolumeFootstep, 0.0f, 1.0f, "ODO: Describe me","%.2fx");
-        ImUtil::SliderF("Footstep Effects",&Settings.Audio.fVolumeFootstepEffects, 0.0f, 1.0f, "ODO: Describe me","%.2fx");
-        ImUtil::SliderF("Impacts",&Settings.Audio.fVolumeImpacts, 0.0f, 1.0f, "ODO: Describe me","%.2fx");
+        ImUtil::SliderF("Footsteps",&Settings.Audio.fVolumeFootstep, 0.0f, 1.0f, "TODO: Describe me","%.2fx");
+        ImUtil::SliderF("Footstep Effects",&Settings.Audio.fVolumeFootstepEffects, 0.0f, 1.0f, "TODO: Describe me","%.2fx");
+        ImUtil::SliderF("Impacts",&Settings.Audio.fVolumeImpacts, 0.0f, 1.0f, "TODO: Describe me","%.2fx");
         ImGui::Spacing();
     }
 }

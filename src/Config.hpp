@@ -39,6 +39,12 @@ enum class DisplayUnit {
     kMammoth
 };
 
+enum class SizeMode {
+    kNormal,
+    kMassBased
+};
+
+
 
 /* 
 
@@ -185,16 +191,10 @@ struct SettingsGameplay {
     float fClothRipStart = 1.5f;
     float fClothRipThreshold = 2.2f;
 
-    //----------- Size Limits
-    float fMaxPlayerSize = 1.0f;
-    float fMaxFollowerSize = 1.0f;
-    float fMaxOtherSize = 1.0f;
-
     //----------- Perks
     bool bEnableCrushGrowth = true;
     bool bEnableFOVEdits = false;
     bool bEnableGrowthOnHit = false;
-
 
     //----------- Other
     bool bDynamicSize = true;
@@ -233,8 +233,6 @@ struct SettingsCamera {
     float fFPCrawlHeightMult = 0.40f;
     float fTPCrawlHeightMult = 0.40f;
     
-    int ActiveCamera = 0;
-    
     CameraOffsets tCONormal = {};
     CameraOffsets tCOAlt = {};
 
@@ -265,18 +263,28 @@ TOML_SERIALIZABLE(SettingsCamera);
 //-------------------------------------------------------------------------------------------------------------------
 struct SettingsBalance {
 
-    std::string sSizeFormula = "kNormal";
+    std::string sSizeMode = "kNormal";
+    float fSpellEfficiency = 0.55f;     
+
     float fSizeDamageMult = 1.0f;
     float fExpMult = 1.0f;
-    float fShrinkOnHitMult = 1.0f;      //Is this a mult?
-    float fSizeConvLevelCap = 1.0f;     //Is this a perk?
-    float fSpellEfficiency = 0.55f;     
-    float fStatBonusDamageMult = 1.0f;  //What does this do?
+    float fBMShrinkOnHitMult = 1.0f;
+    float fSizeConvLevelCap = 1.0f;
+
+    //Attack Damage mult
+    float fStatBonusDamageMult = 1.0f;
+
     bool bPlayerFriendlyImmunity = false;
-    bool bOthersFriendlyImmunity = false;
-    bool bAllowStagger = true;
+    bool bFollowerFriendlyImmunity = false;
+    bool bAllowFriendlyStagger = true;
+    bool bAllowOthersStagger = true;
+
+    //----------- Size Limits
+    float fMaxPlayerSize = 1.0f;
+    float fMaxFollowerSize = 1.0f;
+    float fMaxOtherSize = 1.0f;
     
-    //Balance mode vars
+    //----------- Balance mode vars
     bool bBalanceMode = false;
     float fBMSizeGainPenaltyMult = 1.0f;
     float fBMShrinkRate = 1.0f;

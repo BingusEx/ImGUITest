@@ -6,7 +6,6 @@ using namespace UI;
 
 void ImCategorySplit::Draw() {
 
-    constexpr float wMult = 0.55f;
     const auto WMult = Config::GetSingleton().UI.fItemWidth;
     {   //Left
         const std::string SpltNam = title + "##SLeft";

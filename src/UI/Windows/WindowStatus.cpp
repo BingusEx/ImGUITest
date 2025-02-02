@@ -23,7 +23,7 @@ inline void DrawInfo(/*Actor* TargetActor */){
     std::string res = std::format("{:.2f}m",_currentScale * 1.82f);
 
     float _aspectOfGTS = 43.0f;
-    float _weight = 243.43;
+    float _weight = 243.43f;
 
     float _damageResist = 12.0f;
     float _carryWeight = 220.0f;

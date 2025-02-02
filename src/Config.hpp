@@ -7,45 +7,6 @@
 void Test();
 //TODO Move/Replace this eventually
 
-enum class CameraTrackingUsr {
-    kNone,
-    kSpine,
-    kClavicle,
-    kBreasts_01,
-    kBreasts_02,
-    kBreasts_03, // 3BBB tip
-    kNeck,
-    kButt,
-};
-
-enum class CameraModeTP {
-    kDisabled,
-    kNormal,
-    kAlternative,
-    kFootLeft,
-    kFootRight,
-    kFeetCenter
-};
-
-enum class CameraModeFP {
-    kNormal,
-    kCombat,
-    kLoot
-};
-
-enum class DisplayUnit {
-    kMetric,
-    kImperial,
-    kMammoth
-};
-
-enum class SizeMode {
-    kNormal,
-    kMassBased
-};
-
-
-
 /* 
 
 C++ lacks proper reflection support.
@@ -98,119 +59,84 @@ struct InputEvent {
 //TOML11_DEFINE_CONVERSION_NON_INTRUSIVE(InputEvent, Event, Keys, Exclusive, Duration, BlockInput)
 TOML_SERIALIZABLE(InputEvent);
 
-
-
 //-------------------------------------------------------------------------------------------------------------------
-//  HIDDEN
+//  ENUMS ----- Assumed to be the reference values 
+//  magic_enum will use to convert an enum to a string representation for serialization (Saving The TOML)
 //-------------------------------------------------------------------------------------------------------------------
-//This Struct does not get saved only loaded. Enables the advanced category in the ConfWindow.
-//If this bool is false the SettingsAdvanced struct does not get saved/loaded from the toml. Its default values are used.
-struct SettingsHidden {
-    bool IKnowWhatImDoing = false;
+
+//TODO THESE SHOULD NOT BE HERE
+enum class CameraTrackingUsr {
+    kNone,
+    kSpine,
+    kClavicle,
+    kBreasts_01,
+    kBreasts_02,
+    kBreasts_03, // 3BBB tip
+    kNeck,
+    kButt,
 };
-TOML_SERIALIZABLE(SettingsHidden);
 
-//-------------------------------------------------------------------------------------------------------------------
-//  DEBUG
-//-------------------------------------------------------------------------------------------------------------------
-struct SettingsAdvanced {
-    std::string sLogLevel = "err";
-    std::string sFlushLevel = "trace";
-    bool bProfile = false;
-    bool bShowOverlay = false;
-    bool bAllActorSizeEffects = false;
-    bool bDamageAV = true;
-    bool bCooldowns = true;
-    bool bAllocConsole = false;
+enum class CameraModeTP {
+    kDisabled,
+    kNormal,
+    kAlternative,
+    kFootLeft,
+    kFootRight,
+    kFeetCenter
 };
-TOML_SERIALIZABLE(SettingsAdvanced);
 
-
-//-------------------------------------------------------------------------------------------------------------------
-//  AUDIO
-//-------------------------------------------------------------------------------------------------------------------
-struct SettingsAudio {
-    // Footstep
-    bool bFootstepSounds = true;
-    bool bUseOldSounds = false;
-
-    //Voice
-    bool bSlowGrowMoans = true;
-    bool bEnableVoiceOverride = true;
-    float fMaxVoiceFrequency = 1.0f;
-
-    float fVolumeVoice = 1.0f;
-    float fVolumeEffects = 1.0f;
-    float fVolumeFootstep = 1.0f;
-    float fVolumeFootstepEffects = 1.0f;
-    float fVolumeImpacts = 1.0f;
+enum class CameraModeFP {
+    kNormal,
+    kCombat,
+    kLoot
 };
-TOML_SERIALIZABLE(SettingsAudio);
+
+enum class DisplayUnit {
+    kMetric,
+    kImperial,
+    kMammoth
+};
+
+enum class SizeMode {
+    kNormal,
+    kMassBased
+};
+
+enum class GameMode {
+    kNone,
+    kGrow,
+    kShrink,
+    kCombatGrowth,
+    kSlowCombatGrowth,          //Curse of growth already exists as random growth, its superfluous
+    kCurseOfTheGiantess,        //<------- TODO Implement these... AKA: Just take them from my dll
+    kCurseOfDiminishing,
+    kCurseOfTheDiminishingGiantess //<-------------- Combines both
+};
+
+
 
 //-------------------------------------------------------------------------------------------------------------------
-//  GAMEPLAY
+//  CHILD STRUCTS ----- Not Directly Serialized, But are part of another struct.
 //-------------------------------------------------------------------------------------------------------------------
+
+//------------------------------------------- Gameplay
 struct GameplayActorSettings {
     float fRandomGrowthDelay = 1.0f;
     std::string sGameMode = "kNone";
     float fGrowthRate = 0.001f;
     float fShrinkRate = 0.001f;
     float fGrowthSizeLimit = 25.0f;
+
+    //Curses
+    float fCurseTargetScale = 1.5f;
+
+    float fUpdateInterval = 3.0f;
     bool bMultiplyGrowthrate = false;
 };
 TOML_SERIALIZABLE(GameplayActorSettings);
 
 
-struct SettingsGeneral {
-    // ---------- Visuals
-    bool bLessGore = false;
-    bool bUseMetric = true;
-
-    // ---------- Compatibility
-    bool bDevourmentCompat = false;
-    bool bConversationCamCompat = false;
-};
-TOML_SERIALIZABLE(SettingsGeneral);
-
-struct SettingsGameplay {
-
-    // ---------- Protect
-    bool bProtectEssentials = true;
-    bool bProtectFollowers = true;
-
-    //---------- Gamemode
-    GameplayActorSettings tGamemodePlayer = {};
-    GameplayActorSettings tGamemodeFollower = {};
-
-    //---------- Size Effects
-    bool bAdditionalEffects = true;
-    bool bFollowerEffects = true;
-
-    //---------- Cloth Tearing
-    bool bClothTearing = true;
-    float fClothRipStart = 1.5f;
-    float fClothRipThreshold = 2.2f;
-
-    //----------- Perks
-    bool bEnableCrushGrowth = true;
-    bool bEnableFOVEdits = false;
-    bool bEnableGrowthOnHit = false;
-
-    //----------- Other
-    bool bDynamicSize = true;
-    bool bDynamicAnimspeed = true;
-    bool bEnableHighHeels = true;
-    bool bHighheelsFurniture = true;
-    bool bLaunchObjects = false;
-    bool bLaunchAllCells = false;
-    bool bEnableMales = false;
-
-};
-TOML_SERIALIZABLE(SettingsGameplay);
-
-//-------------------------------------------------------------------------------------------------------------------
-//  CAMERA
-//-------------------------------------------------------------------------------------------------------------------
+//------------------------------------------- Camera
 struct CameraOffsets {
     std::string sCenterOnBone = "kNone";
 
@@ -226,109 +152,8 @@ struct CameraOffsets {
 };
 TOML_SERIALIZABLE(CameraOffsets);
 
-//Camera Category Settings
-struct SettingsCamera {
-    float fCameraShakePlayer = 1.0f;
-    float fCameraShakeOther = 1.0f;
-    float fFPCrawlHeightMult = 0.40f;
-    float fTPCrawlHeightMult = 0.40f;
-    
-    CameraOffsets tCONormal = {};
-    CameraOffsets tCOAlt = {};
 
-    float fFootCameraFBOffset = 0.0;
-
-    bool bAutomaticCamera = true;
-    std::string sAutoCameraModeFP = "kNormal";
-    std::string sAutoCameraModeTP = "kDisabled";
-
-    //TODO These Should be Hooks Not Ini Settings
-    float fCameraDistMin = 6.0f;
-    float fCameraDistMax = 400.0f;
-    float fCameraZoom = 20.0f;
-    float fCameraStep = 0.075f;
-
-    bool bCamCollideActor = false;
-    bool bCamCollideTree = false;
-    bool bCamCollideDebris = true;
-    bool bCamCollideTerrain = true;
-    bool bCamCollideStatics = true;
-    float fModifyCamCollideAt = 3.0f;
-
-};
-TOML_SERIALIZABLE(SettingsCamera);
-
-//-------------------------------------------------------------------------------------------------------------------
-//  BALANCE
-//-------------------------------------------------------------------------------------------------------------------
-struct SettingsBalance {
-
-    std::string sSizeMode = "kNormal";
-    float fSpellEfficiency = 0.55f;     
-
-    float fSizeDamageMult = 1.0f;
-    float fExpMult = 1.0f;
-    float fBMShrinkOnHitMult = 1.0f;
-    float fSizeConvLevelCap = 1.0f;
-
-    //Attack Damage mult
-    float fStatBonusDamageMult = 1.0f;
-
-    bool bPlayerFriendlyImmunity = false;
-    bool bFollowerFriendlyImmunity = false;
-    bool bAllowFriendlyStagger = true;
-    bool bAllowOthersStagger = true;
-
-    //----------- Size Limits
-    float fMaxPlayerSize = 1.0f;
-    float fMaxFollowerSize = 1.0f;
-    float fMaxOtherSize = 1.0f;
-    
-    //----------- Balance mode vars
-    bool bBalanceMode = false;
-    float fBMSizeGainPenaltyMult = 1.0f;
-    float fBMShrinkRate = 1.0f;
-    float fBMShrinkRateCombat = 0.08f;
-};
-TOML_SERIALIZABLE(SettingsBalance);
-
-//-------------------------------------------------------------------------------------------------------------------
-//  ACTIONS
-//-------------------------------------------------------------------------------------------------------------------
-struct SettingsActions {
-    bool bStompAlternative = false;
-    bool bStomAlternativeOther = false;
-
-    bool bSneakTransitions = true;
-    bool bSneakTransitionsOther = true;
-
-    bool bCrawl = true;
-    bool bCrawlOther = true;
-
-    //Todo Experimental Needs to be implemented first. This is a reminder to do it.
-    bool bLayeredSneak = false;
-
-    bool bTrackBones = true;
-
-    bool bVoreFreecam = false;
-    bool bVoreWeightGain = false;
-
-    bool bAllowSpiders = false;
-    bool bAllowUndead = false;
-
-    bool bShowHearts = true;
-    bool bShowIcons = true;
-    
-    //Forward/Back and Up/Down
-    std::array<float,2> f2CleavageOffset = {0.0f, 0.0f};
-};
-TOML_SERIALIZABLE(SettingsActions);
-
-
-//-------------------------------------------------------------------------------------------------------------------
-//  AI
-//-------------------------------------------------------------------------------------------------------------------
-
+//------------------------------------------- AI
 struct AIStatelessAction {
     bool bEnableAction = true;
     float fProbability = 50.0f;
@@ -393,6 +218,230 @@ struct AIGrabAction {
 };
 TOML_SERIALIZABLE(AIGrabAction);
 
+//------------------------------------------- Interface/UI
+struct WindowConfStatus {
+    bool bLock = true;
+    std::array<float, 2> f2Offset = {20.0f, 20.0f};
+    std::string sAnchor = "kTopRight";
+    bool bVisible = false;
+    float fAlpha = 1.0f;
+    uint32_t iDisplayItems = UINT32_MAX;
+};
+TOML_SERIALIZABLE(WindowConfStatus);
+
+struct WindowConfSettings {
+    bool bLock = true;
+    std::array<float, 2> f2Offset = {0.0f, 0.0f};
+    std::string sAnchor = "kCenter";
+    float fWindowSize = 80.f;
+};
+TOML_SERIALIZABLE(WindowConfSettings);
+
+//-------------------------------------------------------------------------------------------------------------------
+//  PARENT STRUCTS ----- Get directly serialized are assumed to have instances in the config singleton.
+//-------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------
+//  HIDDEN
+//-------------------------------------------------------------------------------------------------------------------
+//This Struct does not get saved only loaded. Enables the advanced category in the ConfWindow.
+//If this bool is false the SettingsAdvanced struct does not get saved/loaded from the toml. Its default values are used.
+struct SettingsHidden {
+    bool IKnowWhatImDoing = false;
+};
+TOML_SERIALIZABLE(SettingsHidden);
+
+//-------------------------------------------------------------------------------------------------------------------
+//  DEBUG
+//-------------------------------------------------------------------------------------------------------------------
+struct SettingsAdvanced {
+    std::string sLogLevel = "err";
+    std::string sFlushLevel = "trace";
+    bool bProfile = false;
+    bool bShowOverlay = false;
+    bool bAllActorSizeEffects = false;
+    bool bDamageAV = true;
+    bool bCooldowns = true;
+    bool bAllocConsole = false;
+};
+TOML_SERIALIZABLE(SettingsAdvanced);
+
+
+//-------------------------------------------------------------------------------------------------------------------
+//  AUDIO
+//-------------------------------------------------------------------------------------------------------------------
+struct SettingsAudio {
+    // Footstep
+    bool bFootstepSounds = true;
+    bool bUseOldSounds = false;
+
+    //Voice
+    bool bSlowGrowMoans = true;
+    bool bEnableVoiceOverride = true;
+    float fMaxVoiceFrequency = 1.0f;
+
+    float fVolumeVoice = 1.0f;
+    float fVolumeEffects = 1.0f;
+    float fVolumeFootstep = 1.0f;
+    float fVolumeFootstepEffects = 1.0f;
+    float fVolumeImpacts = 1.0f;
+};
+TOML_SERIALIZABLE(SettingsAudio);
+
+//-------------------------------------------------------------------------------------------------------------------
+//  GENERAL
+//-------------------------------------------------------------------------------------------------------------------
+
+struct SettingsGeneral {
+    // ---------- Visuals
+    bool bLessGore = false;
+    bool bShowHearts = true;
+    bool bShowIcons = true;
+
+    // ---------- Compatibility
+    bool bDevourmentCompat = false;
+    bool bConversationCamCompat = false;
+
+    // ---------- Protect
+    bool bProtectEssentials = true;
+    bool bProtectFollowers = true;
+
+    //----------- Other
+    bool bDynamicSize = true;
+    bool bDynamicAnimspeed = true;
+    bool bEnableHighHeels = true;
+    bool bHighheelsFurniture = true;
+    bool bEnableMales = false;
+    bool bEnableFOVEdits = false;
+
+    //----------- Misc
+    //Todo Experimental Idea Needs to be implemented first. This is a reminder to do it.
+    bool bLayeredSneak = false;
+};
+TOML_SERIALIZABLE(SettingsGeneral);
+
+//-------------------------------------------------------------------------------------------------------------------
+//  GAMEPLAY
+//-------------------------------------------------------------------------------------------------------------------
+
+struct SettingsGameplay {
+    //---------- Gamemode
+    GameplayActorSettings tGamemodePlayer = {};
+    GameplayActorSettings tGamemodeFollower = {};
+
+    //---------- Size Effects
+    bool bAdditionalEffects = true;
+    bool bFollowerEffects = true;
+    bool bLaunchObjects = false;
+    bool bLaunchAllCells = false;
+
+    //---------- Cloth Tearing
+    bool bClothTearing = true;
+    float fClothRipStart = 1.5f;
+    float fClothRipThreshold = 2.2f;
+
+    //----------- Perks
+    bool bEnableCrushGrowth = true;
+    bool bEnableGrowthOnHit = false;
+    float fSizeConvLevelCap = 1.0f;
+
+    //----------- Animations
+    bool bStompAlternative = false;
+    bool bStomAlternativeOther = false;
+    bool bSneakTransitions = true;
+    bool bSneakTransitionsOther = true;
+
+    //These Two Should Be Saved In persistent, Actually Not Needed at all graph vars are saved in the save
+    // bool bCrawl = true; <---------------------- TODO Move To Info Page and place checkbox at Each Active Actor
+    // bool bCrawlOther = true; --- Same here
+
+    bool bTrackBones = true;
+
+    //----------- Vore
+    float fVoreGainMult = 1.0f;
+    bool bVoreFreecam = false;
+    bool bVoreWeightGain = false;
+    bool bAllowSpiders = false;
+    bool bAllowUndead = false;
+
+    //------------ Forward/Back and Up/Down
+    std::array<float,2> f2CleavageOffset = {0.0f, 0.0f};
+
+};
+TOML_SERIALIZABLE(SettingsGameplay);
+
+//-------------------------------------------------------------------------------------------------------------------
+//  CAMERA
+//-------------------------------------------------------------------------------------------------------------------
+
+struct SettingsCamera {
+    float fCameraShakePlayer = 1.0f;
+    float fCameraShakeOther = 1.0f;
+    float fFPCrawlHeightMult = 0.40f;
+    float fTPCrawlHeightMult = 0.40f;
+    
+    CameraOffsets tCONormal = {};
+    CameraOffsets tCOAlt = {};
+
+    float fFootCameraFBOffset = 0.0;
+
+    bool bAutomaticCamera = true;
+    std::string sAutoCameraModeFP = "kNormal";
+    std::string sAutoCameraModeTP = "kDisabled";
+
+    //TODO These Should be Hooks Not Ini Settings
+    float fCameraDistMin = 6.0f;
+    float fCameraDistMax = 400.0f;
+    float fCameraZoom = 20.0f;
+    float fCameraStep = 0.075f;
+
+    bool bCamCollideActor = false;
+    bool bCamCollideTree = false;
+    bool bCamCollideDebris = true;
+    bool bCamCollideTerrain = true;
+    bool bCamCollideStatics = true;
+    float fModifyCamCollideAt = 3.0f;
+
+};
+TOML_SERIALIZABLE(SettingsCamera);
+
+//-------------------------------------------------------------------------------------------------------------------
+//  BALANCE
+//-------------------------------------------------------------------------------------------------------------------
+
+struct SettingsBalance {
+
+    std::string sSizeMode = "kNormal";
+    float fSpellEfficiency = 0.55f;     
+
+    float fSizeDamageMult = 1.0f;
+    float fExpMult = 1.0f;
+
+    //Attack Damage mult
+    float fStatBonusDamageMult = 1.0f;
+
+    bool bPlayerFriendlyImmunity = false;
+    bool bFollowerFriendlyImmunity = false;
+    bool bAllowFriendlyStagger = true;
+    bool bAllowOthersStagger = true;
+
+    //----------- Size Limits
+    float fMaxPlayerSize = 1.0f;
+    float fMaxFollowerSize = 1.0f;
+    float fMaxOtherSize = 1.0f;
+    
+    //----------- Balance mode vars
+    bool bBalanceMode = false;
+    float fBMSizeGainPenaltyMult = 1.0f;
+    float fBMShrinkRate = 1.0f;
+    float fBMShrinkRateCombat = 0.08f;
+    float fBMShrinkOnHitMult = 1.0f;
+};
+TOML_SERIALIZABLE(SettingsBalance);
+
+//-------------------------------------------------------------------------------------------------------------------
+//  AI
+//-------------------------------------------------------------------------------------------------------------------
+
 struct SettingsAI {
     //Action Toggles
 
@@ -444,23 +493,6 @@ TOML_SERIALIZABLE(SettingsAI);
 //-------------------------------------------------------------------------------------------------------------------
 //  UI
 //-------------------------------------------------------------------------------------------------------------------
-struct WindowConfStatus {
-    bool bLock = true;
-    std::array<float, 2> f2Offset = {20.0f, 20.0f};
-    std::string sAnchor = "kTopRight";
-    bool bVisible = false;
-    float fAlpha = 1.0f;
-    uint32_t iDisplayItems = UINT32_MAX;
-};
-TOML_SERIALIZABLE(WindowConfStatus);
-
-struct WindowConfSettings {
-    bool bLock = true;
-    std::array<float, 2> f2Offset = {0.0f, 0.0f};
-    std::string sAnchor = "kCenter";
-    float fWindowSize = 80.f;
-};
-TOML_SERIALIZABLE(WindowConfSettings);
 
 struct SettingsUI {
     std::string sDisplayUnits = "kMetric";
@@ -476,7 +508,7 @@ class Config {
     public:
     //Create structs with default values.
     //These act as sane defaults in case new data is loaded or the toml itself is corrupted.
-    SettingsActions Actions = {};
+    SettingsGeneral General = {};
     SettingsAdvanced Advanced = {};
     SettingsAI AI = {};
     SettingsAudio Audio = {};
@@ -509,6 +541,10 @@ class Config {
             
     private:
     
+
+    const std::string FileDescription = "";
+
+
     const std::string _ConfigFile = "Settings.toml";
     //Should be a relative path to the dll. Combined this should be \\Data\\SKSE\\Plugins\\GTSPlugin
     const std::string _Subfolder = "GTSPlugin"; 

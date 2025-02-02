@@ -9,11 +9,11 @@
 
 namespace UI {
 
-    class WindowConfig : public ImWindow {
+    class WindowSettings : public ImWindow {
 
         public:
         
-        WindowConfig();
+        WindowSettings();
 
         void Draw() override;
 
@@ -33,6 +33,9 @@ namespace UI {
         ImCategoryManager& CatMgr = ImCategoryManager::GetSingleton();
         ImFontManager& FontMgr = ImFontManager::GetSingleton();
         ImStyleManager& StyleMgr = ImStyleManager::GetSingleton();
+
         Config& Settings = Config::GetSingleton();
+        const SettingsHidden& sHidden = Config::GetHidden();
+        const WindowConfSettings& sUI= Config::GetUI().wSettings;
     };
 }

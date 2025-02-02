@@ -62,13 +62,13 @@ WindowStatus::WindowStatus() {
 void WindowStatus::Draw() {
 
 
-    flags = (Settings.UI.wStatus.bLock ? (flags | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove) : (flags & ~ImGuiWindowFlags_NoResize & ~ImGuiWindowFlags_NoMove));
+    flags = (sUI.bLock ? (flags | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove) : (flags & ~ImGuiWindowFlags_NoResize & ~ImGuiWindowFlags_NoMove));
 
     //Handle Fixed Position and Size
-    if(Settings.UI.wStatus.bLock){
+    if(sUI.bLock){
         //X,Y
-        const ImVec2 Offset {Settings.UI.wStatus.f2Offset[0], Settings.UI.wStatus.f2Offset[1]};
-        ImGui::SetWindowPos(GetAnchorPos(Config::StringToEnum<ImWindow::WindowAnchor>(Settings.UI.wStatus.sAnchor), Offset));
+        const ImVec2 Offset {sUI.f2Offset[0], sUI.f2Offset[1]};
+        ImGui::SetWindowPos(GetAnchorPos(Config::StringToEnum<ImWindow::WindowAnchor>(sUI.sAnchor), Offset));
         
     }
     

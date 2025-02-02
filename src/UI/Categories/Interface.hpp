@@ -21,10 +21,7 @@ namespace UI {
         private:
         ImStyleManager& StyleMgr = ImStyleManager::GetSingleton();
         ImFontManager& FontMgr = ImFontManager::GetSingleton();
-        Config& Settings = Config::GetSingleton();
-
-        void ConfigureWindow(const std::string& a_WindowName, const std::string& a_Friendlyname);
-
+        SettingsUI& Settings = Config::GetUI();
     };
 
 }

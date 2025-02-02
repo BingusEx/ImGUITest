@@ -8,14 +8,14 @@ using namespace UI;
 void CategoryBalance::DrawLeft(){
 
     if(ImGui::CollapsingHeader("Balance Mode",ImUtil::HeaderFlags)){ 
-        ImUtil::CheckBox("Enable Balance Mode",&Settings.Balance.bBalanceMode, "TODO: Explain What Balance mode does");
+        ImUtil::CheckBox("Enable Balance Mode",&Settings.bBalanceMode, "TODO: Explain What Balance mode does");
 
-        ImGui::BeginDisabled(!Settings.Balance.bBalanceMode);
+        ImGui::BeginDisabled(!Settings.bBalanceMode);
 
-        ImUtil::SliderF("Size Gain Penalty",&Settings.Balance.fBMSizeGainPenaltyMult, 1.0f, 10.0f,"Penalty multiplier to all size gain if balance mode is enabled","%.2fx");
-        ImUtil::SliderF("Shrink Rate",&Settings.Balance.fBMShrinkRate, 1.0f, 10.0f,"TODO: Description","%.2fx");
-        ImUtil::SliderF("Shrink Rate Combat",&Settings.Balance.fBMShrinkRateCombat, 0.01f, 1.0f,"TODO: Description","%.2fx");
-        ImUtil::SliderF("Shrink On Hit",&Settings.Balance.fBMShrinkOnHitMult, 0.01f, 2.0f,"TODO: Description","%.2fx");
+        ImUtil::SliderF("Size Gain Penalty",&Settings.fBMSizeGainPenaltyMult, 1.0f, 10.0f,"Penalty multiplier to all size gain if balance mode is enabled","%.2fx");
+        ImUtil::SliderF("Shrink Rate",&Settings.fBMShrinkRate, 1.0f, 10.0f,"TODO: Description","%.2fx");
+        ImUtil::SliderF("Shrink Rate Combat",&Settings.fBMShrinkRateCombat, 0.01f, 1.0f,"TODO: Description","%.2fx");
+        ImUtil::SliderF("Shrink On Hit",&Settings.fBMShrinkOnHitMult, 0.01f, 2.0f,"TODO: Description","%.2fx");
         
         ImGui::EndDisabled();
         
@@ -24,10 +24,10 @@ void CategoryBalance::DrawLeft(){
 
     if(ImGui::CollapsingHeader("Misc Settings",ImUtil::HeaderFlags)){ 
         
-        ImUtil::CheckBox("Player Size Damage Immunity",&Settings.Balance.bPlayerFriendlyImmunity,"Should the player recieve size related damage");
-        ImUtil::CheckBox("Followers Size Damage Immunity",&Settings.Balance.bFollowerFriendlyImmunity,"Should followers recieve size related damage");
-        ImUtil::CheckBox("Allow Friendly Stagger",&Settings.Balance.bAllowFriendlyStagger,"Should the player and followers stagger / ragdoll due to others' size");
-        ImUtil::CheckBox("Allow Stagger",&Settings.Balance.bAllowOthersStagger, "Should other NPCs stagger / ragdoll due to others' size");
+        ImUtil::CheckBox("Player Size Damage Immunity",&Settings.bPlayerFriendlyImmunity,"Should the player recieve size related damage");
+        ImUtil::CheckBox("Followers Size Damage Immunity",&Settings.bFollowerFriendlyImmunity,"Should followers recieve size related damage");
+        ImUtil::CheckBox("Allow Friendly Stagger",&Settings.bAllowFriendlyStagger,"Should the player and followers stagger / ragdoll due to others' size");
+        ImUtil::CheckBox("Allow Stagger",&Settings.bAllowOthersStagger, "Should other NPCs stagger / ragdoll due to others' size");
         
         ImGui::Spacing();
     }
@@ -38,13 +38,13 @@ void CategoryBalance::DrawRight(){
 
     if(ImGui::CollapsingHeader("Size Options",ImUtil::HeaderFlags)){ 
 
-        if(ImUtil::ComboEx<SizeMode>("Size Gain Mode",Settings.Balance.sSizeMode,"TODO:Describe Me")){
+        if(ImUtil::ComboEx<SizeMode>("Size Gain Mode",Settings.sSizeMode,"TODO:Describe Me")){
             //TODO These should be enum compares....
-            if(Settings.Balance.sSizeMode == "kNormal") Settings.Balance.fSpellEfficiency = 0.55f;
-            if(Settings.Balance.sSizeMode == "kMassBased") Settings.Balance.fSpellEfficiency = 0.33f;
+            if(Settings.sSizeMode == "kNormal") Settings.fSpellEfficiency = 0.55f;
+            if(Settings.sSizeMode == "kMassBased") Settings.fSpellEfficiency = 0.33f;
         }
 
-        ImUtil::SliderF("Efficiency Mult",&Settings.Balance.fSpellEfficiency,0.1f, 1.0f,"Adjust the global multiplier for all size gains / losses","%.2fx");
+        ImUtil::SliderF("Efficiency Mult",&Settings.fSpellEfficiency,0.1f, 1.0f,"Adjust the global multiplier for all size gains / losses","%.2fx");
         
         ImGui::Spacing();
     }
@@ -58,7 +58,7 @@ void CategoryBalance::DrawRight(){
         const float Min = 0.0;
 
         {   //Player Size
-            float* Scale = &Settings.Balance.fMaxPlayerSize;
+            float* Scale = &Settings.fMaxPlayerSize;
             const bool ShouldBeInf = *Scale > Max - 1.0f;
             const bool ShouldBeAuto = *Scale < Min + 1.0f;
 
@@ -87,7 +87,7 @@ void CategoryBalance::DrawRight(){
 
         {   //Max Follower Size
             
-            float* Scale = &Settings.Balance.fMaxFollowerSize;
+            float* Scale = &Settings.fMaxFollowerSize;
             const bool ShouldBeInf = *Scale > Max - 1.0f;
             const bool ShouldBeAuto = *Scale < Min + 1.0f;
 
@@ -113,7 +113,7 @@ void CategoryBalance::DrawRight(){
         
         {   //Other NPC Max Size
             
-            float* Scale = &Settings.Balance.fMaxOtherSize;
+            float* Scale = &Settings.fMaxOtherSize;
             const bool ShouldBeInf = *Scale > Max - 1.0f;
             const bool ShouldBeAuto = *Scale < Min + 1.0f;
 
@@ -142,9 +142,9 @@ void CategoryBalance::DrawRight(){
 
     if(ImGui::CollapsingHeader("Multipiers",ImUtil::HeaderFlags)){ 
 
-        ImUtil::SliderF("Size Damage Mult",&Settings.Balance.fSizeDamageMult,0.1f, 2.0f,"Changes the ammount of damage size related actions do","%.2fx");
-        ImUtil::SliderF("Damage Mult",&Settings.Balance.fStatBonusDamageMult,0.1f, 2.0f,"Changes the ammount of damage increase gained for normal attacks","%.2fx");
-        ImUtil::SliderF("Experience Mult",&Settings.Balance.fExpMult,0.1f, 5.0f,"Adjust the speed at which you gain","%.2fx");
+        ImUtil::SliderF("Size Damage Mult",&Settings.fSizeDamageMult,0.1f, 2.0f,"Changes the ammount of damage size related actions do","%.2fx");
+        ImUtil::SliderF("Damage Mult",&Settings.fStatBonusDamageMult,0.1f, 2.0f,"Changes the ammount of damage increase gained for normal attacks","%.2fx");
+        ImUtil::SliderF("Experience Mult",&Settings.fExpMult,0.1f, 5.0f,"Adjust the speed at which you gain","%.2fx");
         
         ImGui::Spacing();
     }

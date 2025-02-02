@@ -6,7 +6,7 @@ namespace ImUtil {
     //  Modified/Extended Imgui Controls
     //------------------------------------
 
-    bool Button(const char* a_label, const char* a_Tooltip, const bool a_disabled, const float a_padding){
+    const bool Button(const char* a_label, const char* a_Tooltip, const bool a_disabled, const float a_padding){
         
         const float paddingX = ImGui::GetStyle().FramePadding.x;
         const float paddingY = ImGui::GetStyle().FramePadding.y;
@@ -22,7 +22,7 @@ namespace ImUtil {
         return res;
     }
 
-    bool CheckBox(const char* a_label, bool* a_state, const char* a_Tooltip, const bool a_disabled){
+    const bool CheckBox(const char* a_label, bool* a_state, const char* a_Tooltip, const bool a_disabled){
         ImGui::BeginDisabled(a_disabled);
         const bool res = ImGui::Checkbox(a_label,a_state);
         if (ImGui::IsItemHovered() && a_Tooltip){
@@ -32,7 +32,7 @@ namespace ImUtil {
         return res;
     }
 
-    bool SliderF(const char* a_label, float* a_value, float a_min, float a_max, const char* a_Tooltip, const char* fmt, const bool a_disabled){
+    const bool SliderF(const char* a_label, float* a_value, float a_min, float a_max, const char* a_Tooltip, const char* fmt, const bool a_disabled){
         ImGui::BeginDisabled(a_disabled);
         const bool res = ImGui::SliderFloat(a_label, a_value, a_min, a_max, fmt, ImGuiSliderFlags_AlwaysClamp);
 
@@ -43,7 +43,7 @@ namespace ImUtil {
         return res;
     }
 
-    bool SliderF3(const char* a_label, float* a_value, float a_min, float a_max, const char* a_Tooltip, const char* fmt, const bool a_disabled){
+    const bool SliderF3(const char* a_label, float* a_value, float a_min, float a_max, const char* a_Tooltip, const char* fmt, const bool a_disabled){
         ImGui::BeginDisabled(a_disabled);
         const bool res = ImGui::SliderFloat3(a_label, a_value, a_min, a_max, fmt, ImGuiSliderFlags_AlwaysClamp);
 
@@ -54,7 +54,7 @@ namespace ImUtil {
         return res;
     }
 
-    bool SliderF2(const char* a_label, float* a_value, float a_min, float a_max, const char* a_Tooltip, const char* fmt, const bool a_disabled){
+    const bool SliderF2(const char* a_label, float* a_value, float a_min, float a_max, const char* a_Tooltip, const char* fmt, const bool a_disabled){
         ImGui::BeginDisabled(a_disabled);
         const bool res = ImGui::SliderFloat2(a_label, a_value, a_min, a_max, fmt, ImGuiSliderFlags_AlwaysClamp);
 
@@ -90,7 +90,7 @@ namespace ImUtil {
         }
     }
 
-    bool ConditionalHeader(const std::string a_label, const std::string a_ConditionText, const bool a_condition){
+    const bool ConditionalHeader(const std::string a_label, const std::string a_ConditionText, const bool a_condition){
         ImGui::BeginDisabled(!a_condition);
         auto flags = ImGuiTreeNodeFlags_Bullet | (a_condition ? ImGuiTreeNodeFlags_DefaultOpen : 0);
         
@@ -111,7 +111,7 @@ namespace ImUtil {
     //------------------------------------
 
     // Helper function to pretty-print enum names
-    std::string HumanizeEnum(std::string_view name) {
+    const std::string HumanizeEnum(std::string_view name) {
         if (name.empty()) {
             return {};
         }

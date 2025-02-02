@@ -11,7 +11,10 @@
 #pragma warning( disable : 4101) //Yes, Yes MSVC. Thank you for telling me something i already know ffs.
 
 
-
+//BIG TODO: Needs Async
+// Loading Takes ~160ms
+// Saving Takes ~25-30ms
+// FFS...
 
 
 /// @brief Given a parsed toml file and struct, tries to update the structs contents from the loaded toml table. If one or more elements can't be loaded it defaults to the default value found in the struct.

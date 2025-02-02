@@ -14,7 +14,7 @@ namespace UI{
         void Draw() override;
 
         private:
-        Config& Settings = Config::GetSingleton();
+        SettingsHidden& Settings = Config::GetHidden();
     };
 
 }

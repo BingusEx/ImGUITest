@@ -35,7 +35,7 @@ void ImFontManager::BuildFontsInt(){
     fontAtlas->Clear();
     fontAtlas->AddFontDefault();
     for(auto& font : Fonts){
-        font.second->font = fontAtlas->AddFontFromFileTTF(font.second->path.c_str(), font.second->size * Settings.UI.fScale, font.second->conf);
+        font.second->font = fontAtlas->AddFontFromFileTTF(font.second->path.c_str(), font.second->size * Settings.fScale, font.second->conf);
     }
 }
 

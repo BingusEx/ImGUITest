@@ -34,7 +34,7 @@ void ImStyleManager::InitializeDefaultStyle(ImGuiStyle& style) {
 
 void ImStyleManager::ApplyAccentColor(ImGuiStyle& style) {
     auto& colors = style.Colors;
-    const auto& accent = Settings.UI.f3AccentColor;
+    const auto& accent = Settings.f3AccentColor;
     const ImVec4 accentColor{accent[0], accent[1], accent[2], 1.0f};
 
 
@@ -105,6 +105,6 @@ void ImStyleManager::SetupStyleImpl() {
     ApplyAccentColor(currentStyle);
 
     // Apply scaling
-    currentStyle.ScaleAllSizes(exp2(Settings.UI.fScale));
+    currentStyle.ScaleAllSizes(exp2(Settings.fScale));
     currentStyle.MouseCursorScale = 1.0f;
 }

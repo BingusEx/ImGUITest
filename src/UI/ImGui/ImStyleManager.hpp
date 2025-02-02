@@ -12,7 +12,7 @@ namespace UI {
     class ImStyleManager {
 
         private:
-        Config& Settings = Config::GetSingleton();
+        SettingsUI& Settings = Config::GetUI();
 
         void InitializeDefaultStyle(ImGuiStyle& style);
         void ApplyAccentColor(ImGuiStyle& style);
@@ -38,7 +38,7 @@ namespace UI {
         }
 
         [[nodiscard]] inline float GetScale(){
-            return Settings.UI.fScale;
+            return Settings.fScale;
         }
 
         inline void LoadStyle(){

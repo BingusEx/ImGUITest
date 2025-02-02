@@ -17,16 +17,16 @@ namespace UI {
         void Draw() override;
 
         private:
-        ImFontManager& FontMgr = ImFontManager::GetSingleton();
-        ImStyleManager& StyleMgr = ImStyleManager::GetSingleton();
         Config& Settings = Config::GetSingleton();
+        const SettingsHidden& sHidden = Config::GetHidden();
+        const WindowConfStatus& sUI= Config::GetUI().wStatus;
 
         inline bool ShouldShow() override {
-            return Settings.UI.wStatus.bVisible;
+            return sUI.bVisible;
         }
 
         inline float GetAlpha() override {
-            return Settings.UI.wStatus.fAlpha;
+            return sUI.fAlpha;
         }
     };
 }

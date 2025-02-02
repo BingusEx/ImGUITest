@@ -20,7 +20,7 @@ namespace UI {
         const std::string _SkyrimGUI_Medium = _basePath + "Futura Condensed Medium" + _ext;
         const std::string _SkyrimGUI_Console = _basePath + "Arial" + _ext;
 
-        Config& Settings = Config::GetSingleton();
+        const SettingsUI& Settings = Config::GetUI();
 
         //Structs
         typedef struct FontData {

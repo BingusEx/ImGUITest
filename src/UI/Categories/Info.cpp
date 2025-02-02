@@ -6,7 +6,7 @@
 using namespace UI;
 
 void CategoryInfo::Draw(){
-    ImUtil::CheckBox("IKnowWhatImDoing",&Settings.Hidden.IKnowWhatImDoing, "Only Enable if you know what you're doing ;)");
+    ImUtil::CheckBox("IKnowWhatImDoing",&Settings.IKnowWhatImDoing, "Only Enable if you know what you're doing ;)");
 }
 
 inline void DrawInfo(/*Actor* TargetActor */){

@@ -4,7 +4,7 @@
 
 #include "magic_enum/magic_enum.hpp"
 
-#include "WindowConfig.hpp"
+#include "WindowSettings.hpp"
 
 //categories
 #include "src/UI/Categories/Gameplay.hpp"
@@ -24,11 +24,12 @@
 
 volatile double rendertime;
 volatile double renderloop;
+volatile double maxtime;
 using namespace UI;
 
 //Do All your Init Stuff here
 //Note: Dont do any calls to the imgui api here as the window is not yet created
-WindowConfig::WindowConfig() {
+WindowSettings::WindowSettings() {
 
     Title = "Configuration";
     Name = "ConfigWindow";
@@ -50,19 +51,19 @@ WindowConfig::WindowConfig() {
 
 
 
-void WindowConfig::Draw() {
+void WindowSettings::Draw() {
 
-    flags = (Settings.UI.wSettings.bLock ? (flags | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove) : (flags & ~ImGuiWindowFlags_NoResize & ~ImGuiWindowFlags_NoMove));
+    flags = (sUI.bLock ? (flags | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove) : (flags & ~ImGuiWindowFlags_NoResize & ~ImGuiWindowFlags_NoMove));
 
     //Handle Fixed Position and Size
-    if(Settings.UI.wSettings.bLock){
-        ImGui::SetWindowSize(ImUtil::ScaleToViewport(Settings.UI.wSettings.fWindowSize));
+    if(sUI.bLock){
+        ImGui::SetWindowSize(ImUtil::ScaleToViewport(sUI.fWindowSize));
 
         //Mousedown Check Prevents the window from moving around and messing with the slider while dragging
         if(!ImGui::GetIO().MouseDown[0]){
             //X,Y
-            const ImVec2 Offset {Settings.UI.wSettings.f2Offset[0], Settings.UI.wSettings.f2Offset[1]};
-            ImGui::SetWindowPos(GetAnchorPos(Config::StringToEnum<ImWindow::WindowAnchor>(Settings.UI.wSettings.sAnchor), Offset));
+            const ImVec2 Offset {sUI.f2Offset[0], sUI.f2Offset[1]};
+            ImGui::SetWindowPos(GetAnchorPos(Config::StringToEnum<ImWindow::WindowAnchor>(sUI.sAnchor), Offset));
         }
     }
     
@@ -78,6 +79,8 @@ void WindowConfig::Draw() {
 
         ImGui::PushFont(FontMgr.GetFont("subscript"));
         ImGui::Text("Window Manager: %.3f ms",rendertime);
+        ImGui::SameLine();
+        ImGui::Text("%.3fms",maxtime);
         ImGui::Text("Render Loop: %.3f ms",renderloop);
         ImGui::PopFont();
 
@@ -98,7 +101,7 @@ void WindowConfig::Draw() {
         for (uint8_t i = 0; i < categories.size(); i++) {
             ImCategory* category = categories[i].get();
             if(!category) continue;
-            if(!Settings.Hidden.IKnowWhatImDoing && category->GetTitle() == "Advanced") continue;
+            if(!sHidden.IKnowWhatImDoing && category->GetTitle() == "Advanced") continue;
             if(!category->IsVisible()) continue;
             if (ImGui::Selectable(category->GetTitle().c_str(), CatMgr.activeIndex == i)) {
                 CatMgr.activeIndex = i;
@@ -197,7 +200,7 @@ void WindowConfig::Draw() {
 
 }
 
-void WindowConfig::ShowFooterMessage(){
+void WindowSettings::ShowFooterMessage(){
     
 }
 

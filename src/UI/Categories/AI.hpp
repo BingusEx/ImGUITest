@@ -16,7 +16,7 @@ namespace UI{
         void DrawRight() override;
 
         private:
-        Config& Settings = Config::GetSingleton();
+        SettingsAI& Settings = Config::GetAI();
     };
 
 }

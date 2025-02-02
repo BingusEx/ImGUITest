@@ -6,7 +6,7 @@ using namespace UI;
 
 void ImCategorySplit::Draw() {
 
-    const auto WMult = Config::GetSingleton().UI.fItemWidth;
+    auto WMult = Config::GetUI().fItemWidth;
     {   //Left
         const std::string SpltNam = title + "##SLeft";
         ImGui::BeginChild(SpltNam.c_str(), ImVec2(ImGui::GetContentRegionAvail().x / splitRatio, 0), ImGuiChildFlags_AlwaysUseWindowPadding);

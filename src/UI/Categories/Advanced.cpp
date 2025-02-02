@@ -8,19 +8,19 @@ using namespace UI;
 
 void CategoryAdvanced::DrawLeft(){
     if(ImGui::CollapsingHeader("Logging / Debugging",ImUtil::HeaderFlags)){ 
-        ImUtil::CheckBox("Enable Profiling",&Settings.Advanced.bProfile);
-        ImUtil::CheckBox("Allocate Console",&Settings.Advanced.bAllocConsole,"Open/Close a Console Window Showing Debug Information. Needs Restart To Apply");
-        ImUtil::CheckBox("Show Debug Overlay",&Settings.Advanced.bShowOverlay);
+        ImUtil::CheckBox("Enable Profiling",&Settings.bProfile);
+        ImUtil::CheckBox("Allocate Console",&Settings.bAllocConsole,"Open/Close a Console Window Showing Debug Information. Needs Restart To Apply");
+        ImUtil::CheckBox("Show Debug Overlay",&Settings.bShowOverlay);
         
-        ImUtil::ComboEx<spdlog::level::level_enum>("Log Level", Settings.Advanced.sLogLevel,nullptr,false,true);
-        ImUtil::ComboEx<spdlog::level::level_enum>("Flush Level", Settings.Advanced.sFlushLevel,nullptr,false,true);
+        ImUtil::ComboEx<spdlog::level::level_enum>("Log Level", Settings.sLogLevel,nullptr,false,true);
+        ImUtil::ComboEx<spdlog::level::level_enum>("Flush Level", Settings.sFlushLevel,nullptr,false,true);
         ImGui::Spacing();
     }
 
     if(ImGui::CollapsingHeader("Mod Features",ImUtil::HeaderFlags)){ 
-        ImUtil::CheckBox("ActorValue Damage",&Settings.Advanced.bDamageAV);
-        ImUtil::CheckBox("Action Cooldowns",&Settings.Advanced.bCooldowns);
-        ImUtil::CheckBox("Apply Size Effects to all Actors",&Settings.Advanced.bAllActorSizeEffects);
+        ImUtil::CheckBox("ActorValue Damage",&Settings.bDamageAV);
+        ImUtil::CheckBox("Action Cooldowns",&Settings.bCooldowns);
+        ImUtil::CheckBox("Apply Size Effects to all Actors",&Settings.bAllActorSizeEffects);
         ImGui::Spacing();
     }
 }

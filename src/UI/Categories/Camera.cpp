@@ -70,38 +70,38 @@ void DrawCameraSettings(CameraOffsets* a_set, const char* a_strID, const char* a
 void CategoryCamera::DrawLeft(){
 
     if(ImGui::CollapsingHeader("Camera Shake",ImUtil::HeaderFlags)){ 
-        ImUtil::SliderF("Player Total Shake Power",&Settings.Camera.fCameraShakePlayer, 0.1f, 3.0f ,"Change the intensity of camera shakes when doing actions as the player","%.1fx");
-        ImUtil::SliderF("NPC Total Shake Power",&Settings.Camera.fCameraShakeOther, 0.1f, 3.0f ,"Change the intensity of camera shakes for NPCs","%.1fx");
+        ImUtil::SliderF("Player Total Shake Power",&Settings.fCameraShakePlayer, 0.1f, 3.0f ,"Change the intensity of camera shakes when doing actions as the player","%.1fx");
+        ImUtil::SliderF("NPC Total Shake Power",&Settings.fCameraShakeOther, 0.1f, 3.0f ,"Change the intensity of camera shakes for NPCs","%.1fx");
         ImGui::Spacing();
     }
 
     
     if(ImGui::CollapsingHeader("Crawl Height",ImUtil::HeaderFlags)){ 
-        ImUtil::SliderF("1st P. Crawl Height",&Settings.Camera.fFPCrawlHeightMult, 0.01f, 1.0f ,"Change the height multiplier of the camera when crawling in first person","%.1fx");
-        ImUtil::SliderF("3rd P. Crawl Height",&Settings.Camera.fTPCrawlHeightMult, 0.01f, 1.0f ,"Change the height multiplier of the camera when crawling in third person","%.1fx");
+        ImUtil::SliderF("1st P. Crawl Height",&Settings.fFPCrawlHeightMult, 0.01f, 1.0f ,"Change the height multiplier of the camera when crawling in first person","%.1fx");
+        ImUtil::SliderF("3rd P. Crawl Height",&Settings.fTPCrawlHeightMult, 0.01f, 1.0f ,"Change the height multiplier of the camera when crawling in third person","%.1fx");
         ImGui::Spacing();
     }
 
     if(ImGui::CollapsingHeader("Camera Colision",ImUtil::HeaderFlags)){ 
 
-        ImUtil::CheckBox("Collide With Actors",&Settings.Camera.bCamCollideActor);
+        ImUtil::CheckBox("Collide With Actors",&Settings.bCamCollideActor);
         ImGui::SameLine();
-        ImUtil::CheckBox("Collide With Trees",&Settings.Camera.bCamCollideTree);
-        ImUtil::CheckBox("Collide With Debris",&Settings.Camera.bCamCollideDebris);
+        ImUtil::CheckBox("Collide With Trees",&Settings.bCamCollideTree);
+        ImUtil::CheckBox("Collide With Debris",&Settings.bCamCollideDebris);
         ImGui::SameLine();
-        ImUtil::CheckBox("Collide With Terrain",&Settings.Camera.bCamCollideTerrain);
-        ImUtil::CheckBox("Collide With Statics",&Settings.Camera.bCamCollideStatics);
+        ImUtil::CheckBox("Collide With Terrain",&Settings.bCamCollideTerrain);
+        ImUtil::CheckBox("Collide With Statics",&Settings.bCamCollideStatics);
 
-        ImUtil::SliderF("Apply at Scale",&Settings.Camera.fModifyCamCollideAt, 1.0f, 50.0f ,"Change the scale at which the above colission options should start to be applied at","%.1fx");
+        ImUtil::SliderF("Apply at Scale",&Settings.fModifyCamCollideAt, 1.0f, 50.0f ,"Change the scale at which the above colission options should start to be applied at","%.1fx");
         ImGui::Spacing();
     }
 
     if(ImGui::CollapsingHeader("Skyrim Camera Settings",ImUtil::HeaderFlags)){ 
         //TODO Fix MinMax for the sliders
-        ImUtil::SliderF("Minimum Distance",&Settings.Camera.fCameraDistMin, -10.0f, 100.0f ,"Change the minimum zoom distance","%.0f");
-        ImUtil::SliderF("Maximum Distance",&Settings.Camera.fCameraDistMax, 200.0f, 700.0f ,"Change the maximum zoom distance","%.0f");
-        ImUtil::SliderF("Zoom Speed",&Settings.Camera.fCameraZoom, 5.0f, 40.0f ,"Change the zoom speed","%.0f");
-        ImUtil::SliderF("Zoom Step",&Settings.Camera.fCameraStep, 0.0f, 0.3f ,"Change zoom step","%.3f");
+        ImUtil::SliderF("Minimum Distance",&Settings.fCameraDistMin, -10.0f, 100.0f ,"Change the minimum zoom distance","%.0f");
+        ImUtil::SliderF("Maximum Distance",&Settings.fCameraDistMax, 200.0f, 700.0f ,"Change the maximum zoom distance","%.0f");
+        ImUtil::SliderF("Zoom Speed",&Settings.fCameraZoom, 5.0f, 40.0f ,"Change the zoom speed","%.0f");
+        ImUtil::SliderF("Zoom Step",&Settings.fCameraStep, 0.0f, 0.3f ,"Change zoom step","%.3f");
         ImGui::Spacing();
     }
 
@@ -109,18 +109,18 @@ void CategoryCamera::DrawLeft(){
 
 void CategoryCamera::DrawRight(){
     if(ImGui::CollapsingHeader("Automatic Camera",ImUtil::HeaderFlags)){ 
-        ImUtil::CheckBox("Enable Automatic Camera",&Settings.Camera.bAutomaticCamera,"Enables the automatic camera");
-        ImUtil::ComboEx<CameraModeTP>("TP Camera Mode", Settings.Camera.sAutoCameraModeTP,"Change the 3rd person camera mode",!Settings.Camera.bAutomaticCamera);
-        ImUtil::ComboEx<CameraModeFP>("FP Camera Mode", Settings.Camera.sAutoCameraModeFP,"Change the 1st person camera mode",!Settings.Camera.bAutomaticCamera);
+        ImUtil::CheckBox("Enable Automatic Camera",&Settings.bAutomaticCamera,"Enables the automatic camera");
+        ImUtil::ComboEx<CameraModeTP>("TP Camera Mode", Settings.sAutoCameraModeTP,"Change the 3rd person camera mode",!Settings.bAutomaticCamera);
+        ImUtil::ComboEx<CameraModeFP>("FP Camera Mode", Settings.sAutoCameraModeFP,"Change the 1st person camera mode",!Settings.bAutomaticCamera);
         ImGui::Spacing();
     }
-    ImGui::BeginDisabled(!Settings.Camera.bAutomaticCamera);
+    ImGui::BeginDisabled(!Settings.bAutomaticCamera);
    
-    DrawCameraSettings(&Settings.Camera.tCONormal, "CameraSettings##Normal", "Normal Camera");
-    DrawCameraSettings(&Settings.Camera.tCOAlt, "CameraSettings##Alt", "Alt Camera");
+    DrawCameraSettings(&Settings.tCONormal, "CameraSettings##Normal", "Normal Camera");
+    DrawCameraSettings(&Settings.tCOAlt, "CameraSettings##Alt", "Alt Camera");
     
     if(ImGui::CollapsingHeader("Foot Camera",ImGuiTreeNodeFlags_Bullet)){ 
-        ImUtil::SliderF("Forward - Back", &Settings.Camera.fFootCameraFBOffset ,-200.f, 200.f,nullptr,"%.1f");
+        ImUtil::SliderF("Forward - Back", &Settings.fFootCameraFBOffset ,-200.f, 200.f,nullptr,"%.1f");
         ImGui::Spacing();
     }
     ImGui::EndDisabled();

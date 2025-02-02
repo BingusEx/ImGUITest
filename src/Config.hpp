@@ -113,8 +113,6 @@ enum class GameMode {
     kCurseOfTheDiminishingGiantess //<-------------- Combines both
 };
 
-
-
 //-------------------------------------------------------------------------------------------------------------------
 //  CHILD STRUCTS ----- Not Directly Serialized, But are part of another struct.
 //-------------------------------------------------------------------------------------------------------------------
@@ -425,9 +423,9 @@ struct SettingsBalance {
     bool bAllowOthersStagger = true;
 
     //----------- Size Limits
-    float fMaxPlayerSize = 1.0f;
-    float fMaxFollowerSize = 1.0f;
-    float fMaxOtherSize = 1.0f;
+    float fMaxPlayerSize = 0.0f;
+    float fMaxFollowerSize = 0.0f;
+    float fMaxOtherSize = 0.0f;
     
     //----------- Balance mode vars
     bool bBalanceMode = false;
@@ -505,7 +503,8 @@ struct SettingsUI {
 TOML_SERIALIZABLE(SettingsUI);
 
 class Config {
-    public:
+    private:
+
     //Create structs with default values.
     //These act as sane defaults in case new data is loaded or the toml itself is corrupted.
     SettingsGeneral General = {};
@@ -518,9 +517,49 @@ class Config {
     SettingsUI UI = {};
     SettingsHidden Hidden = {}; 
 
+
+    public: //Static Accessors (Helpers)
+
+    [[nodiscard]] static inline SettingsGeneral& GetGeneral(){
+        return GetSingleton().General;
+    }
+
+    [[nodiscard]] static inline SettingsAdvanced& GetAdvanced(){
+
+        return GetSingleton().Advanced;
+    }
+
+    [[nodiscard]] static inline SettingsAI& GetAI(){
+        return GetSingleton().AI;
+    }
+
+    [[nodiscard]] static inline SettingsAudio& GetAudio(){
+        return GetSingleton().Audio;
+    }
+
+    [[nodiscard]] static inline SettingsBalance& GetBalance(){
+        return GetSingleton().Balance;
+    }
+
+    [[nodiscard]] static inline SettingsCamera& GetCamera(){
+        return GetSingleton().Camera;
+    }
+
+    [[nodiscard]] static inline SettingsGameplay& GetGameplay(){
+        return GetSingleton().Gameplay;
+    }
+
+    [[nodiscard]] static inline SettingsUI& GetUI(){
+        return GetSingleton().UI;
+    }
+
+    [[nodiscard]] static inline SettingsHidden& GetHidden(){
+        return GetSingleton().Hidden;
+    }
+
     [[nodiscard]] static inline Config& GetSingleton() {
-        static Config instance;
-        return instance;
+        static Config Instance;
+        return Instance;
     }
 
     [[nodiscard]] bool LoadSettings();
@@ -552,14 +591,14 @@ class Config {
     std::mutex _ReadWriteLock;
 
     template<typename T>
-    [[nodiscard]] bool LoadStructFromTOML(const auto& a_toml, T& a_data);
+    [[nodiscard]] [[flatten]] bool LoadStructFromTOML(const auto& a_toml, T& a_data);
 
     template<typename T>
-    [[nodiscard]] bool UpdateTOMLFromStruct(auto& a_toml, T& a_data);
+    [[nodiscard]] [[flatten]] bool UpdateTOMLFromStruct(auto& a_toml, T& a_data);
 
-    [[nodiscard]] bool SaveTOMLToFile(const auto& a_toml, const std::filesystem::path& a_file);
+    [[nodiscard]] [[flatten]] bool SaveTOMLToFile(const auto& a_toml, const std::filesystem::path& a_file);
 
-    [[nodiscard]] bool CheckFile(const std::filesystem::path& a_file);
+    [[nodiscard]] [[flatten]] bool CheckFile(const std::filesystem::path& a_file);
 
     toml::basic_value<toml::ordered_type_config> TomlData;
 

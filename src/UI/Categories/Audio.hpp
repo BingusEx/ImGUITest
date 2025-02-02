@@ -15,6 +15,6 @@ namespace UI{
         void DrawRight() override;
 
         private:
-        Config& Settings = Config::GetSingleton();
+        SettingsAudio& Settings = Config::GetAudio();
     };
 }

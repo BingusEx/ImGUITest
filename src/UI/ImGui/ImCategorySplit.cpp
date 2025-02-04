@@ -8,8 +8,8 @@ void ImCategorySplit::Draw() {
 
     auto WMult = Config::GetUI().fItemWidth;
     {   //Left
-        const std::string SpltNam = title + "##SLeft";
-        ImGui::BeginChild(SpltNam.c_str(), ImVec2(ImGui::GetContentRegionAvail().x / splitRatio, 0), ImGuiChildFlags_AlwaysUseWindowPadding);
+
+        ImGui::BeginChild("SLeft", ImVec2(ImGui::GetContentRegionAvail().x / splitRatio, 0), ImGuiChildFlags_AlwaysUseWindowPadding);
         ImGui::PushItemWidth(ImGui::GetWindowWidth() * WMult);
         DrawLeft();
         ImGui::PopItemWidth();
@@ -21,8 +21,7 @@ void ImCategorySplit::Draw() {
     ImGui::SameLine(0.0,8.0f);
 
     {   //Right
-        const std::string SpltNam = title + "##SRight";
-        ImGui::BeginChild(SpltNam.c_str(), ImVec2(0, 0), ImGuiChildFlags_AlwaysUseWindowPadding);
+        ImGui::BeginChild("SRight", ImVec2(0, 0), ImGuiChildFlags_AlwaysUseWindowPadding);
         ImGui::PushItemWidth(ImGui::GetWindowWidth() * WMult);
         DrawRight();
         ImGui::PopItemWidth();

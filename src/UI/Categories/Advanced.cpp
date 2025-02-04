@@ -1,31 +1,44 @@
 #include "Advanced.hpp"
 #include "imgui.h"
 
+#include "src/UI/ImGui/ImWindowManager.hpp"
 #include "src/UI/ImGui/ImUtil.hpp"
-#include "spdlog/spdlog.h"
+#include "spdlog/spdlog.h" 
+
+
 
 using namespace UI;
 
 void CategoryAdvanced::DrawLeft(){
-    if(ImGui::CollapsingHeader("Logging / Debugging",ImUtil::HeaderFlags)){ 
-        ImUtil::CheckBox("Enable Profiling",&Settings.bProfile);
-        ImUtil::CheckBox("Allocate Console",&Settings.bAllocConsole,"Open/Close a Console Window Showing Debug Information. Needs Restart To Apply");
-        ImUtil::CheckBox("Show Debug Overlay",&Settings.bShowOverlay);
-        
-        ImUtil::ComboEx<spdlog::level::level_enum>("Log Level", Settings.sLogLevel,nullptr,false,true);
-        ImUtil::ComboEx<spdlog::level::level_enum>("Flush Level", Settings.sFlushLevel,nullptr,false,true);
-        ImGui::Spacing();
+
+
+    ImUtil_Unique {
+
+        if(ImGui::CollapsingHeader("Logging / Debugging",ImUtil::HeaderFlags)){
+            ImUtil::CheckBox("Enable Profiling",&Settings.bProfile);
+            ImUtil::CheckBox("Allocate Console",&Settings.bAllocConsole,"Open/Close a Console Window Showing Debug Information. Needs Restart To Apply");
+            ImUtil::CheckBox("Show Debug Overlay",&Settings.bShowOverlay);
+            
+            ImUtil::ComboEx<spdlog::level::level_enum>("Log Level", Settings.sLogLevel,nullptr,false,true);
+            ImUtil::ComboEx<spdlog::level::level_enum>("Flush Level", Settings.sFlushLevel,nullptr,false,true);
+            ImGui::Spacing();
+        }
+
     }
 
-    if(ImGui::CollapsingHeader("Mod Features",ImUtil::HeaderFlags)){ 
-        ImUtil::CheckBox("ActorValue Damage",&Settings.bDamageAV);
-        ImUtil::CheckBox("Action Cooldowns",&Settings.bCooldowns);
-        ImUtil::CheckBox("Apply Size Effects to all Actors",&Settings.bAllActorSizeEffects);
-        ImGui::Spacing();
+    ImUtil_Unique {
+
+        if(ImGui::CollapsingHeader("Mod Features",ImUtil::HeaderFlags)){ 
+            ImUtil::CheckBox("ActorValue Damage",&Settings.bDamageAV);
+            ImUtil::CheckBox("Action Cooldowns",&Settings.bCooldowns);
+            ImUtil::CheckBox("Apply Size Effects to all Actors",&Settings.bAllActorSizeEffects);
+            ImGui::Spacing();
+        }
     }
 }
 
 void CategoryAdvanced::DrawRight(){
+
 
     {   //Info About the Config Window
         ImGui::SeparatorText("ImGUI Info");
@@ -37,7 +50,11 @@ void CategoryAdvanced::DrawRight(){
     }
 
     if(ImUtil::Button("Close Program", "Close the program", false, 1.0f)){
-        //Call Win32 API to close this program
         PostQuitMessage(0);
+    }
+
+    {
+        ImUtil::CheckBox("Show Metrics", &ImWindowManager::GetSingleton().ShowMetrics);
+        ImUtil::CheckBox("Show Stack", &ImWindowManager::GetSingleton().ShowStack);
     }
 }

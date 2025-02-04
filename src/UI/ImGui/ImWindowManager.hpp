@@ -19,6 +19,9 @@ namespace UI {
 
         public:
 
+        bool ShowMetrics = false;
+        bool ShowStack = false;
+
         void Init();
         [[nodiscard]] static inline ImWindowManager& GetSingleton() {
             static ImWindowManager instance;

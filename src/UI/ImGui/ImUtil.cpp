@@ -24,7 +24,7 @@ namespace ImUtil {
 
     const bool CheckBox(const char* a_label, bool* a_state, const char* a_Tooltip, const bool a_disabled){
         ImGui::BeginDisabled(a_disabled);
-        const bool res = ImGui::Checkbox(a_label,a_state);
+        const bool res = ImGui::Checkbox(a_label, a_state);
         if (ImGui::IsItemHovered() && a_Tooltip){
             ImGui::SetTooltip(a_Tooltip);
         }

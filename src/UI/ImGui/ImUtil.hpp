@@ -7,16 +7,31 @@
 
 #include "magic_enum/magic_enum.hpp"
 
-namespace ImUtil {
+// RAII helper: pushes an ID on construction and pops it on destruction.
+struct ImGuiUniqueID {
+    ImGuiUniqueID(int id) { ImGui::PushID(id); }
+    ~ImGuiUniqueID() { ImGui::PopID(); }
+};
 
+#define CONCAT_IMPL(a, b) a##b
+#define CONCAT(a, b) CONCAT_IMPL(a, b)
+
+#define ImUtil_Unique \
+    if (ImGuiUniqueID CONCAT(uniqueID_, __COUNTER__)(__COUNTER__); true)
+
+#define Imutil_UniqueCall(func_call) \
+    ImGuiUniqueID CONCAT(uniqueID_, __COUNTER__)(__COUNTER__); \
+    func_call
+
+namespace ImUtil {
+    
     //-------------------
     //  Constants
     //-------------------
 
     //Predefined colors {R, G, B, A} (0.0 to 1.0f)
-    constexpr ImVec4 ColorError = {1.0f, 0.15f, 0.15f, 1.0f};
-    constexpr ImVec4 ColorSubscript = {.8f, 0.8f, 0.8f, .7f};
-
+    constexpr ImVec4 ColorError = {1.0f, 0.35f, 0.30f, 0.9f};
+    constexpr ImVec4 ColorSubscript = {1.0f, 1.0f, 1.0f, 0.5f};
     constexpr uint32_t HeaderFlags = ImGuiTreeNodeFlags_Bullet | ImGuiTreeNodeFlags_DefaultOpen;
 
     [[nodiscard]] static inline bool ValidState() noexcept {
@@ -32,7 +47,7 @@ namespace ImUtil {
 
     inline void SeperatorV(){
         ImGui::SameLine();
-        ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical, 2.f);
+        ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical, 1.f);
         ImGui::SameLine();
     }
 
@@ -57,7 +72,7 @@ namespace ImUtil {
     const bool ConditionalHeader(const std::string a_label, const std::string a_ConditionText, const bool a_condition);
 
     template <typename T>
-    bool ComboEx(const char* label, std::string& currentValue, const char* a_Tooltip = nullptr, bool a_disabled = false, bool a_hasTotal = false) {
+    bool ComboEx(const char* a_label, std::string& currentValue, const char* a_Tooltip = nullptr, bool a_disabled = false, bool a_hasTotal = false) {
         // Retrieve enum metadata
         constexpr auto enumNames = magic_enum::enum_names<T>();
         constexpr auto enumValues = magic_enum::enum_values<T>();
@@ -87,7 +102,8 @@ namespace ImUtil {
         }
 
         ImGui::BeginDisabled(a_disabled);
-        bool res = ImGui::Combo(label, &currentIndex, items.c_str());
+
+        bool res = ImGui::Combo(a_label, &currentIndex, items.c_str());
         if (ImGui::IsItemHovered() && a_Tooltip){
             ImGui::SetTooltip(a_Tooltip);
         }

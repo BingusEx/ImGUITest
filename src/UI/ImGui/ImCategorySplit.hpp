@@ -9,7 +9,7 @@ namespace UI {
     class ImCategorySplit : public ImCategory {
         private:
         const ImGuiChildFlags flags = ImGuiChildFlags_AlwaysAutoResize | ImGuiChildFlags_AutoResizeX | ImGuiChildFlags_AutoResizeY;
-        const float splitRatio = 2.2f;
+        const float splitRatio = 2.17f;
 
         void Draw() override;
 

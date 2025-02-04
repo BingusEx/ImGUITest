@@ -122,7 +122,7 @@ int main(int, char**) {
 
     //WindowManager
 
-    Config::GetSingleton().LoadSettings(); //Pretend this is the kDataLoaded SKSE Message
+    //Config::GetSingleton().LoadSettings(); //Pretend this is the kDataLoaded SKSE Message
     WinMgr.Init();
     WinMgr.AddWindow(std::make_unique<WindowSettings>());
     WinMgr.AddWindow(std::make_unique<WindowStatus>());
@@ -163,7 +163,7 @@ int main(int, char**) {
         //Process Queued FontManager Actions
         ImFontManager::GetSingleton().ProcessActions();
         using namespace std::chrono_literals;
-        std::this_thread::sleep_for(12ms);
+        //std::this_thread::sleep_for(12ms);
         auto end1 = std::chrono::steady_clock::now();
         auto duration1 = std::chrono::duration_cast<std::chrono::microseconds>(end1 - start1);
         

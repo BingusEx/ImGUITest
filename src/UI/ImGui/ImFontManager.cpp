@@ -9,6 +9,7 @@ void ImFontManager::Init(){
     AddFont( new FontData("title",_SkyrimGUI_Medium, 58.0f));
     AddFont( new FontData("footer",_SkyrimGUI_Medium, 28.0f));
     AddFont( new FontData("text",_SkyrimGUI_Console, 17.0f));
+    AddFont( new FontData("errortext",_SkyrimGUI_Console, 21.0f));
     AddFont( new FontData("subscript",_SkyrimGUI_Console, 12.0f));
     AddFont( new FontData("widgetbody",_SkyrimGUI_Light, 22.0f));
     AddFont( new FontData("widgettitle",_SkyrimGUI_Light, 40.0f));
@@ -69,9 +70,7 @@ void ImFontManager::ProcessActions(){
                 //logger::warn("ImFontmanager: Unimplemented Action!")
                 break;
             }
-
         }
-
         ActionQueue.pop();
     }
 }

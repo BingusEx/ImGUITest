@@ -102,12 +102,13 @@
 #include <d3d11.h>
 #include <tchar.h>
 
-//This is here because the stupid thing forgot to inline one function
-//So if you include it in 2 seperate files the linker cries.
 #include "git.h"
 
 #undef cdecl // Workaround for Clang 14 CMake configure error.
-#undef PlaySound //Workaround for winapi define breaking intelisense for Runtime::PlaySound
+
+//Undef Win32 crap
+#undef PlaySound 
+#undef DeleteFile 
 
 // Compatible declarations with other sample projects.
 #define DLLEXPORT __declspec(dllexport)

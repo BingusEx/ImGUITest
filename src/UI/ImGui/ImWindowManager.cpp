@@ -32,13 +32,20 @@ void ImWindowManager::Draw(){
                 ImGui::PushStyleVar(ImGuiStyleVar_Alpha, window->GetAlpha());
                 ImGui::PushFont(FontMgr.GetFont("text")); //Default font
             
-                ImGui::Begin((wmName + "##" + window->Name).c_str(), &window->Show, window->flags);
+                ImGui::Begin((window->Name).c_str(), &window->Show, window->flags);
                 window->Draw();
 
                 ImGui::End();
                 ImGui::PopStyleVar();
                 ImGui::PopFont();
             }
+        }
+
+        if(ShowMetrics){
+            ImGui::ShowMetricsWindow();
+        }
+        else if (ShowStack){
+            ImGui::ShowStackToolWindow();
         }
     }
 }

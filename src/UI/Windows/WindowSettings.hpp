@@ -27,7 +27,10 @@ namespace UI {
 
 
         private:
-        void ShowFooterMessage();
+        void AsyncLoad();
+        void AsyncSave();
+
+        std::atomic<bool> SaveLoadBusy = false;
 
         std::string ErrorString = "";
         ImCategoryManager& CatMgr = ImCategoryManager::GetSingleton();
@@ -36,6 +39,6 @@ namespace UI {
 
         Config& Settings = Config::GetSingleton();
         const SettingsHidden& sHidden = Config::GetHidden();
-        const WindowConfSettings& sUI= Config::GetUI().wSettings;
+        const WindowConfSettings& sUI= Config::GetUI().SettingsWindow;
     };
 }

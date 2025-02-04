@@ -33,44 +33,36 @@ bool Config::LoadStructFromTOML(const auto& a_toml, T& a_data) {
     }
 }
 
-/// @brief 
-/// @tparam T Given a parsed toml file and struct, tries to update the contents of the toml table/value with the data found in the stuct.
-/// @param a_toml Parsed TOML File.
-/// @param a_data Reference to a data only struct.
-/// @return true on success, false on failure.
+// /// @brief 
+// /// @tparam T Given a parsed toml file and struct, replaces the toml table with the data found in the given stuct.
+// /// @param a_toml Parsed TOML File.
+// /// @param a_data Reference to a data only struct.
+// /// @return true on success, false on failure.
 template<typename T>
 bool Config::UpdateTOMLFromStruct(auto& a_toml, T& a_data) {
     static_assert(std::is_class_v<T>, "a_data must be a struct or class type");
-    try{
+    try {
         std::lock_guard<std::mutex> lock(_ReadWriteLock);
         std::string _StructName = std::string(GetStructName(a_data));
 
-        // Convert the struct to a toml::value... which is basically a toml table in this case.
+        // Convert the struct to a toml::value
         toml::ordered_value table = a_data;
 
-        // Merge the new data with the existing data
-        // If a table with the struct name exists, update the table, otherwise create a new one.
-        if (a_toml.contains(_StructName)) {
-            auto& existing_table = a_toml.as_table()[_StructName].as_table();
-            for (const auto& [key, value] : table.as_table()) {
-                existing_table[key] = value;
-            }
-        } 
-        else {
-            a_toml.as_table()[_StructName] = table;
-            //logger::info("Struct {} does not exist in the toml, created a new table for it",_StructName);
-        }
+        // Replace the entire table to remove unused data
+        a_toml.as_table()[_StructName] = table;
+        //logger::info("TOML Data for Table {} Has been Replaced",_StructName);
         return true;
     }
-    catch(toml::exception e){
-        //logger::error("Could not parse the toml table into a struct: {}",e.what());
+    catch(toml::exception e) {
+        //logger::error("Could not parse the struct into a TOML table table into a struct: {}",e.what());
         return false;
     }
-    catch(...){
+    catch(...) {
         //logger::error("UpdateTOMLFromStruct() -> Something really bad happened with {} and not even TOML11's Handler caught it", reflect::type_name<T&>(a_data) );
         return false;
     }
 }
+
 
 /// @brief 
 /// @param a_toml TOML data.
@@ -221,12 +213,12 @@ bool Config::LoadSettings() {
     try{
         bool LoadRes = true;
 
-        LoadRes &= LoadStructFromTOML(TomlData, AI);
-        LoadRes &= LoadStructFromTOML(TomlData, Audio);
-        LoadRes &= LoadStructFromTOML(TomlData, Balance);
-        LoadRes &= LoadStructFromTOML(TomlData, Camera);
-        LoadRes &= LoadStructFromTOML(TomlData, Gameplay);
         LoadRes &= LoadStructFromTOML(TomlData, General);
+        LoadRes &= LoadStructFromTOML(TomlData, Gameplay);
+        LoadRes &= LoadStructFromTOML(TomlData, Balance);
+        LoadRes &= LoadStructFromTOML(TomlData, Audio);
+        LoadRes &= LoadStructFromTOML(TomlData, AI);
+        LoadRes &= LoadStructFromTOML(TomlData, Camera);
         LoadRes &= LoadStructFromTOML(TomlData, UI);
         LoadRes &= LoadStructFromTOML(TomlData, Hidden);
 
@@ -272,14 +264,13 @@ bool Config::SaveSettings() {
           UpdateRes &= UpdateTOMLFromStruct(TomlData, Advanced);
         }
 
-        UpdateRes &= UpdateTOMLFromStruct(TomlData, AI);
-        UpdateRes &= UpdateTOMLFromStruct(TomlData, Audio);
-        UpdateRes &= UpdateTOMLFromStruct(TomlData, Balance);
-        UpdateRes &= UpdateTOMLFromStruct(TomlData, Camera);
         UpdateRes &= UpdateTOMLFromStruct(TomlData, General);
         UpdateRes &= UpdateTOMLFromStruct(TomlData, Gameplay);
+        UpdateRes &= UpdateTOMLFromStruct(TomlData, Balance);
+        UpdateRes &= UpdateTOMLFromStruct(TomlData, Audio);
+        UpdateRes &= UpdateTOMLFromStruct(TomlData, AI);
+        UpdateRes &= UpdateTOMLFromStruct(TomlData, Camera);
         UpdateRes &= UpdateTOMLFromStruct(TomlData, UI);
-
 
         if(!UpdateRes){
             //logger::error("One or more structs could not be serialized to TOML, Skipping Disk Write");

@@ -79,7 +79,7 @@ void CategoryCamera::DrawLeft(){
         ImGui::Spacing();
     }
 
-    if(ImGui::CollapsingHeader("Camera Colision",ImUtil::HeaderFlags)){ 
+    if(ImGui::CollapsingHeader("Camera Colision",ImGuiTreeNodeFlags_Bullet)){ 
 
         ImUtil::CheckBox("Collide With Actors",&Settings.bCamCollideActor);
         ImGui::SameLine();
@@ -93,7 +93,7 @@ void CategoryCamera::DrawLeft(){
         ImGui::Spacing();
     }
 
-    if(ImGui::CollapsingHeader("Skyrim Camera Settings",ImUtil::HeaderFlags)){ 
+    if(ImGui::CollapsingHeader("Skyrim Camera Settings",ImGuiTreeNodeFlags_Bullet)){ 
         //TODO Fix MinMax for the sliders
         ImUtil::SliderF("Minimum Distance",&Settings.fCameraDistMin, -10.0f, 100.0f ,"Change the minimum zoom distance","%.0f");
         ImUtil::SliderF("Maximum Distance",&Settings.fCameraDistMax, 200.0f, 700.0f ,"Change the maximum zoom distance","%.0f");

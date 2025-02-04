@@ -110,7 +110,7 @@ enum class GameMode {
     kSlowCombatGrowth,          //Curse of growth already exists as random growth, its superfluous
     kCurseOfTheGiantess,        //<------- TODO Implement these... AKA: Just take them from my dll
     kCurseOfDiminishing,
-    kCurseOfTheDiminishingGiantess //<-------------- Combines both
+    kSizeLocked //<-------------- Combines both
 };
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -342,6 +342,11 @@ struct SettingsGeneral {
 
     // Miscellaneous
     bool bLayeredSneak = false;
+    bool bPlayerCrawling = true;
+    bool bFollowerCrawling = true;
+
+    // Bone tracking for foot Animations
+    bool bTrackBonesDuringAnim = true;
 };
 TOML_SERIALIZABLE(SettingsGeneral);
 
@@ -355,8 +360,8 @@ struct SettingsGameplay {
     GameplayActorSettings GamemodeFollower = {};
 
     // Size Effects
-    bool bAdditionalEffects = true;
-    bool bFollowerEffects = true;
+    bool bPlayerAnimEffects = true;
+    bool bNPCAnimEffects = true;
     bool bLaunchObjects = false;
     bool bLaunchAllCells = false;
 
@@ -375,9 +380,6 @@ struct SettingsGameplay {
     bool bStomAlternativeOther = false;
     bool bSneakTransitions = true;
     bool bSneakTransitionsOther = true;
-
-    // Bone tracking for animations
-    bool bTrackBones = true;
 
     // Vore-related settings
     float fVoreGainMult = 1.0f;
@@ -408,7 +410,7 @@ struct SettingsCamera {
 
     // Foot camera offset
     float fFootCameraFBOffset = 0.0;
-
+    
     // Automatic camera controls
     bool bAutomaticCamera = true;
     std::string sAutoCameraModeFP = "kNormal";

@@ -7,7 +7,8 @@
 
 #include "magic_enum/magic_enum.hpp"
 
-// RAII helper: pushes an ID on construction and pops it on destruction.
+// RAII helper to push an ID on construction and pop it on destruction
+// So i don't have to remember to use push pop constantly...
 struct ImGuiUniqueID {
     ImGuiUniqueID(int id) { ImGui::PushID(id); }
     ~ImGuiUniqueID() { ImGui::PopID(); }
@@ -32,7 +33,10 @@ namespace ImUtil {
     //Predefined colors {R, G, B, A} (0.0 to 1.0f)
     constexpr ImVec4 ColorError = {1.0f, 0.35f, 0.30f, 0.9f};
     constexpr ImVec4 ColorSubscript = {1.0f, 1.0f, 1.0f, 0.5f};
+
     constexpr uint32_t HeaderFlags = ImGuiTreeNodeFlags_Bullet | ImGuiTreeNodeFlags_DefaultOpen;
+    
+    constexpr float TooltipDelay = 0.45f; //sec
 
     [[nodiscard]] static inline bool ValidState() noexcept {
         ImGuiContext* ctx = ImGui::GetCurrentContext();
@@ -61,7 +65,7 @@ namespace ImUtil {
 
     const bool Button(const char* a_label, const char* a_Tooltip = nullptr, const bool a_disabled = false, const float a_padding = 1.0f);
     const bool CheckBox(const char* a_label, bool* a_state, const char* a_Tooltip = nullptr, const bool a_disabled = false);
-    const bool SliderF(const char* a_label, float* a_value, float a_min, float a_max, const char* a_Tooltip = nullptr, const char* fmt = "%.2f", const bool a_disabled = false);
+    const bool SliderF(const char* a_label, float* a_value, float a_min, float a_max, const char* a_Tooltip = nullptr, const char* fmt = "%.2f", const bool a_disabled = false, const bool a_alwaysclamp = false);
     const bool SliderF2(const char* a_label, float* a_value, float a_min, float a_max, const char* a_Tooltip = nullptr, const char* fmt = "%.2f", const bool a_disabled = false);
     const bool SliderF3(const char* a_label, float* a_value, float a_min, float a_max, const char* a_Tooltip = nullptr, const char* fmt = "%.2f", const bool a_disabled = false);
     
@@ -69,7 +73,7 @@ namespace ImUtil {
 
     void HelpMarker(const char* a_desc);
 
-    const bool ConditionalHeader(const std::string a_label, const std::string a_ConditionText, const bool a_condition);
+    const bool ConditionalHeader(const std::string a_label, const std::string a_ConditionText, const bool a_condition, const bool a_defaultopen = true);
 
     template <typename T>
     bool ComboEx(const char* a_label, std::string& currentValue, const char* a_Tooltip = nullptr, bool a_disabled = false, bool a_hasTotal = false) {

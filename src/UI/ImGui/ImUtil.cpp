@@ -15,7 +15,7 @@ namespace ImUtil {
 
         ImGui::BeginDisabled(a_disabled);
         const bool res = ImGui::Button(a_label, buttonSize);
-        if (ImGui::IsItemHovered() && a_Tooltip){
+        if (ImGui::IsItemHovered() && a_Tooltip && GImGui->HoveredIdTimer > TooltipDelay){
             ImGui::SetTooltip(a_Tooltip);
         }
         ImGui::EndDisabled();
@@ -25,18 +25,26 @@ namespace ImUtil {
     const bool CheckBox(const char* a_label, bool* a_state, const char* a_Tooltip, const bool a_disabled){
         ImGui::BeginDisabled(a_disabled);
         const bool res = ImGui::Checkbox(a_label, a_state);
-        if (ImGui::IsItemHovered() && a_Tooltip){
+        if (ImGui::IsItemHovered() && a_Tooltip && GImGui->HoveredIdTimer > TooltipDelay){
             ImGui::SetTooltip(a_Tooltip);
         }
         ImGui::EndDisabled();
         return res;
     }
 
-    const bool SliderF(const char* a_label, float* a_value, float a_min, float a_max, const char* a_Tooltip, const char* fmt, const bool a_disabled){
+    const bool SliderF(const char* a_label, float* a_value, float a_min, float a_max, const char* a_Tooltip, const char* fmt, const bool a_disabled, const bool a_alwaysclamp){
         ImGui::BeginDisabled(a_disabled);
+
+        if(a_alwaysclamp){
+            if (*a_value > a_max)
+                *a_value = a_max;
+            if (*a_value < a_min)
+                *a_value = a_min;
+        }
+
         const bool res = ImGui::SliderFloat(a_label, a_value, a_min, a_max, fmt, ImGuiSliderFlags_AlwaysClamp);
 
-        if (ImGui::IsItemHovered() && a_Tooltip){
+        if (ImGui::IsItemHovered() && a_Tooltip && GImGui->HoveredIdTimer > TooltipDelay){
             ImGui::SetTooltip(a_Tooltip);
         }
         ImGui::EndDisabled();
@@ -47,7 +55,7 @@ namespace ImUtil {
         ImGui::BeginDisabled(a_disabled);
         const bool res = ImGui::SliderFloat3(a_label, a_value, a_min, a_max, fmt, ImGuiSliderFlags_AlwaysClamp);
 
-        if (ImGui::IsItemHovered() && a_Tooltip){
+        if (ImGui::IsItemHovered() && a_Tooltip && GImGui->HoveredIdTimer > TooltipDelay){
             ImGui::SetTooltip(a_Tooltip);
         }
         ImGui::EndDisabled();
@@ -58,7 +66,7 @@ namespace ImUtil {
         ImGui::BeginDisabled(a_disabled);
         const bool res = ImGui::SliderFloat2(a_label, a_value, a_min, a_max, fmt, ImGuiSliderFlags_AlwaysClamp);
 
-        if (ImGui::IsItemHovered() && a_Tooltip){
+        if (ImGui::IsItemHovered() && a_Tooltip && GImGui->HoveredIdTimer > TooltipDelay){
             ImGui::SetTooltip(a_Tooltip);
         }
         ImGui::EndDisabled();
@@ -90,9 +98,9 @@ namespace ImUtil {
         }
     }
 
-    const bool ConditionalHeader(const std::string a_label, const std::string a_ConditionText, const bool a_condition){
+    const bool ConditionalHeader(const std::string a_label, const std::string a_ConditionText, const bool a_condition, const bool a_defaultopen){
         ImGui::BeginDisabled(!a_condition);
-        auto flags = ImGuiTreeNodeFlags_Bullet | (a_condition ? ImGuiTreeNodeFlags_DefaultOpen : 0);
+        auto flags = ImGuiTreeNodeFlags_Bullet | (a_condition && a_defaultopen ? ImGuiTreeNodeFlags_DefaultOpen : 0);
         
         //TODO Optimize this POS;
         const std::string _FullText = (a_label + (a_condition ? "##" : (" [" + a_ConditionText + "]")));

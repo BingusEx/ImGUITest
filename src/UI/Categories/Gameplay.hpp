@@ -16,6 +16,7 @@ namespace UI{
 
         private:
         SettingsGameplay& Settings = Config::GetGameplay();
+        void GameModeOptions(const char* a_title, GameplayActorSettings* a_Settings);
     };
 
 }

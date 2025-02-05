@@ -1,7 +1,8 @@
 .idea
 .vs
 .vscode/
-build
+out/
+build/
 *.exe
 *.dll
 *.pdb

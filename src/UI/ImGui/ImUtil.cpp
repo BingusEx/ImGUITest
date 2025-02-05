@@ -25,8 +25,10 @@ namespace ImUtil {
     const bool CheckBox(const char* a_label, bool* a_state, const char* a_Tooltip, const bool a_disabled){
         ImGui::BeginDisabled(a_disabled);
         const bool res = ImGui::Checkbox(a_label, a_state);
+        
         if (ImGui::IsItemHovered() && a_Tooltip && GImGui->HoveredIdTimer > TooltipDelay){
             ImGui::SetTooltip(a_Tooltip);
+        
         }
         ImGui::EndDisabled();
         return res;
@@ -158,6 +160,7 @@ namespace ImUtil {
         if (start == std::string::npos) {
             return "";
         }
+
         size_t end = result.find_last_not_of(' ');
         result = result.substr(start, end - start + 1);
 

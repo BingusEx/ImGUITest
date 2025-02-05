@@ -138,6 +138,22 @@ struct GameplayActorSettings {
 };
 TOML_SERIALIZABLE(GameplayActorSettings);
 
+struct GameplayActionSettings {
+
+    //Player/AI
+    float fStartThighSandwichScale = 6.0f;  
+    float fStartStompScale = 10.0f;
+	float fStartButtCrushScale = 2.0f;
+	float fStartVoreScale = 8.0f;
+	float fStartGrabScale = 8.0f;
+	float fHugDropScale = 0.92f;
+
+    //AI
+    float fAIStartThighCrushScale = 4.0f;
+
+};
+TOML_SERIALIZABLE(GameplayActionSettings);
+
 
 //------------------------------------------- Camera
 struct CameraOffsets {
@@ -202,8 +218,9 @@ struct AIButtAction {
 
     // Different probabilities for variations of the action
     float fFastProb = 50.0f;
-    float fTargetedProb = 50.0f;
+    float fButtCrushTypeProb = 50.0f;
     float fGrowProb = 80.0f;
+    float fCrushProb = 20.0f;
 
     // Timing and limit
     float fInterval = 2.0f;
@@ -225,6 +242,7 @@ struct AIGrabAction {
     float fCleavageProb = 50.0f;
     float fCleavageAttackProb = 50.0f;
     float fCleavageAbsorbProb = 50.0f;
+    float fCleavageVoreProb = 50.0f;
     float fCleavageSuffocateProb = 50.0f;
 
     // Timing
@@ -359,6 +377,9 @@ struct SettingsGameplay {
     GameplayActorSettings GamemodePlayer = {};
     GameplayActorSettings GamemodeFollower = {};
 
+    GameplayActionSettings ActionSettings = {};
+
+
     // Size Effects
     bool bPlayerAnimEffects = true;
     bool bNPCAnimEffects = true;
@@ -387,6 +408,9 @@ struct SettingsGameplay {
     bool bVoreWeightGain = false;
     bool bAllowSpiders = false;
     bool bAllowUndead = false;
+
+    //Hug Settings
+    bool bNonLethalHugsHostile = true;
 
     // Cleavage offset for forward/back and up/down adjustments
     std::array<float,2> f2CleavageOffset = {0.0f, 0.0f};
@@ -629,13 +653,13 @@ class Config {
                 
                 //Delete the config file
                 if(!Instance.DeleteFile(Instance.ConfigFile)){
-                    MessageBoxA(nullptr,"Could not delete Settings.toml\nCheck GTSPlugin.log for more info.\nThe game will now close", "Size Matters - GTSPlugin.dll", MB_OK);
+                    MessageBoxA(nullptr,"Could not delete Settings.toml\nCheck GTSPlugin.log for more info.\nThe game will now close.", "Size Matters - GTSPlugin.dll", MB_OK);
                     TerminateProcess(GetCurrentProcess(), EXIT_FAILURE);
                 }
                 
                 //Recreate the config file and start with a fresh table.
                 if(!Instance.CheckFile(Instance.ConfigFile)){
-                    MessageBoxA(nullptr,"Could not create a blank Settings.toml file.\nCheck GTSPlugin.log for more info.\nThe game will now close", "Size Matters - GTSPlugin.dll", MB_OK);
+                    MessageBoxA(nullptr,"Could not create a blank Settings.toml file.\nCheck GTSPlugin.log for more info.\nThe game will now close.", "Size Matters - GTSPlugin.dll", MB_OK);
                     TerminateProcess(GetCurrentProcess(), EXIT_FAILURE);
                 }
             }

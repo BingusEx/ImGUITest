@@ -108,7 +108,7 @@ namespace ImUtil {
         ImGui::BeginDisabled(a_disabled);
 
         bool res = ImGui::Combo(a_label, &currentIndex, items.c_str());
-        if (ImGui::IsItemHovered() && a_Tooltip){
+        if (ImGui::IsItemHovered() && a_Tooltip && GImGui->HoveredIdTimer > TooltipDelay){
             ImGui::SetTooltip(a_Tooltip);
         }
         ImGui::EndDisabled();

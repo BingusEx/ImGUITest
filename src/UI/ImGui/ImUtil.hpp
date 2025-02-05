@@ -34,7 +34,7 @@ namespace ImUtil {
     constexpr ImVec4 ColorError = {1.0f, 0.35f, 0.30f, 0.9f};
     constexpr ImVec4 ColorSubscript = {1.0f, 1.0f, 1.0f, 0.5f};
 
-    constexpr uint32_t HeaderFlags = ImGuiTreeNodeFlags_Bullet | ImGuiTreeNodeFlags_DefaultOpen;
+    constexpr uint32_t HeaderFlags = ImGuiTreeNodeFlags_DefaultOpen;
     
     constexpr float TooltipDelay = 0.45f; //sec
 

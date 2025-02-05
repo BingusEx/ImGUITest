@@ -24,10 +24,10 @@ void CategoryAI::DrawLeft(){
         const char* THelp = "The GTS AI checks at a configurable time interval what GTS actions it can start.\n"
                             "Whether the AI takes an action depends on said actions' probability settings.\n"
                             "If its probability percentage is low, the action is less likely to be started.\n"
-                            "When all action chances are low, the AI is more likely to do simply \"Do nothing\".\n"
-                            "As the \"Do nothing\" action chance is inversly weighted against them.\n\n"
+                            "When all action chances are low, the AI is more likely to do simply \"Do nothing\",\n"
+                            "as the \"Do nothing\" action chance is inversly proportional.\n\n"
                             "Some actions (like hugs or grabs) have their own actions (sub-actions) that work on the same idea but with their own settings\n"
-                            "whom you can modify on the right pane in this settings page.";
+                            "whom you can modify on the right pane of this settings page.";
 
         if(ImGui::CollapsingHeader("AI Settings",ImUtil::HeaderFlags)){
 
@@ -76,7 +76,7 @@ void CategoryAI::DrawRight(){
         const char* T0 = "Enable starting a vore action.";
         const char* T1 = "Set the chance for a vore action to be started.";
 
-        if(ImGui::CollapsingHeader("Vore",ImGuiTreeNodeFlags_Bullet)){
+        if(ImGui::CollapsingHeader("Vore",ImGuiTreeNodeFlags_None)){
             ImUtil::CheckBox("Enable Vore", &Settings.Vore.bEnableAction, T0);
             ImUtil::SliderF("Vore Probability", &Settings.Vore.fProbability, 1.0f, 100.0f, T1,"%.0f%%",!Settings.Vore.bEnableAction);
             ImGui::Spacing();
@@ -88,7 +88,7 @@ void CategoryAI::DrawRight(){
         const char* T0 = "Enable foot stomps when standing or hand stomps when sneaking / crawling.";
         const char* T1 = "Set the chance for a stomp action to be started.";
 
-        if(ImGui::CollapsingHeader("Stomps",ImGuiTreeNodeFlags_Bullet)){
+        if(ImGui::CollapsingHeader("Stomps",ImGuiTreeNodeFlags_None)){
             ImUtil::CheckBox("Enable Stomps", &Settings.Stomp.bEnableAction, T0);
             ImUtil::SliderF("Stomp Probability", &Settings.Stomp.fProbability, 1.0f, 100.0f, T1, "%.0f%%",!Settings.Stomp.bEnableAction);
             ImGui::Spacing();
@@ -99,7 +99,7 @@ void CategoryAI::DrawRight(){
         const char* T0 = "Enable kicks when standing or hand swipes when sneaking / crawling.";
         const char* T1 = "Set the chance for a kick or swipe action to be started.";
 
-        if(ImGui::CollapsingHeader("Kicks / Swipes",ImGuiTreeNodeFlags_Bullet)){
+        if(ImGui::CollapsingHeader("Kicks / Swipes",ImGuiTreeNodeFlags_None)){
             ImUtil::CheckBox("Enable Kicks / Swipes", &Settings.KickSwipe.bEnableAction, T0);
             ImUtil::SliderF("Kick / Swipe Probability", &Settings.KickSwipe.fProbability, 1.0f, 100.0f, T1,"%.0f%%",!Settings.KickSwipe.bEnableAction);
             ImGui::Spacing();
@@ -118,7 +118,7 @@ void CategoryAI::DrawRight(){
         const char* T3 = "Modify the chance to start a heavy attack.";
         const char* T4 = "Modify the chance to start a light attack.";
         
-        if(ImGui::CollapsingHeader("Thigh Sandwich",ImGuiTreeNodeFlags_Bullet)){
+        if(ImGui::CollapsingHeader("Thigh Sandwich",ImGuiTreeNodeFlags_None)){
             ImUtil::CheckBox("Enable Thigh Sandwich", &Settings.ThighSandwich.bEnableAction, T0);
 
             {
@@ -148,7 +148,7 @@ void CategoryAI::DrawRight(){
 
         const char* T3 = "Modify the chance to perform an attack.";
 
-        if(ImGui::CollapsingHeader("Thigh Crush",ImGuiTreeNodeFlags_Bullet)) {
+        if(ImGui::CollapsingHeader("Thigh Crush",ImGuiTreeNodeFlags_None)) {
 
             ImUtil::CheckBox("Enable Thigh Crush", &Settings.ThighCrush.bEnableAction, T0);
             
@@ -180,7 +180,7 @@ void CategoryAI::DrawRight(){
         const char* T7 = "Set the chance to perform a hug crush action.";
         const char* T8 = "Set the chance to perform a hug shrink action.";
 
-        if(ImGui::CollapsingHeader("Hugs",ImGuiTreeNodeFlags_Bullet)){
+        if(ImGui::CollapsingHeader("Hugs",ImGuiTreeNodeFlags_None)){
 
             ImUtil::CheckBox("Enable Hugs", &Settings.Hugs.bEnableAction, T0);
 
@@ -229,7 +229,7 @@ void CategoryAI::DrawRight(){
                          "grows to this scale, the next time the interval timer ticks,\n"
                          "they will perform a crush action.";
 
-        if(ImGui::CollapsingHeader("Butt Crush",ImGuiTreeNodeFlags_Bullet)) {
+        if(ImGui::CollapsingHeader("Butt Crush",ImGuiTreeNodeFlags_None)) {
 
             ImUtil::CheckBox("Enable Butt Crush", &Settings.ButtCrush.bEnableAction, T0);
 
@@ -280,7 +280,7 @@ void CategoryAI::DrawRight(){
         const char* T9 = "If an NPC is between the followers' cleavage, set the chance for a crush attack action to start.";
         const char* T10 = "If an NPC is between the followers' cleavage, set the chance for a suffocation action to start.";
 
-        if(ImGui::CollapsingHeader("Grabs",ImGuiTreeNodeFlags_Bullet)) {
+        if(ImGui::CollapsingHeader("Grabs",ImGuiTreeNodeFlags_None)) {
 
             ImUtil::CheckBox("Enable Grabs", &Settings.Grab.bEnableAction, T0);
 

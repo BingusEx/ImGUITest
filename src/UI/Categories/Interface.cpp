@@ -66,8 +66,8 @@ void CategoryInterface::DrawLeft(){
                 ImUtil::ComboEx<ImWindow::WindowAnchor>("Anchor", Settings.SettingsWindow.sAnchor, T2);
                 ImGui::BeginDisabled(Settings.SettingsWindow.sAnchor == "kCenter");
                 {
-                    ImUtil::SliderF("Offset (Left/Right)", &Settings.SettingsWindow.f2Offset[0], 0.0f, 700.0f, T3,"%.1f%");
-                    ImUtil::SliderF("Offset (Up/Down)", &Settings.SettingsWindow.f2Offset[1], 0.0f, 700.0f, T4,"%.1f%");
+                    ImUtil::SliderF("Offset (Left/Right)", &Settings.SettingsWindow.f2Offset[0], 0.0f, 700.0f, T3,"%.1f%%");
+                    ImUtil::SliderF("Offset (Up/Down)", &Settings.SettingsWindow.f2Offset[1], 0.0f, 700.0f, T4,"%.1f%%");
                 }
                 ImGui::EndDisabled();
             }

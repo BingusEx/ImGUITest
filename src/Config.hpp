@@ -351,7 +351,8 @@ struct SettingsGeneral {
     bool bProtectFollowers = true;
 
     // Gameplay enhancements
-    bool bDynamicSize = true;
+    bool bDynamicSizePlayer = true;
+    bool bDynamicSizeFollowers = true;
     bool bDynamicAnimspeed = true;
     bool bEnableHighHeels = true;
     bool bHighheelsFurniture = true;
@@ -365,6 +366,9 @@ struct SettingsGeneral {
 
     // Bone tracking for foot Animations
     bool bTrackBonesDuringAnim = true;
+
+    bool bPlayerLootpiles = true;
+    bool bFollowerLootpiles = true;
 };
 TOML_SERIALIZABLE(SettingsGeneral);
 

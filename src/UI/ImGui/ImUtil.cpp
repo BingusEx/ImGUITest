@@ -102,7 +102,7 @@ namespace ImUtil {
 
     const bool ConditionalHeader(const std::string a_label, const std::string a_ConditionText, const bool a_condition, const bool a_defaultopen){
         ImGui::BeginDisabled(!a_condition);
-        auto flags = ImGuiTreeNodeFlags_Bullet | (a_condition && a_defaultopen ? ImGuiTreeNodeFlags_DefaultOpen : 0);
+        auto flags = ImGuiTreeNodeFlags_None | (a_condition && a_defaultopen ? ImGuiTreeNodeFlags_DefaultOpen : 0);
         
         //TODO Optimize this POS;
         const std::string _FullText = (a_label + (a_condition ? "##" : (" [" + a_ConditionText + "]")));

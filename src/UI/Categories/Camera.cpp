@@ -29,7 +29,7 @@ inline void DrawCameraOffsets(const char* a_title, const char* a_toolip, std::ar
 void DrawCameraSettings(CameraOffsets* a_set, const char* a_title) {
     const char* T0 = "Select which biped skeleton bone the camera should track.";
 
-    if (ImGui::CollapsingHeader(a_title, ImGuiTreeNodeFlags_Bullet)) {
+    if (ImGui::CollapsingHeader(a_title, ImGuiTreeNodeFlags_None)) {
         ImUtil::ComboEx<CameraTrackingUsr>("Center On Bone", a_set->sCenterOnBone, T0);
 
         ImUtil_Unique {
@@ -104,7 +104,7 @@ void CategoryCamera::DrawLeft() {
         const char* T4 = "Enable camera collision with statics (basically any solid, non-movable object).";
         const char* T5 = "Change the scale at which the above collision settings should apply.";
 
-        if (ImGui::CollapsingHeader("Camera Collision", ImGuiTreeNodeFlags_Bullet)) {
+        if (ImGui::CollapsingHeader("Camera Collision", ImGuiTreeNodeFlags_None)) {
             ImUtil::CheckBox("Collide With Actors", &Settings.bCamCollideActor, T0);
             ImGui::SameLine();
             ImUtil::CheckBox("Collide With Trees", &Settings.bCamCollideTree, T1);
@@ -132,7 +132,7 @@ void CategoryCamera::DrawLeft() {
             "Note: These values are modified through hooks,\n"
             "so no matter what values you set in any ini file, they will be overridden by the offsets set here.";
 
-        if (ImGui::CollapsingHeader("Skyrim Camera Settings", ImGuiTreeNodeFlags_Bullet)) {
+        if (ImGui::CollapsingHeader("Skyrim Camera Settings", ImGuiTreeNodeFlags_None)) {
             ImGui::TextColored(ImUtil::ColorSubscript, "What is this (?)");
 
             if (ImGui::IsItemHovered()) {
@@ -178,7 +178,7 @@ void CategoryCamera::DrawRight() {
     ImUtil_Unique {
         const char* T0 = "Offset the foot cameras forward or backward.";
 
-        if (ImGui::CollapsingHeader("Foot Camera", ImGuiTreeNodeFlags_Bullet)) {
+        if (ImGui::CollapsingHeader("Foot Camera", ImGuiTreeNodeFlags_None)) {
             ImUtil::SliderF("Forward - Back", &Settings.fFootCameraFBOffset, -200.f, 200.f, T0, "%.1f");
 
             ImGui::Spacing();

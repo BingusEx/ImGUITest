@@ -114,7 +114,7 @@ void CategoryGameplay::DrawLeft() {
     }
 
     ImUtil_Unique {
-        if (ImGui::CollapsingHeader("Size Effects", ImGuiTreeNodeFlags_Bullet)) {
+        if (ImGui::CollapsingHeader("Size Effects", ImGuiTreeNodeFlags_None)) {
 
             const char* T1 = "When large enough, footsteps or size-related actions will launch physics-enabled items.";
 
@@ -135,7 +135,7 @@ void CategoryGameplay::DrawLeft() {
     }
 
     ImUtil_Unique {
-        if (ImGui::CollapsingHeader("Animations", ImGuiTreeNodeFlags_Bullet)) {
+        if (ImGui::CollapsingHeader("Animations", ImGuiTreeNodeFlags_None)) {
 
             const char* T1 = "When enabled:\n"
                              "Replaces the light stomp animations made by SonderBain with different\n"
@@ -155,7 +155,7 @@ void CategoryGameplay::DrawLeft() {
     }
 
     ImUtil_Unique {
-        if (ImGui::CollapsingHeader("Vore Settings", ImGuiTreeNodeFlags_Bullet)) {
+        if (ImGui::CollapsingHeader("Vore Settings", ImGuiTreeNodeFlags_None)) {
 
             const char* T1 = "Modify the amount of growth gained after vore.";
             const char* T2 = "Enable Skyrim's free camera when doing any vore actions.";
@@ -174,7 +174,7 @@ void CategoryGameplay::DrawLeft() {
     }
 
     ImUtil_Unique {
-        if (ImGui::CollapsingHeader("Hug Settings", ImGuiTreeNodeFlags_Bullet)) {
+        if (ImGui::CollapsingHeader("Hug Settings", ImGuiTreeNodeFlags_None)) {
 
             const char* T1 = "Toggle wether non lethal hug actions\n"
                              "like Hug-Heal or Hug-Shrink should start combat.";
@@ -186,7 +186,7 @@ void CategoryGameplay::DrawLeft() {
     }
 
     ImUtil_Unique {
-        if (ImGui::CollapsingHeader("Cleavage Offsets", ImGuiTreeNodeFlags_Bullet)) {
+        if (ImGui::CollapsingHeader("Cleavage Offsets", ImGuiTreeNodeFlags_None)) {
 
             const char* T1 = "Modify the placement of actors during cleavage actions.";
 

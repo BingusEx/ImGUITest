@@ -200,7 +200,7 @@ void WindowSettings::Draw() {
         volatile bool buttonstate = SaveLoadBusy.load();
 
         //Load
-        if(ImUtil::Button(Lables[0], "(Re)Load the values stored in Settings.toml", buttonstate, 1.2f)){
+        if(ImUtil::Button(Lables[0], "Reload and apply the values currenly stored in Settings.toml", buttonstate, 1.3f)){
             SaveLoadBusy.store(true);
             std::thread(&WindowSettings::AsyncLoad, this).detach();
         }
@@ -208,7 +208,7 @@ void WindowSettings::Draw() {
         ImGui::SameLine();
 
         //Save
-        if(ImUtil::Button(Lables[1], "Save changes to Settings.toml", buttonstate, 1.2f)){
+        if(ImUtil::Button(Lables[1], "Save changes to Settings.toml", buttonstate, 1.3f)){
             SaveLoadBusy.store(true);
             std::thread(&WindowSettings::AsyncSave, this).detach();
         }
@@ -216,7 +216,7 @@ void WindowSettings::Draw() {
         ImUtil::SeperatorV();
         
         //Reset
-        if(ImUtil::Button(Lables[2], "Load the default values, this does not change", buttonstate, 1.2f)){
+        if(ImUtil::Button(Lables[2], "Load the default values.\nThis does not delete any previous saved changes unless you explicitly overwrite them by saving.", buttonstate, 1.3f)){
             Settings.ResetToDefaults();
             StyleMgr.LoadStyle();
             FontMgr.RebuildFonts();

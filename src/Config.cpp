@@ -1,4 +1,3 @@
-#include "TOMLUtil.hpp"
 #include "boost/pfr.hpp"
 #include "imgui.h"
 
@@ -33,11 +32,11 @@ bool Config::LoadStructFromTOML(const auto& a_toml, T& a_data) {
     }
 }
 
-// /// @brief 
-// /// @tparam T Given a parsed toml file and struct, replaces the toml table with the data found in the given stuct.
-// /// @param a_toml Parsed TOML File.
-// /// @param a_data Reference to a data only struct.
-// /// @return true on success, false on failure.
+/// @brief 
+/// @tparam T Given a parsed toml file and struct, replaces the toml table with the data found in the given stuct.
+/// @param a_toml Parsed TOML File.
+/// @param a_data Reference to a data only struct.
+/// @return true on success, false on failure.
 template<typename T>
 bool Config::UpdateTOMLFromStruct(auto& a_toml, T& a_data) {
     static_assert(std::is_class_v<T>, "a_data must be a struct or class type");
@@ -194,7 +193,7 @@ bool Config::LoadSettings() {
     catch (const toml::exception& e) {
         
         //We shouldn't immediatly panic while ingame like we do in the constructor call. 
-        //The way to even trigger this exception would be to modify the file incorrectly while ingame.
+        //The only way to even trigger this exception would be to modify the file incorrectly while ingame.
         //You'd never need to mess with the file though in the first place
         //Except to enable the hidden options. But... if someone does decide to be an idiot
         //Atleast I can say I tried to handle said someone being an idiot...

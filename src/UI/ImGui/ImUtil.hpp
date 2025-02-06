@@ -7,6 +7,7 @@
 
 #include "magic_enum/magic_enum.hpp"
 
+
 // RAII helper to push an ID on construction and pop it on destruction
 // So i don't have to remember to use push pop constantly...
 struct ImGuiUniqueID {
@@ -69,6 +70,8 @@ namespace ImUtil {
     const bool SliderF2(const char* a_label, float* a_value, float a_min, float a_max, const char* a_Tooltip = nullptr, const char* fmt = "%.2f", const bool a_disabled = false);
     const bool SliderF3(const char* a_label, float* a_value, float a_min, float a_max, const char* a_Tooltip = nullptr, const char* fmt = "%.2f", const bool a_disabled = false);
     
+    void CenteredProgress(float fraction, const ImVec2& size_arg, const char* overlay = nullptr);
+    
     void Bitfield(const char* a_label, uint32_t* a_bitfield);
 
     void HelpMarker(const char* a_desc);
@@ -119,6 +122,30 @@ namespace ImUtil {
         }
 
         return res;
+    }
+
+    template <typename EnumT>
+    void Bitfield(typename std::underlying_type<EnumT>::type* a_bitfield) {
+        static_assert(std::is_enum<EnumT>::value, "EnumT must be an enum type");
+        
+        using Underlying = typename std::underlying_type<EnumT>::type;
+
+        uint32_t itt = 0;
+        for (auto flag : magic_enum::enum_values<EnumT>()) {
+            Underlying flagValue = static_cast<Underlying>(flag);
+            bool bit = ((*a_bitfield) & flagValue) != 0;
+
+            const std::string checkboxLabel = HumanizeEnum(magic_enum::enum_name(flag));
+            ImGui::Checkbox(checkboxLabel.c_str(), &bit);
+            
+            if(++itt % 3)
+                ImGui::SameLine(220.0f * (itt % 3));
+
+            // If the checkbox state has changed, update the bitfield.
+            if (bit != (((*a_bitfield) & flagValue) != 0)) {
+                *a_bitfield ^= flagValue;
+            }
+        }
     }
 
 }

@@ -75,17 +75,7 @@ namespace ImUtil {
         return res;
     }
 
-    void Bitfield(const char* a_label, uint32_t* a_bitfield) {
-        for (int i = 0; i < 32; ++i) {
-            bool bit = (*a_bitfield >> i) & 1; // Extract the i-th bit
-            ImGui::Checkbox(("Bit " + std::to_string(i)).c_str(), &bit);
 
-            // Update the bitfield if the checkbox is toggled
-            if (bit != ((*a_bitfield >> i) & 1)) {
-                *a_bitfield ^= (1 << i); // Toggle the i-th bit
-            }
-        }
-    }
 
     // Helper to display a little (?) mark which shows a tooltip when hovered.
     void HelpMarker(const char* a_desc) {
@@ -182,5 +172,54 @@ namespace ImUtil {
         return final_result;
     }
 
+    void CenteredProgress(float fraction, const ImVec2& size_arg, const char* overlay) {
+        ImGuiWindow* window = ImGui::GetCurrentWindow();
+        if (window->SkipItems)
+            return;
 
+        ImGuiContext& g = *GImGui;
+        const ImGuiStyle& style = g.Style;
+
+        // Calculate progress bar dimensions
+        ImVec2 pos = window->DC.CursorPos;
+        ImVec2 size = ImGui::CalcItemSize(size_arg, ImGui::CalcItemWidth(), g.FontSize + style.FramePadding.y * 2.0f);
+        ImVec2 possize = {pos.x + size.x, pos.y + size.y};
+        ImRect bb(pos, possize);
+        
+        // Register the item and handle clipping
+        ImGui::ItemSize(size, style.FramePadding.y);
+        if (!ImGui::ItemAdd(bb, 0))
+            return;
+
+        // Render background
+        ImU32 bg_color = ImGui::GetColorU32(ImGuiCol_FrameBg);
+        ImU32 fill_color = ImGui::GetColorU32(ImGuiCol_PlotHistogram);
+        float frame_rounding = style.FrameRounding;
+        window->DrawList->AddRectFilled(bb.Min, bb.Max, bg_color, frame_rounding);
+
+        // Render filled portion
+        if (fraction > 0.0f) {
+            float fill_width = ImMax(size.x * fraction, 2.0f);
+            ImRect fill_bb(bb.Min, ImVec2(bb.Min.x + fill_width, bb.Max.y));
+            window->DrawList->AddRectFilled(fill_bb.Min, fill_bb.Max, fill_color, frame_rounding);
+        }
+
+        // Render centered text
+        if (overlay != nullptr) {
+            ImVec2 overlay_size = ImGui::CalcTextSize(overlay);
+            ImVec2 text_pos = ImVec2(
+                bb.Min.x + (size.x - overlay_size.x) * 0.5f,
+                bb.Min.y + (size.y - overlay_size.y) * 0.5f
+            );
+            
+            // Draw text with contrasting shadow
+            window->DrawList->AddText(
+                ImVec2(text_pos.x + 1, text_pos.y + 1), 
+                IM_COL32(0,0,0,128 * ImGui::GetStyle().Alpha), 
+                overlay
+            );
+            window->DrawList->AddText(text_pos, ImGui::GetColorU32(ImGuiCol_Text), overlay);
+        }
+    }
+    
 }

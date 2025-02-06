@@ -20,8 +20,6 @@ void CategoryAdvanced::DrawLeft(){
         const char* T4 = "Set the flush severity level. The higher it is the more info is dumped into GTSPlugin.log when a crash happens\n"
                          "Sidenote: I've never actually seen this do anything... No extra info is flushed out. I guess we always immediatly empty the log buffer...";
 
-
-
         if(ImGui::CollapsingHeader("Logging / Debugging",ImUtil::HeaderFlags)){
             ImUtil::CheckBox("Enable Profiling",&Settings.bProfile, T0);
             ImUtil::CheckBox("Allocate Console",&Settings.bAllocConsole, T1);
@@ -57,7 +55,8 @@ void CategoryAdvanced::DrawLeft(){
 void CategoryAdvanced::DrawRight(){
 
     ImUtil_Unique 
-    {   //ImGui Debug
+    {   
+        //ImGui Debug
         if(ImGui::CollapsingHeader("ImGui Debug",ImUtil::HeaderFlags)){
             ImGui::BulletText("Viewport Size: (%.2f,%.2f)", ImGui::GetMainViewport()->Size.x, ImGui::GetMainViewport()->Size.y);
             ImGui::BulletText("Viewport Position: (%.2f,%.2f)", ImGui::GetMainViewport()->Pos.x, ImGui::GetMainViewport()->Pos.y);
@@ -65,7 +64,6 @@ void CategoryAdvanced::DrawRight(){
             ImGui::BulletText("Config Window Position: (%.2f,%.2f)", ImGui::GetWindowPos().x, ImGui::GetWindowPos().y);
             ImGui::Spacing();
         
-
             {   
                 const char* T0 = "Show ImGui's Metrics Window";
                 const char* T1 = "Show ImGui's Stack Window";

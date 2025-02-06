@@ -1,7 +1,7 @@
 #pragma once
 
 #include "toml.hpp"
-#include "TOMLUtil.hpp"
+#include "src/Util/TOMLUtil.hpp"
 #include "magic_enum/magic_enum.hpp"
 
 void Test();
@@ -264,7 +264,7 @@ struct WindowConfStatus {
     float fAlpha = 1.0f;
 
     // Display control
-    uint32_t iDisplayItems = UINT32_MAX;
+    uint32_t iFlags = 2070;
 };
 TOML_SERIALIZABLE(WindowConfStatus);
 

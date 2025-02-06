@@ -31,9 +31,20 @@ void ImWindowManager::Draw(){
             if (window->ShouldShow()) {
                 ImGui::PushStyleVar(ImGuiStyleVar_Alpha, window->GetAlpha());
                 ImGui::PushFont(FontMgr.GetFont("text")); //Default font
-            
+                volatile bool PushedVars = false;
+
+                if(!window->DrawBG){
+                    ImGui::PushStyleColor(ImGuiCol_WindowBg, {0.0f, 0.0f, 0.0f, 0.0f});
+                    PushedVars = true;
+                }
+
                 ImGui::Begin((window->Name).c_str(), &window->Show, window->flags);
+
                 window->Draw();
+
+                if(PushedVars){
+                    ImGui::PopStyleColor();
+                }
 
                 ImGui::End();
                 ImGui::PopStyleVar();

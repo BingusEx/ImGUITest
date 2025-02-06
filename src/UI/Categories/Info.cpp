@@ -5,12 +5,8 @@
 
 using namespace UI;
 
-void CategoryInfo::Draw(){
-    ImUtil::CheckBox("IKnowWhatImDoing",&Settings.IKnowWhatImDoing, "@Sermit, This option enables hidden/debug settings\nThe idea is to keep these hidden so idiots dont kill their game. The settings loader completely ignores these settings if it cant find a hidden config option\nThis Config option must be added manually to the toml like this.\n\n[Hidden]\nIKnowWhatImDoing = true");
-}
-
-inline void DrawInfo(/*Actor* TargetActor */){
-
+inline void DrawInfo(/* Actor* TargetActor */){
+    
 
     //Animations Installed <--- Make a fancy colored checkmark out of it
 
@@ -46,7 +42,12 @@ inline void DrawInfo(/*Actor* TargetActor */){
 
     ImGui::ProgressBar(_currentScale/_maxScale);
 
-
     ImGui::EndGroup();
 
 }
+
+void CategoryInfo::Draw(){
+    ImUtil::CheckBox("IKnowWhatImDoing",&Settings.IKnowWhatImDoing, "@Sermit, This option enables hidden/debug settings\nThe idea is to keep these hidden so idiots dont kill their game. The settings loader completely ignores these settings if it cant find a hidden config option\nThis Config option must be added manually to the toml like this.\n\n[Hidden]\nIKnowWhatImDoing = true");
+}
+
+

@@ -134,4 +134,26 @@ void CategoryGeneral::DrawRight(){
 
         }
     }
+
+    ImUtil_Unique {
+        
+        const char* T0 = "Automatically complete this mods' quest.";
+        const char* T1 = "Get the basic size manipulation spells before completing the quest.";
+        const char* T2 = "Instantly complete the perk tree.";
+
+        if(ImUtil::ConditionalHeader("Skip Progression","Balance Mode Active", !Config::GetBalance().bBalanceMode)){ 
+
+            if(ImUtil::Button("Skip Quest",T0)){
+
+            } //TODO Disable by checking quest state
+            ImGui::SameLine();
+            if(ImUtil::Button("Get Basic Spells",T1)){
+
+            } //Disable by asking papyrus
+            ImGui::SameLine();
+            if(ImUtil::Button("Get All Perks",T2)){
+                
+            } //Disable by asking papyrus
+        }
+    }
 }

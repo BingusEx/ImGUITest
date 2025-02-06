@@ -57,7 +57,7 @@ void CategoryAI::DrawLeft(){
 
     ImUtil_Unique {
 
-        const char* T0 = "Toggle wether other NPCs should panic when near a GTS."; 
+        const char* T0 = "Toggle whether other NPCs should panic when near a GTS."; 
 
         if(ImGui::CollapsingHeader("Misc Settings",ImUtil::HeaderFlags)){
             ImUtil::CheckBox("Actors Panic", &Settings.bPanic, T0);

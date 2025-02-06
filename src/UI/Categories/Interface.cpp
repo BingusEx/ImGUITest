@@ -5,6 +5,7 @@
 #include "src/UI/ImGui/ImUtil.hpp"
 
 #include "magic_enum/magic_enum.hpp"
+#include "src/UI/Windows/GTSInfo.hpp"
 
 using namespace UI;
 
@@ -66,8 +67,8 @@ void CategoryInterface::DrawLeft(){
                 ImUtil::ComboEx<ImWindow::WindowAnchor>("Anchor", Settings.SettingsWindow.sAnchor, T2);
                 ImGui::BeginDisabled(Settings.SettingsWindow.sAnchor == "kCenter");
                 {
-                    ImUtil::SliderF("Offset (Left/Right)", &Settings.SettingsWindow.f2Offset[0], 0.0f, 700.0f, T3,"%.1f%%");
-                    ImUtil::SliderF("Offset (Up/Down)", &Settings.SettingsWindow.f2Offset[1], 0.0f, 700.0f, T4,"%.1f%%");
+                    ImUtil::SliderF("Offset (Left/Right)", &Settings.SettingsWindow.f2Offset[0], 0.0f, 700.0f, T3,"%.1f");
+                    ImUtil::SliderF("Offset (Up/Down)", &Settings.SettingsWindow.f2Offset[1], 0.0f, 700.0f, T4,"%.1f");
                 }
                 ImGui::EndDisabled();
             }
@@ -85,7 +86,7 @@ void CategoryInterface::DrawRight(){
 
     ImUtil_Unique {
 
-        const char* T0 = "Toggle visibility of the stats window.";
+        const char* T0 = "Toggle visibility extra information for the player character.";
         const char* T1 = "Adjust the opacity of the stats window.";
         const char* T2 = "Locks the stats window's position and size";
         const char* T3 = "Choose the alignment point for the window on screen";
@@ -93,7 +94,7 @@ void CategoryInterface::DrawRight(){
         const char* T5 = "Adjust vertical offset from the selected anchor point.";
 
         if(ImGui::CollapsingHeader("Status Widget",ImUtil::HeaderFlags)){ 
-            ImUtil::CheckBox("Show Stats Widget", &Settings.StatusWindow.bVisible, T0);
+            ImUtil::CheckBox("Show Player Stats Widget", &Settings.StatusWindow.bVisible, T0);
 
             ImUtil::SliderF("Widget Alpha", &Settings.StatusWindow.fAlpha, 0.1f, 1.0f, T1,("%.1fx"));
             
@@ -110,10 +111,11 @@ void CategoryInterface::DrawRight(){
                 }
                 ImGui::EndDisabled();
             }
-
-            //ImUtil::Bitfield("Bits",&Settings.StatusWindow.iDisplayItems);
-            ImGui::EndDisabled();
             ImGui::Spacing();
+            ImGui::EndDisabled();
+
+            if(ImGui::CollapsingHeader("Widget Flags",ImUtil::HeaderFlags))
+                ImUtil::Bitfield<GTSInfoFeatures>(&Settings.StatusWindow.iFlags);
         }
     }
 }

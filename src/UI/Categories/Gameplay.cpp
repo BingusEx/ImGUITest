@@ -38,9 +38,18 @@ void CategoryGameplay::GameModeOptions(const char* a_title, GameplayActorSetting
                      "The value you select is offset by +/- 10%% each time.";
 
     // TODO Check for perk
-    const bool temp = true;
+    bool HasPerk = true;
 
-    if (ImUtil::ConditionalHeader(a_title, "Requires \"Colossal Growth\" Perk", temp, false)) {
+    const char* Reason;
+    if(Config::GetBalance().bBalanceMode){
+        Reason = "Balance Mode Active";
+        HasPerk = false;
+    }
+    else {
+        Reason = "Requires \"Colossal Growth\" Perk";
+    }
+
+    if (ImUtil::ConditionalHeader(a_title, Reason, HasPerk, false)) {
 
         ImUtil::ComboEx<GameMode>("Game Mode", a_Settings->sGameMode, T0);
 
@@ -176,7 +185,7 @@ void CategoryGameplay::DrawLeft() {
     ImUtil_Unique {
         if (ImGui::CollapsingHeader("Hug Settings", ImGuiTreeNodeFlags_None)) {
 
-            const char* T1 = "Toggle wether non lethal hug actions\n"
+            const char* T1 = "Toggle whether non lethal hug actions\n"
                              "like Hug-Heal or Hug-Shrink should start combat.";
 
             ImUtil::CheckBox("Non Lethal Hugs Are Hostile", &Settings.bNonLethalHugsHostile, T1);
@@ -202,8 +211,17 @@ void CategoryGameplay::DrawRight() {
 
     ImUtil_Unique {
         //TODO Check for perk
-        const bool temp = true;
-        if (ImUtil::ConditionalHeader("Random Growth", "Requires \"Pleasurable Growth\" Perk", temp)) {
+        bool HasPerk = true;
+        const char* Reason;
+        if(Config::GetBalance().bBalanceMode){
+            Reason = "Balance Mode Active";
+            HasPerk = false;
+        }
+        else {
+            Reason = "Requires \"Pleasurable Growth\" Perk";
+        }
+
+        if (ImUtil::ConditionalHeader("Random Growth", Reason, HasPerk)) {
 
             const char* T1 = "Change how often the random growth should trigger.\n"
                              "Lower values = More often.\n"

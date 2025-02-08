@@ -228,40 +228,43 @@ void CategoryGameplay::DrawRight() {
                              "Higher values = Less often.\n"
                              "Set to 0.0 to disable it entirely.";
 
-            ImUtil::SliderF("Growth Delay Player", &Settings.GamemodePlayer.fRandomGrowthDelay, 0.01f, 4.0f, T1, "%.2fx");
-            ImUtil::SliderF("Growth Delay Followers", &Settings.GamemodeFollower.fRandomGrowthDelay, 0.01f, 4.0f, T1, "%.2fx");
+            const char* Fmt1 = Settings.GamemodePlayer.fRandomGrowthDelay != 0.0f ? "%.2fx" : "Disabled";
+            const char* Fmt2 = Settings.GamemodeFollower.fRandomGrowthDelay != 0.0f ? "%.2fx" : "Disabled";
+
+            ImUtil::SliderF("Growth Delay Player", &Settings.GamemodePlayer.fRandomGrowthDelay, 0.00f, 4.0f, T1, Fmt1);
+            ImUtil::SliderF("Growth Delay Followers", &Settings.GamemodeFollower.fRandomGrowthDelay, 0.00f, 4.0f, T1, Fmt2);
 
             ImGui::Spacing();
         }
     }
 
-    ImUtil_Unique {
-        //TODO Check for perk
-        const bool temp = true;
-        if (ImUtil::ConditionalHeader("Size Difference Thresholds", "Requires \"Colossal Growth\" Perk", temp,false)) {
+    // ImUtil_Unique {
+    //     //TODO Check for perk
+    //     const bool temp = true;
+    //     if (ImUtil::ConditionalHeader("Size Difference Thresholds", "Requires \"Colossal Growth\" Perk", temp,false)) {
             
-            const char* T0 = "Size difference required between the GTS and a target to start a vore action.";
-            const char* T1 = "Size difference required between the GTS and a target to start a butt crush action.";
-            const char* T2 = "Size difference required between the GTS and a target to start a grab action.";
-            const char* T3 = "Size difference required between the GTS and a target to start a thigh sandwich action.";
-            const char* T4 = "Size difference required between the GTS and a target for stomps to start doing significant damage.";
-            const char* T5 = "Size difference required between the GTS and a target to be able to keep perfoming hugs on them.";
-            const char* T6 = "Size difference required between the GTS AI and a target to start a thigh crush action.";
+    //         const char* T0 = "Size difference required between the GTS and a target to start a vore action.";
+    //         const char* T1 = "Size difference required between the GTS and a target to start a butt crush action.";
+    //         const char* T2 = "Size difference required between the GTS and a target to start a grab action.";
+    //         const char* T3 = "Size difference required between the GTS and a target to start a thigh sandwich action.";
+    //         const char* T4 = "Size difference required between the GTS and a target for stomps to start doing significant damage.";
+    //         const char* T5 = "Size difference required between the GTS and a target to be able to keep perfoming hugs on them.";
+    //         const char* T6 = "Size difference required between the GTS AI and a target to start a thigh crush action.";
 
-            ImGui::Text("Applies to both Player/Followers");
-            ImUtil::SliderF("Start Vore", &Settings.ActionSettings.fStartVoreScale, 4.0f, 10.0f, T0, "%.2fx");
-            ImUtil::SliderF("Start Butt Crush", &Settings.ActionSettings.fStartButtCrushScale, 1.5f, 5.0f, T1, "%.2fx");
-            ImUtil::SliderF("Start Grab", &Settings.ActionSettings.fStartGrabScale, 5.5f, 10.0f, T2, "%.2fx");
-            ImUtil::SliderF("Start Thigh Sandwich", &Settings.ActionSettings.fStartThighSandwichScale, 3.0f, 10.0f, T3, "%.2fx");
-            ImUtil::SliderF("Start Stomp", &Settings.ActionSettings.fStartStompScale, 5.0f, 4.0f, T4, "%.2fx");
-            ImUtil::SliderF("Hugs Max Size Difference", &Settings.ActionSettings.fHugDropScale, 0.7f, 1.1f, T5, "%.2fx");
+    //         ImGui::Text("Applies to both Player/Followers");
+    //         ImUtil::SliderF("Start Vore", &Settings.ActionSettings.fStartVoreScale, 4.0f, 10.0f, T0, "%.2fx");
+    //         ImUtil::SliderF("Start Butt Crush", &Settings.ActionSettings.fStartButtCrushScale, 1.5f, 5.0f, T1, "%.2fx");
+    //         ImUtil::SliderF("Start Grab", &Settings.ActionSettings.fStartGrabScale, 5.5f, 10.0f, T2, "%.2fx");
+    //         ImUtil::SliderF("Start Thigh Sandwich", &Settings.ActionSettings.fStartThighSandwichScale, 3.0f, 10.0f, T3, "%.2fx");
+    //         ImUtil::SliderF("Start Stomp", &Settings.ActionSettings.fStartStompScale, 5.0f, 4.0f, T4, "%.2fx");
+    //         ImUtil::SliderF("Hugs Max Size Difference", &Settings.ActionSettings.fHugDropScale, 0.7f, 1.1f, T5, "%.2fx");
 
-            ImGui::Text("Applies to followers only");
-            ImUtil::SliderF("Start Thigh Crush", &Settings.ActionSettings.fAIStartThighCrushScale, 3.0f, 10.0f, T6, "%.2fx");
+    //         ImGui::Text("Applies to followers only");
+    //         ImUtil::SliderF("Start Thigh Crush", &Settings.ActionSettings.fAIStartThighCrushScale, 3.0f, 10.0f, T6, "%.2fx");
 
-            ImGui::Spacing();
-        }
-    }
+    //         ImGui::Spacing();
+    //     }
+    // }
 
 
 

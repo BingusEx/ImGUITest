@@ -39,14 +39,22 @@ void CategoryAdvanced::DrawLeft(){
 
     ImUtil_Unique {
         
-        const char* T0 = "Immediately return from DamageAV Calls for the player.";
-        const char* T1 = "Bypass action cooldowns.";
-        const char* T2 = "Apply computationally expensive damage calculations to all actors.";
+        const char* T0 = "Apply computationally expensive damage calculations to all actors.";
 
         if(ImGui::CollapsingHeader("Mod Features",ImUtil::HeaderFlags)){ 
+            ImUtil::CheckBox("Apply Size Effects to all Actors",&Settings.bAllActorSizeEffects, T0);
+            ImGui::Spacing();
+        }
+    }
+
+    ImUtil_Unique {
+        
+        const char* T0 = "Immediately return from DamageAV Calls for the player.";
+        const char* T1 = "Bypass action cooldowns.";
+
+        if(ImGui::CollapsingHeader("Cheats",ImUtil::HeaderFlags)){ 
             ImUtil::CheckBox("ActorValue Damage",&Settings.bDamageAV, T0);
             ImUtil::CheckBox("Action Cooldowns",&Settings.bCooldowns, T1);
-            ImUtil::CheckBox("Apply Size Effects to all Actors",&Settings.bAllActorSizeEffects, T2);
             ImGui::Spacing();
         }
     }

@@ -75,7 +75,7 @@ namespace UI {
 
         void Init();
         void AddFont(FontData* a_font);
-        [[nodiscard]] ImFont* GetFont(const std::string& fontName);
+        [[nodiscard]] static ImFont* GetFont(const std::string& fontName);
         void ProcessActions();
 
     };

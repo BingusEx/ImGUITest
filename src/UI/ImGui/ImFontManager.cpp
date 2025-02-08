@@ -12,7 +12,7 @@ void ImFontManager::Init(){
     AddFont( new FontData("errortext",_SkyrimGUI_Console, 21.0f));
     AddFont( new FontData("subscript",_SkyrimGUI_Console, 12.0f));
     AddFont( new FontData("widgetbody",_SkyrimGUI_Light, 22.0f));
-    AddFont( new FontData("widgettitle",_SkyrimGUI_Light, 40.0f));
+    AddFont( new FontData("widgettitle",_SkyrimGUI_Light, 32.0f));
 
     BuildFontsInt();
 
@@ -42,8 +42,9 @@ void ImFontManager::BuildFontsInt(){
 
 // Utility function to get a font with fallback
 ImFont* ImFontManager::GetFont(const std::string& fontName) {
-    auto it = Fonts.find(fontName);
-    if (it != Fonts.end()) {
+    auto F = ImFontManager::GetSingleton();
+    auto it = F.Fonts.find(fontName);
+    if (it != F.Fonts.end()) {
         return it->second->font;  // Font found
     }
     return ImGui::GetIO().Fonts->Fonts[0];    // Fallback to default font

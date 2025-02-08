@@ -88,14 +88,13 @@ void CategoryBalance::DrawRight(){
 
         if(ImUtil::ConditionalHeader("Size Limits", "Requires \"Colossal Growth\" Perk", temp)){ 
             
-            //Assumed Max From Audio > 128x Is Mega. Seems Like good compromise for the slider resolution
-            const float Max = 129.0f; 
+            const float Max = 255.0f; 
             const float Min = 0.0;
 
             {   //Player Size
                 float* Scale = &Settings.fMaxPlayerSize;
-                const bool ShouldBeInf = *Scale > Max - 1.0f;
-                const bool ShouldBeAuto = *Scale < Min + 1.0f;
+                const bool ShouldBeInf = *Scale > Max - 5.0f;
+                const bool ShouldBeAuto = *Scale < Min + 0.1f;
 
                 std::string _Frmt = "";
 
@@ -120,8 +119,8 @@ void CategoryBalance::DrawRight(){
                     std::string ToolTip = fmt::format(
                         "Change the maximum player size\n"
                         "Higher than {:.0f}x scale disables the limit entirely\n"
-                        "Below 1.0x the limit is based on your skill level and perks.",
-                        Max - 1.0f
+                        "At 0.0x the limit is based on your skill level and perks.",
+                        Max - 5.0f
                     );
 
                     ImUtil::SliderF("Max Player Size", Scale, Min, Max, ToolTip.c_str(), _Frmt.c_str());
@@ -133,8 +132,8 @@ void CategoryBalance::DrawRight(){
             {   //Max Follower Size
                 
                 float* Scale = &Settings.fMaxFollowerSize;
-                const bool ShouldBeInf = *Scale > Max - 1.0f;
-                const bool ShouldBeAuto = *Scale < Min + 1.0f;
+                const bool ShouldBeInf = *Scale > Max - 5.0f;
+                const bool ShouldBeAuto = *Scale < Min + 0.1f;
 
                 std::string _Frmt = "";
                 if(ShouldBeInf) {
@@ -158,8 +157,8 @@ void CategoryBalance::DrawRight(){
                     std::string ToolTip = fmt::format(
                         "Change the maximum follower size\n"
                         "Higher than {:.0f}x scale disables the limit entirely\n"
-                        "Below 1.0x will base the limit on whatever the player's limit currently is.", 
-                        Max - 1.0f
+                        "At 0.0x scale the limit will be based on the player's.", 
+                        Max - 5.0f
                     );
 
                     ImUtil::SliderF("Max Follower Size", Scale, Min, Max, ToolTip.c_str(), _Frmt.c_str());
@@ -170,8 +169,8 @@ void CategoryBalance::DrawRight(){
             {   //Other NPC Max Size
                 
                 float* Scale = &Settings.fMaxOtherSize;
-                const bool ShouldBeInf = *Scale > Max - 1.0f;
-                const bool ShouldBeAuto = *Scale < Min + 1.0f;
+                const bool ShouldBeInf = *Scale > Max - 5.0f;
+                const bool ShouldBeAuto = *Scale < Min + 0.1f;
 
                 std::string _Frmt = "";
                 if(ShouldBeInf) {
@@ -195,8 +194,8 @@ void CategoryBalance::DrawRight(){
                     std::string ToolTip = fmt::format(
                         "Change the maximum size for non-follower NPCs\n"
                         "Higher than {:.0f}x scale disables the limit entirely\n"
-                        "Below 1.0x will base the limit on whatever the player's limit currently is.", 
-                        Max - 1.0f
+                        "At 0.0x scale the limit will be based on the player's.", 
+                        Max - 5.0f
                     );
                     ImUtil::SliderF("Max NPC Size", Scale, Min, Max, ToolTip.c_str(), _Frmt.c_str());
                 }

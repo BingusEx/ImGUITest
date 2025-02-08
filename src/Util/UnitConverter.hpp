@@ -118,7 +118,7 @@ namespace Gts {
     }
 
     const inline std::string FormatMammothWeight(const double a_mammoth){
-        return fmt::format("{:.2f} Mammoths", a_mammoth);
+        return fmt::format("{:.0f} Mammoths", a_mammoth);
     }
 
     const inline std::string GetWeight(/*RE::Actor* a_Actor*/){

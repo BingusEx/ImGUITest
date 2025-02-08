@@ -58,7 +58,7 @@ void WindowSettings::AsyncSave(){
 //Note: Dont do any calls to the imgui api here as the window is not yet created
 WindowSettings::WindowSettings() {
 
-    Title = "Configuration";
+    Title = "Size Matters - Settings";
     Name = "Settings";
     Show = true;
     flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoNavInputs;
@@ -116,16 +116,26 @@ void WindowSettings::Draw() {
         ImGui::Text(Title.c_str());
         ImGui::PopFont();
     }
-
-    {  // Debug Draw Window Manager total time
-
-        ImGui::PushFont(FontMgr.GetFont("subscript"));
-        ImGui::Text("Window Manager: %.3f ms",rendertime);
-        ImGui::SameLine();
-        ImGui::Text("%.3fms",maxtime);
-        ImGui::Text("Render Loop: %.3f ms",renderloop);
-        ImGui::PopFont();
+    
+    ImGui::SameLine(ImGui::GetContentRegionAvail().x - ImGui::GetStyle().FramePadding.x - ImGui::CalcTextSize("Slider Info (?)").x);
+    
+    {
+        const char* THelp = "Holding Ctrl when clicking on a slider allows you to manually enter a value for finer control.";
+        ImGui::TextColored(ImUtil::ColorSubscript, "Slider Info (?)");
+        if (ImGui::IsItemHovered()){
+            ImGui::SetTooltip(THelp);
+        }
     }
+
+    // {  // Debug Draw Window Manager total time
+
+    //     ImGui::PushFont(FontMgr.GetFont("subscript"));
+    //     ImGui::Text("Window Manager: %.3f ms",rendertime);
+    //     ImGui::SameLine();
+    //     ImGui::Text("%.3fms",maxtime);
+    //     ImGui::Text("Render Loop: %.3f ms",renderloop);
+    //     ImGui::PopFont();
+    // }
 
     ImUtil::SeperatorH();
 

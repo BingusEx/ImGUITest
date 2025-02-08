@@ -6,6 +6,7 @@ using namespace UI;
 
 void CategoryGeneral::DrawLeft(){
     
+    
     ImUtil_Unique {
 
         const char* T0 = "Protect essential NPCs from being crushed, eaten, or affected by size-related spells/actions.";

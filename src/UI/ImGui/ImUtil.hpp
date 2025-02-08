@@ -46,7 +46,7 @@ namespace ImUtil {
 
     inline void SeperatorH(){
         ImGui::Spacing();
-        ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal, 2.0f);
+        ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal, 2.f);
         ImGui::Spacing();
     }
 

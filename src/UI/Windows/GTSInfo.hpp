@@ -64,7 +64,7 @@ namespace UI {
         
 
         if(hasFlag(a_featureFlags, GTSInfoFeatures::kShowMaxSize))
-        ImGui::Text("Max Scale: %.2f", MaxScale);
+        ImGui::Text("Max Scale: %.2fx", MaxScale);
 
         if(hasFlag(a_featureFlags, GTSInfoFeatures::kShowWeight))
         ImGui::Text("Weight: %s", Gts::GetWeight().c_str());
@@ -76,16 +76,16 @@ namespace UI {
         ImGui::Text("Damage Resist: %.1f%%", _damageResist);
 
         if(hasFlag(a_featureFlags, GTSInfoFeatures::kShowCarryW))
-        ImGui::Text("Carry Weight: %.1f", _carryWeight);
+        ImGui::Text("Carry Weight: %.1fu", _carryWeight);
 
         if(hasFlag(a_featureFlags, GTSInfoFeatures::kShowSpeedmult))
-        ImGui::Text("Speed: %.1f", _speed);
+        ImGui::Text("Speed: %.1f%%", _speed);
 
         if(hasFlag(a_featureFlags, GTSInfoFeatures::kShowJumpMult))
-        ImGui::Text("Jump Height: %.1f", _jumpHeight);
+        ImGui::Text("Jump Height: %.1f%%", _jumpHeight);
 
         if(hasFlag(a_featureFlags, GTSInfoFeatures::kShowDmgMult))
-        ImGui::Text("Damage: %.1f", _damage);
+        ImGui::Text("Damage: %.1f%%", _damage);
 
     }
 

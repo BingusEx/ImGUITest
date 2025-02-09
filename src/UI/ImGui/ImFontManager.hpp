@@ -6,7 +6,7 @@
 #include "imgui_internal.h"
 
 
-#include "src/Config.hpp"
+#include "src/Config/Config.hpp"
 
 namespace UI {
     class ImFontManager {

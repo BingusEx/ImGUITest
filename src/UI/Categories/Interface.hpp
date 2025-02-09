@@ -5,7 +5,7 @@
 #include "src/UI/ImGui/ImStyleManager.hpp"
 #include "src/UI/ImGui/ImFontManager.hpp"
 
-#include "src/Config.hpp"
+#include "src/Config/Config.hpp"
 
 namespace UI {
 

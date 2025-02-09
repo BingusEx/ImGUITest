@@ -1,6 +1,6 @@
 #pragma once
 #include "fmt/format.h"
-#include "src/Config.hpp"
+#include "src/Config/Config.hpp"
 
 namespace Gts {
 

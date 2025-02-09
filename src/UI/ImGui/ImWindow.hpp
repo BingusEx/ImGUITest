@@ -5,7 +5,7 @@
 #include "imgui_impl_dx11.h"
 #include "imgui_internal.h"
 
-#include "src/Config.hpp"
+#include "src/Config/Config.hpp"
 
 namespace UI {
 

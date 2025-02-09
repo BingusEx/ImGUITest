@@ -2,9 +2,10 @@
 #pragma once
 
 #include "src/UI/ImGUI/ImCategory.hpp"
-#include "src/Config.hpp"
+#include "src/Config/Config.hpp"
+#include "src/Config/Keybinds.hpp"
 
-namespace UI{
+namespace UI {
 
     class CategoryKeybinds : public ImCategory {
         public:
@@ -15,6 +16,7 @@ namespace UI{
 
         private:
         const Config& Settings = Config::GetSingleton();
+        Input::Keybinds& KeyMgr = Input::Keybinds::GetSingleton();
     };
 
 }

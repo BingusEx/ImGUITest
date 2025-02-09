@@ -5,7 +5,8 @@
 #include "src/UI/ImGUI/ImFontManager.hpp"
 #include "src/UI/ImGUI/ImStyleManager.hpp"
 
-#include "src/Config.hpp"
+#include "src/Config/Config.hpp"
+#include "src/Config/Keybinds.hpp"
 
 namespace UI {
 
@@ -38,6 +39,7 @@ namespace UI {
         ImStyleManager& StyleMgr = ImStyleManager::GetSingleton();
 
         Config& Settings = Config::GetSingleton();
+        Input::Keybinds& KeyMgr = Input::Keybinds::GetSingleton();
         const SettingsHidden& sHidden = Config::GetHidden();
         const WindowConfSettings& sUI= Config::GetUI().SettingsWindow;
     };

@@ -254,8 +254,9 @@ void CategoryAI::DrawRight(){
 
                     if(ShouldBeInf) 
                         *Scale = 10000.0f;
-
-                    ImUtil::SliderF("Grow Scale Cap", Scale, Config::GetGameplay().ActionSettings.fStartButtCrushScale + 0.1f, Max, T6, ShouldBeInf ? "Infinite" : "%.1fx");
+                    
+                    //Config::GetGameplay().ActionSettings.fStartButtCrushScale
+                    ImUtil::SliderF("Grow Scale Cap", Scale, 2.0f + 0.1f, Max, T6, ShouldBeInf ? "Infinite" : "%.1fx");
                 }
                 
                 ImGui::EndDisabled();

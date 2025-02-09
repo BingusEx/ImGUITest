@@ -1,6 +1,6 @@
 #include "ImCategorySplit.hpp"
 #include "ImUtil.hpp"
-#include "src/Config.hpp"
+#include "src/Config/Config.hpp"
 
 using namespace UI;
 

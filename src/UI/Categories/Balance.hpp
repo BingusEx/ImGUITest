@@ -1,7 +1,7 @@
 #pragma once
 
 #include "src/UI/ImGUI/ImCategorySplit.hpp"
-#include "src/Config.hpp"
+#include "src/Config/Config.hpp"
 
 namespace UI{
 

@@ -21,10 +21,14 @@
 
 #include "src/UI/ImGui/ImUtil.hpp"
 
+#include "src/Config/ConfigUtil.hpp"
+
 volatile double rendertime;
 volatile double renderloop;
 volatile double maxtime;
+
 using namespace UI;
+using namespace Input;
 
 
 //Not the most elegant solution but it does work...
@@ -37,6 +41,14 @@ void WindowSettings::AsyncLoad(){
         ErrorString = "";
     }
 
+    if(!KeyMgr.LoadKeybinds()){
+        ErrorString = "Could Not Input Settings! Check GTSPlugin.log for more info";
+    }
+    else{
+        ErrorString = "";
+    }
+
+    //TODO InputManager Re-init;
     StyleMgr.LoadStyle();
     FontMgr.RebuildFonts();
     SaveLoadBusy.store(false);
@@ -45,6 +57,13 @@ void WindowSettings::AsyncLoad(){
 void WindowSettings::AsyncSave(){
     if(!Settings.SaveSettings()){
         ErrorString = "Could Not Save Settings! Check GTSPlugin.log for more info";
+    }
+    else{
+        ErrorString = "";
+    }
+
+    if(!KeyMgr.SaveKeybinds()){
+        ErrorString = "Could Not Input Settings! Check GTSPlugin.log for more info";
     }
     else{
         ErrorString = "";
@@ -106,7 +125,7 @@ void WindowSettings::Draw() {
         if(!ImGui::GetIO().MouseDown[0]){
             //X,Y
             const ImVec2 Offset {sUI.f2Offset[0], sUI.f2Offset[1]};
-            ImGui::SetWindowPos(GetAnchorPos(Config::StringToEnum<ImWindow::WindowAnchor>(sUI.sAnchor), Offset));
+            ImGui::SetWindowPos(GetAnchorPos(StringToEnum<ImWindow::WindowAnchor>(sUI.sAnchor), Offset));
         }
     }
     

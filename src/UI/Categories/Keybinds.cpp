@@ -4,8 +4,9 @@
 #include "src/UI/imGui/ImUtil.hpp"
 
 using namespace UI;
+using namespace Input;
 
 void CategoryKeybinds::Draw(){
-   ImGui::Text("Nothing Here Yet....");
+
 }
 

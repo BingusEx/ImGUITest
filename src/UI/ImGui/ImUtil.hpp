@@ -62,7 +62,7 @@ namespace ImUtil {
         return { viewportSize.x * (a_Percentage / 100.f), viewportSize.y * (a_Percentage / 100.f) };
     }
 
-    const std::string HumanizeEnum(std::string_view name);
+    const std::string HumanizeString(std::string_view name);
 
     const bool Button(const char* a_label, const char* a_Tooltip = nullptr, const bool a_disabled = false, const float a_padding = 1.0f);
     const bool CheckBox(const char* a_label, bool* a_state, const char* a_Tooltip = nullptr, const bool a_disabled = false);
@@ -88,7 +88,7 @@ namespace ImUtil {
         std::ostringstream itemsStream;
         const int offset = a_hasTotal ? 2 : 1;
         for (size_t i = 0; i <= enumNames.size() - offset; i++) {
-            itemsStream << HumanizeEnum(enumNames[i]) << '\0';
+            itemsStream << HumanizeString(enumNames[i]) << '\0';
         }
         std::string items = itemsStream.str();
 
@@ -135,7 +135,7 @@ namespace ImUtil {
             Underlying flagValue = static_cast<Underlying>(flag);
             bool bit = ((*a_bitfield) & flagValue) != 0;
 
-            const std::string checkboxLabel = HumanizeEnum(magic_enum::enum_name(flag));
+            const std::string checkboxLabel = HumanizeString(magic_enum::enum_name(flag));
             ImGui::Checkbox(checkboxLabel.c_str(), &bit);
             
             if(++itt % 3)
@@ -147,6 +147,8 @@ namespace ImUtil {
             }
         }
     }
+
+    [[nodiscard]] const bool ContainsString(const std::string& a1, const std::string& a2);
 
 }
 

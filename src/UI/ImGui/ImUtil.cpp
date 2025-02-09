@@ -1,4 +1,8 @@
 #include "ImUtil.hpp"
+#include <algorithm>
+#include <cctype>
+#include <string>
+#include <ranges>
 
 namespace ImUtil {
 
@@ -111,7 +115,7 @@ namespace ImUtil {
     //------------------------------------
 
     // Helper function to pretty-print enum names
-    const std::string HumanizeEnum(std::string_view name) {
+    const std::string HumanizeString(std::string_view name) {
         if (name.empty()) {
             return {};
         }
@@ -221,5 +225,15 @@ namespace ImUtil {
             window->DrawList->AddText(text_pos, ImGui::GetColorU32(ImGuiCol_Text), overlay);
         }
     }
+
+    const bool ContainsString(const std::string& a1, const std::string& a2) {
+        auto to_lower = [](unsigned char c) { return std::tolower(c); };
+
+        auto a1_view = a1 | std::views::transform(to_lower);
+        auto a2_view = a2 | std::views::transform(to_lower);
     
+        auto result = std::ranges::search(a1_view, a2_view);
+    
+        return result.begin() != a1_view.end();
+    }
 }

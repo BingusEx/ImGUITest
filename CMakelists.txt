@@ -22,7 +22,7 @@ FetchContent_MakeAvailable(cmake_git_version_tracking)
 
 FetchContent_Declare(
   boost_ext_reflect
-  GIT_REPOSITORY https://github.com/boost-ext/reflect
+  GIT_REPOSITORY https://github.com/qlibs/reflect
   GIT_SHALLOW ON  # Download the branch without its history
   GIT_TAG        v1.1.1
 )

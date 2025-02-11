@@ -39,14 +39,15 @@ void WindowSettings::AsyncLoad(){
     }
     else{
         ErrorString = "";
+        if(!KeyMgr.LoadKeybinds()){
+            ErrorString = "Could Not Input Settings! Check GTSPlugin.log for more info";
+        }
+        else{
+            ErrorString = "";
+        }
     }
 
-    if(!KeyMgr.LoadKeybinds()){
-        ErrorString = "Could Not Input Settings! Check GTSPlugin.log for more info";
-    }
-    else{
-        ErrorString = "";
-    }
+
 
     //TODO InputManager Re-init;
     StyleMgr.LoadStyle();
@@ -56,17 +57,16 @@ void WindowSettings::AsyncLoad(){
 
 void WindowSettings::AsyncSave(){
     if(!Settings.SaveSettings()){
-        ErrorString = "Could Not Save Settings! Check GTSPlugin.log for more info";
+        ErrorString = "Could Not Save Settings! Check GTSPlugin.log for more info.";
     }
     else{
         ErrorString = "";
-    }
-
-    if(!KeyMgr.SaveKeybinds()){
-        ErrorString = "Could Not Input Settings! Check GTSPlugin.log for more info";
-    }
-    else{
-        ErrorString = "";
+        if(!KeyMgr.SaveKeybinds()){
+            ErrorString = "Could Not Input Settings! Check GTSPlugin.log for more info.";
+        }
+        else{
+            ErrorString = "";
+        }
     }
 
     SaveLoadBusy.store(false);

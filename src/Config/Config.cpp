@@ -118,6 +118,8 @@ void Config::ResetToDefaults(){
     Camera = SettingsCamera{};
     Gameplay = SettingsGameplay{};
     UI = SettingsUI{};
+
+    TomlData = toml::ordered_table();
 }
 
 //TODO Add Ingame Check. If this fails ingame dont immediatly die. if it happens during plugin init die.
@@ -201,6 +203,7 @@ bool Config::SaveSettings() {
         //If Enabled Allow Saving Advanced Settings
         if(Hidden.IKnowWhatImDoing){
           UpdateRes &= UpdateTOMLFromStruct(TomlData, Advanced);
+          UpdateRes &= UpdateTOMLFromStruct(TomlData, Hidden);
         }
 
         UpdateRes &= UpdateTOMLFromStruct(TomlData, General);

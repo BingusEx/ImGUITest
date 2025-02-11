@@ -14,6 +14,8 @@ namespace UI {
         }
         void Draw() override;
 
+        void HandleKeys(std::string bindingStr, int CurrentIndex);
+
         private:
         const Config& Settings = Config::GetSingleton();
         Input::Keybinds& KeyMgr = Input::Keybinds::GetSingleton();
@@ -22,9 +24,9 @@ namespace UI {
 
         std::string SearchRes = "";
         bool HideFiltered = false;
+        std::string VisualKeyString = "";
+        std::vector<std::string> TempKeys = {};
         int RebindIndex = 0;
-        std::string VisualKey = "";
-
     };
 
 }

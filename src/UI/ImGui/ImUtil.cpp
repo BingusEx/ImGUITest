@@ -114,65 +114,63 @@ namespace ImUtil {
     //  Misc
     //------------------------------------
 
-    // Helper function to pretty-print enum names
     const std::string HumanizeString(std::string_view name) {
         if (name.empty()) {
             return {};
         }
-
+        
         std::string result;
-
-        // Remove leading 'k'
-        if (name[0] == 'k') {
+        
+        // Remove a leading 'k', if present.
+        if (name.front() == 'k') {
             name.remove_prefix(1);
         }
-
-        bool first_char = true;
-        for (char c : name) {
+        
+        // Process each character by index.
+        for (size_t i = 0; i < name.size(); ++i) {
+            char c = name[i];
+            
             if (c == '_') {
-                // Replace underscores with spaces, avoiding consecutive spaces
-                if (result.empty() || result.back() != ' ') {
+                // Replace underscore with a space (avoiding duplicate spaces).
+                if (result.empty() || result.back() != ' ')
                     result += ' ';
-                }
-                first_char = false;
                 continue;
             }
-
-            // Add space before uppercase letters if needed
-            if (!first_char && std::isupper(static_cast<unsigned char>(c))) {
-                if (result.empty() || result.back() != ' ') {
+            
+            // For uppercase letters (except at the very start), add a space if the previous character
+            // was NOT uppercase. This prevents adding spaces between sequential uppercase letters.
+            if (i > 0 && std::isupper(static_cast<unsigned char>(c)) &&
+                !std::isupper(static_cast<unsigned char>(name[i - 1]))) {
+                if (result.empty() || result.back() != ' ')
                     result += ' ';
-                }
             }
-
+            
             result += c;
-            first_char = false;
         }
-
-        // Trim leading and trailing spaces
+        
+        // Trim leading and trailing spaces.
         size_t start = result.find_first_not_of(' ');
         if (start == std::string::npos) {
             return "";
         }
-
         size_t end = result.find_last_not_of(' ');
         result = result.substr(start, end - start + 1);
-
-        // Collapse consecutive spaces into a single space
+        
+        // Collapse any consecutive spaces (if any)
         std::string final_result;
         bool prev_space = false;
-        for (char c : result) {
-            if (c == ' ') {
+        for (char ch : result) {
+            if (ch == ' ') {
                 if (!prev_space) {
                     final_result += ' ';
                     prev_space = true;
                 }
             } else {
-                final_result += c;
+                final_result += ch;
                 prev_space = false;
             }
         }
-
+        
         return final_result;
     }
 

@@ -136,11 +136,11 @@ void WindowSettings::Draw() {
         ImGui::PopFont();
     }
     
-    ImGui::SameLine(ImGui::GetContentRegionAvail().x - ImGui::GetStyle().FramePadding.x - ImGui::CalcTextSize("Slider Info (?)").x);
+    ImGui::SameLine(ImGui::GetContentRegionAvail().x - (ImGui::CalcTextSize("Control Info (?)").x));
     
     {
-        const char* THelp = "Holding Ctrl when clicking on a slider allows you to manually enter a value for finer control.";
-        ImGui::TextColored(ImUtil::ColorSubscript, "Slider Info (?)");
+        const char* THelp = "Holding Ctrl when clicking on a UI control allows you to manually enter a value for finer adjustment.";
+        ImGui::TextColored(ImUtil::ColorSubscript, "Control Info (?)");
         if (ImGui::IsItemHovered()){
             ImGui::SetTooltip(THelp);
         }
@@ -229,7 +229,7 @@ void WindowSettings::Draw() {
         volatile bool buttonstate = SaveLoadBusy.load();
 
         //Load
-        if(ImUtil::Button(Lables[0], "Reload and apply the values currenly stored in Settings.toml", buttonstate, 1.3f)){
+        if(ImUtil::Button(Lables[0], "Reload and apply the values currenly stored in Settings.toml and Input.toml", buttonstate, 1.3f)){
             SaveLoadBusy.store(true);
             std::thread(&WindowSettings::AsyncLoad, this).detach();
         }
@@ -237,7 +237,7 @@ void WindowSettings::Draw() {
         ImGui::SameLine();
 
         //Save
-        if(ImUtil::Button(Lables[1], "Save changes to Settings.toml", buttonstate, 1.3f)){
+        if(ImUtil::Button(Lables[1], "Save changes to Settings.toml and Input.toml", buttonstate, 1.3f)){
             SaveLoadBusy.store(true);
             std::thread(&WindowSettings::AsyncSave, this).detach();
         }
@@ -247,6 +247,7 @@ void WindowSettings::Draw() {
         //Reset
         if(ImUtil::Button(Lables[2], "Load the default values.\nThis does not delete any previous saved changes unless you explicitly overwrite them by saving.", buttonstate, 1.3f)){
             Settings.ResetToDefaults();
+            KeyMgr.ResetKeybinds();
             StyleMgr.LoadStyle();
             FontMgr.RebuildFonts();
         }

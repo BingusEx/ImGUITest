@@ -17,6 +17,14 @@ namespace UI {
         private:
         const Config& Settings = Config::GetSingleton();
         Input::Keybinds& KeyMgr = Input::Keybinds::GetSingleton();
+
+        int Div = 2;
+
+        std::string SearchRes = "";
+        bool HideFiltered = false;
+        int RebindIndex = 0;
+        std::string VisualKey = "";
+
     };
 
 }

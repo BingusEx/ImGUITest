@@ -55,12 +55,6 @@ namespace Input {
                 .Trigger = "Once",
                 .BlockInput = "Never"
             },
-            {
-                .Event = "OpenSettings",
-                .Keys = {"LSHIFT", "F1"},
-                .Trigger = "Once",
-                .BlockInput = "Never"
-            },
 
             //========================================================
             //================ V O R E

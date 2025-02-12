@@ -84,7 +84,7 @@ void CategoryAdvanced::DrawRight(){
     }
 
     if(ImUtil::Button("Quit", "Close the program\nTODO: Remove this later", false, 1.0f)){
-        PostQuitMessage(0);
+        TerminateProcess(GetCurrentProcess(), EXIT_SUCCESS);
     }
 
 

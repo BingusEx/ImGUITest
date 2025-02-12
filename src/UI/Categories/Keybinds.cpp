@@ -150,8 +150,8 @@ bool CategoryKeybinds::DrawInputEvent(InputEvent& Event, std::string a_name){
                      "- Never: Never prevent the game from reading the pressed keys for this action even if the action would be valid.\n"
                      "- Always: Will always prevent the game from reading this key combination regardless if the action would trigger/do something or not.";
 
-    const char* T4 = "This add a time delay before an action is considered triggerable.\n"
-                     "(eg. if the trigger type is once and this value is set to 1.0 you'd need to hold the key combination for atleast 1 second before it will trigger)";
+    const char* T4 = "This adds a time delay before an action gets triggerd if its keys are pressed.\n"
+                     "(eg. if the trigger type is once and this value is set to 1.0 you'd need to hold the correct key combination for atleast 1 second before this event's action will fire.)";
     
     const char* T5 = "Here you can see the current key combination required to trigger an action as well as modify it.\n"
                      "Pressing \"Rebind Action\" Will allow you to enter a new key combination for this action.\n"

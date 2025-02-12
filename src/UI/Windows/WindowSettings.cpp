@@ -31,7 +31,10 @@ using namespace UI;
 using namespace Input;
 
 
-//Not the most elegant solution but it does work...
+//This is bad... Should probably be disabled.
+//We completely clobber the struct data when re-reading it from the toml's
+//Just one poorly timed memory read and its joever.
+//sadly i cant use atomic types or volatiles in the structs themselves.
 void WindowSettings::AsyncLoad(){
 
     //TODO Set Plugin::Live to false for this duration...
@@ -42,14 +45,12 @@ void WindowSettings::AsyncLoad(){
     else{
         ErrorString = "";
         if(!KeyMgr.LoadKeybinds()){
-            ErrorString = "Could Not Input Settings! Check GTSPlugin.log for more info";
+            ErrorString = "Could Not Load Input Settings! Check GTSPlugin.log for more info";
         }
         else{
             ErrorString = "";
         }
     }
-
-
 
     //TODO InputManager Re-init;
     StyleMgr.LoadStyle();
@@ -57,6 +58,7 @@ void WindowSettings::AsyncLoad(){
     SaveLoadBusy.store(false);
 }
 
+//Saving doesn't have the same race condition issues that loading has.
 void WindowSettings::AsyncSave(){
     if(!Settings.SaveSettings()){
         ErrorString = "Could Not Save Settings! Check GTSPlugin.log for more info.";
@@ -64,7 +66,7 @@ void WindowSettings::AsyncSave(){
     else{
         ErrorString = "";
         if(!KeyMgr.SaveKeybinds()){
-            ErrorString = "Could Not Input Settings! Check GTSPlugin.log for more info.";
+            ErrorString = "Could Not Save Input Settings! Check GTSPlugin.log for more info.";
         }
         else{
             ErrorString = "";
@@ -250,6 +252,7 @@ void WindowSettings::Draw() {
         ImUtil::SeperatorV();
         
         //Reset
+        //TODO: I wonder if this also messes with the struct data. I mean it does. But does it have any effect?
         if(ImUtil::Button(Lables[2], "Load the default values.\nThis does not delete any previous saved changes unless you explicitly overwrite them by saving.", buttonstate, 1.3f)){
             Settings.ResetToDefaults();
             KeyMgr.ResetKeybinds();

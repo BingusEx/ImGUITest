@@ -87,7 +87,7 @@ bool Keybinds::LoadKeybinds() {
         auto triggerIt = table.find("Trigger");
         if (triggerIt != table.end() && triggerIt->second.is_string()) {
             std::string triggerStr = triggerIt->second.as_string();
-            if (auto optTrigger = magic_enum::enum_cast<Triggers>(triggerStr); optTrigger.has_value()) {
+            if (auto optTrigger = magic_enum::enum_cast<TriggerType>(triggerStr); optTrigger.has_value()) {
                 // Update with the canonical name (or you might store the enum itself).
                 bindIt->Trigger = std::string(magic_enum::enum_name(*optTrigger));
             } else {

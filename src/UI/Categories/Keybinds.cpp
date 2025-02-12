@@ -183,7 +183,7 @@ bool CategoryKeybinds::DrawInputEvent(InputEvent& Event, std::string a_name){
 
                     ImGui::BeginDisabled(IsRebinding);
                     ImUtil::CheckBox("Exclusive", &Event.Exclusive, T1);
-                    ImUtil::ComboEx<Triggers>("Trigger Type",Event.Trigger, T2);
+                    ImUtil::ComboEx<TriggerType>("Trigger Type",Event.Trigger, T2);
                     ImUtil::ComboEx<BlockInputTypes>("Block Input",Event.BlockInput, T3);
 
                     ImGui::InputFloat("Trigger After",&Event.Duration,0.1f,0.01f,"%.2f Seconds");

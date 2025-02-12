@@ -11,7 +11,7 @@ struct InputEvent {
 };
 TOML_SERIALIZABLE(InputEvent);
 
-enum class Triggers {
+enum class TriggerType {
     Once,
     Continuous,
     Release,
@@ -24,7 +24,7 @@ enum class BlockInputTypes {
 };
 
 namespace Input {
-     //----------------------------------------
+    //----------------------------------------
     // EVENT LIST ----
     //----------------------------------------
     

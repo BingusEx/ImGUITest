@@ -140,7 +140,7 @@ bool CategoryKeybinds::DrawInputEvent(InputEvent& Event, std::string a_name){
 
     const char* T2 = "The action trigger type modifies the activation behavior for an action.\n\n"
                      "- Once: Trigger an action once uppon pressing its key combo.\n"
-                     "- Release: The action will only trigger as soon as you release its keys.\n"
+                     "- Release: The action will only trigger when you release its keys after pressing them.\n"
                      "- Continuous: As long as you are holding down the key combination the action event will be fired every game frame.";
     
     const char* T3 = "Normaly when you press a key combo. whatever keys you are holding down are sent to the mod and the game at the same time\n"

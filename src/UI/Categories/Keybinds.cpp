@@ -166,12 +166,26 @@ bool CategoryKeybinds::DrawInputEvent(InputEvent& Event, std::string a_name){
         const bool IsRebinding = RebindIndex == CurEventIndex && RebindIndex != 0;
 
         ImGui::BeginDisabled(RebindIndex != CurEventIndex && RebindIndex != 0);
-        
+
+        //Not the most elegant solution but it works...
+        bool* HeaderState = nullptr;
+        if (auto Res = HeaderStateMap.find(Event.Event); Res != HeaderStateMap.end()){
+            HeaderState = &Res->second;
+        }
+
         if(ColExpState != 0){
             ImGui::SetNextItemOpen(ColExpState - 1);
         }
+        else{
+            if(HeaderState)
+            ImGui::SetNextItemOpen(*HeaderState);
+        }
 
         if(ImGui::CollapsingHeader(a_name.c_str())){
+
+            if (HeaderState){
+                *HeaderState = true;
+            }
 
             ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x * 0.7f);
             ImUtil::CheckBox("Disabled", &Event.Disabled,T0);
@@ -283,6 +297,11 @@ bool CategoryKeybinds::DrawInputEvent(InputEvent& Event, std::string a_name){
             }
             ImGui::Spacing();
             ImGui::PopItemWidth();
+        }
+        else{
+            if (HeaderState){
+                *HeaderState = false;
+            }
         }
         
         ImGui::EndDisabled();

@@ -12,6 +12,9 @@ namespace UI {
         public:
         CategoryKeybinds(){
             title = "Keybinds";
+            for(auto& e : Input::DefaultEvents){
+                HeaderStateMap.emplace(e.Event,false);
+            }
         }
         void Draw() override;
 
@@ -31,6 +34,7 @@ namespace UI {
         bool HideFiltered = false;
         volatile uint8_t ColExpState = 0;
 
+        std::unordered_map<std::string, bool> HeaderStateMap = {};
         //InputEvent Rebinding
         std::string VisualKeyString = "";
         std::vector<std::string> TempKeys = {};
@@ -39,6 +43,7 @@ namespace UI {
         float Width = 0.0f;
         bool DrawInputEvent(InputEvent& Event, std::string a_name);
         const int HeaderFlags =  ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_AutoResizeX ;
+
     };
 
 }

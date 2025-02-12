@@ -42,10 +42,6 @@ namespace Input {
     //----------------------------------------
     
     //Add New Events Here
-    
-    //--------------------------------------------------------
-    // Pls... No Duplicate events the UI can't handle it. :(
-    //--------------------------------------------------------
     inline const std::vector<InputEvent> DefaultEvents = [](){
         const std::vector<InputEvent> DefaultVec = {
 

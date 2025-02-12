@@ -33,7 +33,7 @@ void CategoryBalance::DrawLeft(){
             ImGui::BeginDisabled(!Settings.bBalanceMode);
 
             ImUtil::SliderF("Size Gain Penalty", &Settings.fBMSizeGainPenaltyMult, 1.0f, 10.0f, T1, "%.2fx");
-            ImUtil::SliderF("Shrink Rate", &Settings.fBMShrinkRate, 1.0f, 10.0f, T2, "%.2fx");
+            ImUtil::SliderF("Shrink Rate", &Settings.fBMShrinkRate, 0.01f, 10.0f, T2, "%.2fx");
             ImUtil::SliderF("Shrink Rate Combat", &Settings.fBMShrinkRateCombat, 0.01f, 1.0f, T3, "%.2fx");
             ImUtil::SliderF("Shrink On Hit", &Settings.fBMShrinkOnHitMult, 0.01f, 2.0f, T4, "%.2fx");
 

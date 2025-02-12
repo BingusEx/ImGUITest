@@ -78,6 +78,13 @@ namespace ImUtil {
 
     const bool ConditionalHeader(const std::string a_label, const std::string a_ConditionText, const bool a_condition, const bool a_defaultopen = true);
 
+    inline void Tooltip(const char* a_Tip){
+        if(!a_Tip) return;
+        if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && GImGui->HoveredIdTimer > TooltipDelay){
+            ImGui::SetTooltip(a_Tip);
+        }
+    }
+
     template <typename T>
     bool ComboEx(const char* a_label, std::string& currentValue, const char* a_Tooltip = nullptr, bool a_disabled = false, bool a_hasTotal = false) {
         // Retrieve enum metadata
@@ -111,9 +118,8 @@ namespace ImUtil {
         ImGui::BeginDisabled(a_disabled);
 
         bool res = ImGui::Combo(a_label, &currentIndex, items.c_str());
-        if (ImGui::IsItemHovered() && a_Tooltip && GImGui->HoveredIdTimer > TooltipDelay){
-            ImGui::SetTooltip(a_Tooltip);
-        }
+        Tooltip(a_Tooltip);
+
         ImGui::EndDisabled();
 
         if(res){
@@ -147,6 +153,8 @@ namespace ImUtil {
             }
         }
     }
+
+
 
     [[nodiscard]] const bool ContainsString(const std::string& a1, const std::string& a2);
 

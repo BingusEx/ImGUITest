@@ -72,6 +72,5 @@ namespace Input {
     
         toml::basic_value<toml::ordered_type_config> TomlData;
         std::mutex _ReadWriteLock;
-
     };
 }

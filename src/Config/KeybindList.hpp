@@ -1,13 +1,13 @@
 #pragma once
 
 struct InputEvent {
-    std::string Event;                  //Event Name
-    std::vector<std::string> Keys;      //List Of Keys Minus "DIK_"
-    bool Exclusive = false;             //Exclusive Flag
-    std::string Trigger = "Once";       //Trigger Type
-    float Duration = 0.0;               //Trigger Duration
-    std::string BlockInput = "Default"; //Block Game Input
-    bool Disabled = false;              //Completely Ignore Event
+    std::string Event;                      //Event Name
+    std::vector<std::string> Keys;          //List Of Dinput key names Minus "DIK_ preffix"
+    bool Exclusive = false;                 //Exclusive Flag
+    std::string Trigger = "Once";           //Trigger Type
+    float Duration = 0.0;                   //Trigger Duration
+    std::string BlockInput = "Automatic";   //Block Game Input
+    bool Disabled = false;                  //Completely Ignore Event
 };
 TOML_SERIALIZABLE(InputEvent);
 
@@ -18,7 +18,7 @@ enum class Triggers {
 };
 
 enum class BlockInputTypes {
-    Default,
+    Automatic,
     Always,
     Never,
 };
@@ -30,6 +30,14 @@ namespace Input {
     
     //Add New Events Here
     const std::vector<InputEvent> DefaultEvents = {
+
+        {
+            .Event = "OpenSettings",
+            .Keys = {"LSHIFT", "F1"},
+            .Trigger = "Once",
+            .BlockInput = "Never"
+        },
+
 
         //========================================================
         //================ V O R E

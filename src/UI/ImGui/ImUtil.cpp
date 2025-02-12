@@ -19,9 +19,8 @@ namespace ImUtil {
 
         ImGui::BeginDisabled(a_disabled);
         const bool res = ImGui::Button(a_label, buttonSize);
-        if (ImGui::IsItemHovered() && a_Tooltip && GImGui->HoveredIdTimer > TooltipDelay){
-            ImGui::SetTooltip(a_Tooltip);
-        }
+        Tooltip(a_Tooltip);
+
         ImGui::EndDisabled();
         return res;
     }
@@ -29,11 +28,8 @@ namespace ImUtil {
     const bool CheckBox(const char* a_label, bool* a_state, const char* a_Tooltip, const bool a_disabled){
         ImGui::BeginDisabled(a_disabled);
         const bool res = ImGui::Checkbox(a_label, a_state);
-        
-        if (ImGui::IsItemHovered() && a_Tooltip && GImGui->HoveredIdTimer > TooltipDelay){
-            ImGui::SetTooltip(a_Tooltip);
-        
-        }
+        Tooltip(a_Tooltip);
+
         ImGui::EndDisabled();
         return res;
     }
@@ -50,9 +46,8 @@ namespace ImUtil {
 
         const bool res = ImGui::SliderFloat(a_label, a_value, a_min, a_max, fmt, ImGuiSliderFlags_AlwaysClamp);
 
-        if (ImGui::IsItemHovered() && a_Tooltip && GImGui->HoveredIdTimer > TooltipDelay){
-            ImGui::SetTooltip(a_Tooltip);
-        }
+        Tooltip(a_Tooltip);
+
         ImGui::EndDisabled();
         return res;
     }
@@ -61,9 +56,8 @@ namespace ImUtil {
         ImGui::BeginDisabled(a_disabled);
         const bool res = ImGui::SliderFloat3(a_label, a_value, a_min, a_max, fmt, ImGuiSliderFlags_AlwaysClamp);
 
-        if (ImGui::IsItemHovered() && a_Tooltip && GImGui->HoveredIdTimer > TooltipDelay){
-            ImGui::SetTooltip(a_Tooltip);
-        }
+        Tooltip(a_Tooltip);
+
         ImGui::EndDisabled();
         return res;
     }
@@ -72,9 +66,8 @@ namespace ImUtil {
         ImGui::BeginDisabled(a_disabled);
         const bool res = ImGui::SliderFloat2(a_label, a_value, a_min, a_max, fmt, ImGuiSliderFlags_AlwaysClamp);
 
-        if (ImGui::IsItemHovered() && a_Tooltip && GImGui->HoveredIdTimer > TooltipDelay){
-            ImGui::SetTooltip(a_Tooltip);
-        }
+        Tooltip(a_Tooltip);
+
         ImGui::EndDisabled();
         return res;
     }
@@ -176,8 +169,9 @@ namespace ImUtil {
 
     void CenteredProgress(float fraction, const ImVec2& size_arg, const char* overlay) {
         ImGuiWindow* window = ImGui::GetCurrentWindow();
-        if (window->SkipItems)
+        if (window->SkipItems){
             return;
+        }
 
         ImGuiContext& g = *GImGui;
         const ImGuiStyle& style = g.Style;
@@ -190,8 +184,9 @@ namespace ImUtil {
         
         // Register the item and handle clipping
         ImGui::ItemSize(size, style.FramePadding.y);
-        if (!ImGui::ItemAdd(bb, 0))
+        if (!ImGui::ItemAdd(bb, 0)){
             return;
+        }
 
         // Render background
         ImU32 bg_color = ImGui::GetColorU32(ImGuiCol_FrameBg);
@@ -217,7 +212,7 @@ namespace ImUtil {
             // Draw text with contrasting shadow
             window->DrawList->AddText(
                 ImVec2(text_pos.x + 1, text_pos.y + 1), 
-                IM_COL32(0,0,0,128 * ImGui::GetStyle().Alpha), 
+                IM_COL32(0,0,0,128 * style.Alpha), 
                 overlay
             );
             window->DrawList->AddText(text_pos, ImGui::GetColorU32(ImGuiCol_Text), overlay);

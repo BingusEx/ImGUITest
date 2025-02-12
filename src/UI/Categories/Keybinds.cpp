@@ -4,148 +4,239 @@
 #include "src/UI/imGui/ImUtil.hpp"
 #include "imgui_stdlib.h"
 #include "src/UI/ImGui/ImInput.hpp"
+#include "src/UI/Windows/WindowSettings.hpp"
 
 using namespace UI;
 using namespace Input;
 
-static std::vector<std::string> currentBinding;      // Temporary storage for keys pressed during rebind mode
-static std::vector<std::string> actionBinding;       // The “action” binding (the currently assigned key sequence)
-
-
 void CategoryKeybinds::Draw(){
 
-    const char* T0 = "";
-    const char* T1 = "";
-    const char* T2 = "";
-    const char* T3 = "";
-    const char* T4 = "";
-    const char* T5 = "";
-    const char* T6 = "";
-    const char* T7 = "";
-    const char* T8 = "";
-    const char* T9 = "";
+    //New Render Loop. Reset Index.
+    //Why is it 1000? Why not.
+    CurEventIndex = 1000;
 
-    int CurEventIndex = 1000;
-    const float Width = ImGui::GetContentRegionAvail().x - (((ImGui::GetStyle().CellPadding.x + ImGui::GetStyle().FramePadding.x) * Div) + ImGui::GetStyle().WindowPadding.x * 2);
-
-    {   // Top Bar Controls
-        ImGui::PushItemWidth(Width / 6.0f);
-
-        ImGui::InputText("Search Filter", &SearchRes);
-        if (ImGui::IsItemHovered() && GImGui->HoveredIdTimer > ImUtil::TooltipDelay){
-            ImGui::SetTooltip(T0);
-        }
-
-        ImGui::SameLine();
-        ImUtil::CheckBox("Hide Filtered", &HideFiltered, T1);
-        
-        ImGui::SameLine();
-        ImGui::InputInt("Columns",&Div,1,1);
-        if (ImGui::IsItemHovered() && GImGui->HoveredIdTimer > ImUtil::TooltipDelay){
-            ImGui::SetTooltip(T2);
-        }
-        std::clamp(Div,1,3);
-
-        ImGui::PopItemWidth();
-    }
+    //Calc the correct width
+    Width = ImGui::GetContentRegionAvail().x - ((ImGui::GetStyle().CellPadding.x * 2 + ImGui::GetStyle().FramePadding.x * 2) * Div);
+    
+    //Draw top bar
+    DrawOptions();
 
     ImUtil::SeperatorH();
 
-    //KeyRender Loop
+    //Draw the columns containing each input event.
+    DrawContent();
 
-    for (auto& Event : KeyMgr.InputEvents){
+    //Reset Collapse/Expand Flag.
+    ColExpState = 0;
+}
 
-        //Run The event name through the enum humanizer.
-        std::string Pretty_Event = ImUtil::HumanizeString(Event.Event);
+void CategoryKeybinds::DrawOptions(){
 
-        //Is This current result filtered? -> Does Pretty_Event Contain SearcRes?
-        //If it doesn't it means its not what the user searched for.
-        bool Filtered = !ImUtil::ContainsString(Pretty_Event, SearchRes);
-        
-        if(Filtered && HideFiltered){
-            continue;
-        }
-        
-        Pretty_Event = Filtered ? Pretty_Event + " [Filtered]" : Pretty_Event;
+    const char* T0 = "Collapse all currently visible input actions.";
+    const char* T1 = "Expand all currently visible input actions.";
+    const char* T2 = "Filter based on an actions's name.";
+    const char* T3 = "Divide the action list in columns.";
 
-        //Hack, Imgui will autoscale the child to fullscreen if values 0,0 are set.
-        //If the child is off-screen the child is scaled to its contents.
-        //There's no way to tell imgui to do that for on-screen elements currently.
-        //So just hardcode it...
-        ImGui::BeginChild(CurEventIndex++,{Width/Div, Filtered ? 35.0f : 300.f},true,true);
-
-        { // --  CollapsingHeader Control Begin
-            
-            ImGui::BeginDisabled(Filtered || (RebindIndex != CurEventIndex && RebindIndex != 0));
-            
-            //Auto Collapse/expand based on if the control is filtered.
-            ImGui::SetNextItemOpen(!Filtered);
-            
-            //Gray out Filtered Headers.
-            ImGui::PushStyleColor(ImGuiCol_Header, (Filtered ? ImVec4(0.0f,0.0f,0.0f,0.1f) : ImGui::GetStyle().Colors[ImGuiCol_Header]));
+    ImGui::BeginChild("Options", {-FLT_MIN, 0.0f}, ImGuiChildFlags_AlwaysAutoResize | ImGuiChildFlags_AutoResizeY);
     
-            if(ImGui::CollapsingHeader(Pretty_Event.c_str(), ImGuiTreeNodeFlags_Bullet)){
+    ImGui::BeginDisabled(RebindIndex > 0);
 
-                ImUtil::CheckBox("Disabled", &Event.Disabled,T3);
+    if(ImUtil::Button("Collapse All",T0)){
+        ColExpState = 1;
+    }
+
+    ImGui::SameLine();
+    
+    if(ImUtil::Button("Expand All",T1)){
+        ColExpState = 2;
+    }
+
+    ImUtil::SeperatorV();
+
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x / 8.0f);
+
+    {
+        ImGui::InputText("Search", &SearchRes);
+        ImUtil::Tooltip(T2);
+    }
+
+    ImGui::SameLine();
+
+    {
+        ImGui::InputInt("Columns", &Div, 1, 1);
+        ImUtil::Tooltip(T3);
+        Div = std::clamp(Div,1,4);
+    }
+
+    ImGui::PopItemWidth();
+    ImGui::EndDisabled();
+    ImGui::EndChild();
+    
+
+}
+
+void CategoryKeybinds::DrawContent(){
+
+    //4 For Loops just to display the input events in a table...
+    ImGui::BeginChild("InputEvents", ImVec2(0, 0));
+
+    // Build a vector of pointers for events that pass the search filter.
+    std::vector<InputEvent*> VisibleEvents;
+    for (auto& Event : KeyMgr.InputEvents){
+        if (ImUtil::ContainsString(ImUtil::HumanizeString(Event.Event), SearchRes))
+        VisibleEvents.push_back(&Event);
+    }
+
+    // Now distribute the filtered events evenly across columns.
+    std::vector<std::vector<InputEvent*>> Columns(Div);
+    for (size_t i = 0; i < VisibleEvents.size(); i++){
+        Columns[i % Div].push_back(VisibleEvents[i]);
+    }
+
+    //Keep a list of column indeces that have items in them.
+    std::vector<int> NonEmptyIndices;
+    for (int i = 0; i < Div; i++) {
+        if (!Columns[i].empty()) {
+            NonEmptyIndices.push_back(i);
+        }
+    }
+
+    //If we have items to display...
+    if (!NonEmptyIndices.empty()){
+
+        // Draw child windows for each column.
+        for (int i = 0; i < Div; i++){
+            
+            // Draw a separator from the second column up to if the subsequent column exists.
+            // TBH I have no idea how i managed to make this work...
+            if (i > 0 && NonEmptyIndices.size() - i > 0){
+                ImUtil::SeperatorV();
+            }
+            
+            ImGui::BeginChild(i + 1, {0, 0}, this->HeaderFlags);
+            
+            //Draw each presorted input event.
+            for (InputEvent* Event : Columns[i]){
+                DrawInputEvent(*Event, ImUtil::HumanizeString(Event->Event));
+            }
+
+            ImGui::EndChild();
+        }
+    }
+    else{
+        ImGui::Text("No results matching search string.");
+    }
+
+    ImGui::EndChild();
+}
+
+bool CategoryKeybinds::DrawInputEvent(InputEvent& Event, std::string a_name){
+
+    const char* T0 = "Disable this input event.\n"
+                     "Disabled events are completely ignored by the game and will never trigger.";
+
+    const char* T1 = "When an action is marked as exclusive it means it will only activate if its exact key combination is being pressed.\n"
+                     "(eg. If an action requires ALT+E to activate and you're also holding W while trying to trigger it with this flag set, nothing will happen unless you stop pressing W.)";
+
+    const char* T2 = "The action trigger type modifies the activation behavior for an action.\n\n"
+                     "- Once: Trigger an action once uppon pressing its key combo.\n"
+                     "- Release: The action will only trigger as soon as you release its keys.\n"
+                     "- Continuous: As long as you are holding down the key combination the action event will be fired every game frame.";
+    
+    const char* T3 = "Normaly when you press a key combo. whatever keys you are holding down are sent to the mod and the game at the same time\n"
+                     "Depending on what keys you press this may have undesired effects. Which is why this option exists.\n\n"
+                     "- Automatic: Prevent the game from reading the pressed action keys only when said GTS action would be valid. (eg. When you have the relevant perk/the action is possible to do).\n"
+                     "  (NOTE: Some actions are not compatible with this setting. These are by default set to \"Never\" On purpose.)\n"
+                     "- Never: Never prevent the game from reading the pressed keys for this action even if the action would be valid.\n"
+                     "- Always: Will always prevent the game from reading this key combination regardless if the action would trigger/do something or not.";
+
+    const char* T4 = "This add a time delay before an action is considered triggerable.\n"
+                     "(eg. if the trigger type is once and this value is set to 1.0 you'd need to hold the key combination for atleast 1 second before it will trigger)";
+    
+    const char* T5 = "Here you can see the current key combination required to trigger an action as well as modify it.\n"
+                     "Pressing \"Rebind Action\" Will allow you to enter a new key combination for this action.\n"
+                     "You don't have to hold down the keys if creating a key combination. Pressing a key once will append it to the list\n."
+                     "After entering the new key combination press \"Confirm\" to apply it.\n\n"
+                     "IMPORTANT: You NEED to press the \"Save\" button at the bottom to be able to make use of the changes you've made\n"
+                     "If not done the key combination to trigger the action will not change and any changes made here will be lost if you restart the game or reload your save.";
+
+    ImGui::BeginChild(CurEventIndex++, {Width/Div, 0.0f}, ImGuiChildFlags_AlwaysAutoResize | ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_AutoResizeX);
+
+    { // --  CollapsingHeader Control Begin
+        const bool IsRebinding = RebindIndex == CurEventIndex && RebindIndex != 0;
+
+        ImGui::BeginDisabled(RebindIndex != CurEventIndex && RebindIndex != 0);
+        
+        if(ColExpState != 0){
+            ImGui::SetNextItemOpen(ColExpState - 1);
+        }
+
+        if(ImGui::CollapsingHeader(a_name.c_str())){
+
+            ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x * 0.7f);
+            ImUtil::CheckBox("Disabled", &Event.Disabled,T0);
+            
+            //If Disabled: Don't draw at all.
+            if(!Event.Disabled){
+
+                {   //-- Basic Controls
+
+                    ImGui::BeginDisabled(IsRebinding);
+                    ImUtil::CheckBox("Exclusive", &Event.Exclusive, T1);
+                    ImUtil::ComboEx<Triggers>("Trigger Type",Event.Trigger, T2);
+                    ImUtil::ComboEx<BlockInputTypes>("Block Input",Event.BlockInput, T3);
+
+                    ImGui::InputFloat("Trigger After",&Event.Duration,0.1f,0.01f,"%.2f Seconds");
+                    ImUtil::Tooltip(T4);
+                    Event.Duration = std::clamp(Event.Duration,0.0f,10.0f);
+                    ImGui::EndDisabled();
+                }
+
                 
-                //If Disabled: Don't draw at all.
-                if(!Event.Disabled){
+                // Pain and suffering... Begins Here...
+                {   //-- UI CODE
 
-                    { //-- Basic (Easy to implement) Controls
-                        ImUtil::CheckBox("Exclusive", &Event.Exclusive, T4);
-                        ImUtil::ComboEx<Triggers>("Trigger Type",Event.Trigger, T5);
-                        ImUtil::ComboEx<BlockInputTypes>("Block Input",Event.BlockInput, T6);
-                        ImGui::InputFloat("Trigger After",&Event.Duration,0.1f,0.01f,"%.2f Seconds");
-                        if (ImGui::IsItemHovered() && GImGui->HoveredIdTimer > ImUtil::TooltipDelay){
-                            ImGui::SetTooltip(T7);
+                    VisualKeyString = "";
+
+                    const std::vector<std::string>& VisualKeyList = IsRebinding ? TempKeys : Event.Keys;
+
+                    const int NumOfKeys = static_cast<int>(VisualKeyList.size());
+
+                    for (int i = 0; i < NumOfKeys; i++){
+                        VisualKeyString +=  VisualKeyList[i];
+
+                        if(i != NumOfKeys - 1){
+                            VisualKeyString += " + ";
                         }
                     }
-
-                    const bool IsRebinding = RebindIndex == CurEventIndex;
-                    static bool prevKeysDown[1024] = { false };
-
-                    {   // Keybind Hell...
-
-                        
-
-                        VisualKeyString = "";
-
-                        const std::vector<std::string>& VisualKeyList = IsRebinding ? TempKeys : Event.Keys;
-
-                        const int NumOfKeys = static_cast<int>(VisualKeyList.size());
-
-                        for (int i = 0; i < NumOfKeys; i++){
-                            VisualKeyString +=  VisualKeyList[i];
-
-                            if(i != NumOfKeys - 1){
-                                VisualKeyString += " + ";
-                            }
-                        }
-
-                    }
-
-                    const std::string ButtonText = IsRebinding ? (VisualKeyString.size() > 0 ? "Save" : "Enter New Binds") : "Rebind Action";
-                    std::string InputText = VisualKeyString.size() == 0 ? "Press New Keys / ESC To Cancel" : VisualKeyString;
+            
+                    const std::string ButtonText = IsRebinding ? (NumOfKeys ? "Confirm" : "Cancel") : "Rebind Action";
+                    std::string InputText = VisualKeyString.size() == 0 ? "Press any Key(s) or ESC To Cancel" : VisualKeyString;
                     const float Pad = 4.0f;
-                    //Disable Control Without Graying it out... This api will break in the future...
-                    //As of v1.91.8 works as we want it to.
-                    ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
-                    ImGui::PushItemWidth(ImGui::CalcItemWidth() - (ImGui::CalcTextSize(ButtonText.c_str()).x + ImGui::GetStyle().CellPadding.x * 2.0f + Pad));
-                    ImGui::InputText("##KeyRebind", &InputText, ImGuiInputTextFlags_ReadOnly);
-                    if (ImGui::IsItemHovered() && GImGui->HoveredIdTimer > ImUtil::TooltipDelay){
-                        ImGui::SetTooltip(T8);
+
+                    {   //---- Draw Keybind Textbox
+
+                        //Disable control wihtout graying it out... This api will break in the future...
+                        //As of v1.91.8 it works as expected.
+
+                        ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+                        ImGui::InputText("##KeyRebind", &InputText, ImGuiInputTextFlags_ReadOnly);
+                        ImGui::PopItemFlag();
                     }
-                    ImGui::PopItemFlag();
-                    ImGui::PopItemWidth();
+
 
                     ImGui::SameLine(0.f, Pad);
-
+                    
+                    //TODO: This Is horrible
+                    dynamic_cast<WindowSettings*>(ImWindowManager::GetSingleton().GetWindowByName("Settings"))->SetDisabled(RebindIndex > 0);
+                    
                     ImGui::BeginDisabled(TempKeys.size() == 0 && IsRebinding);
-                    if(ImUtil::Button(ButtonText.c_str(),T9)){
+                    if(ImUtil::Button(ButtonText.c_str(),T5)){
+                        //Start new key rebind for this index.
                         RebindIndex = CurEventIndex;
 
                         if(IsRebinding && TempKeys.size() > 0){
-                            //Save
+                            //Save new keybind
                             Event.Keys = TempKeys;
                             TempKeys.clear();
                             RebindIndex = 0;
@@ -153,22 +244,29 @@ void CategoryKeybinds::Draw(){
                     }
                     ImGui::EndDisabled();
 
+                }
+
+                {   //-- PARSE LOGIC
+
                     //If Escape Stop Rebind
                     if(ImGui::IsKeyDown(ImGuiKey_Escape)){
                         RebindIndex = 0;
                         TempKeys.clear();
                     }
+                    //IsItemHovered References the last control drawn in this case its the Button.
+                    //If the mouse is hovering the button ignore its left click inputs.
+                    else if (IsRebinding && !(ImGui::IsItemHovered() && ImGui::IsMouseDown(ImGuiMouseButton_Left))){
 
-                    else if (IsRebinding && !ImGui::IsItemHovered()){
+                        //Go though all the imgui keys.
+                        for (int key = ImGuiKey_NamedKey_BEGIN; key < ImGuiKey_NamedKey_END; key++){
 
-                        for (int key = ImGuiKey_NamedKey_BEGIN; key < ImGuiKey_NamedKey_END; key++)
-                        {
-                            // Detect a new key press (key is down now but wasn’t in previous frame)
+                            // Detect a new key press
                             if (ImGui::IsKeyPressed(static_cast<ImGuiKey>(key))){
 
                                 // Convert the key to a string representation.
                                 std::string keyName = GetDIKStringFromImGuiKey(static_cast<ImGuiKey>(key));
                                 if(keyName == "INVALID") continue;
+
                                 // Only append if it's not already in TempKeys.
                                 if (std::find(TempKeys.begin(), TempKeys.end(), keyName) == TempKeys.end() && TempKeys.size() < 5){
                                     TempKeys.push_back(keyName);
@@ -178,22 +276,19 @@ void CategoryKeybinds::Draw(){
                                 std::sort(TempKeys.begin(), TempKeys.end(), [](const std::string &a, const std::string &b) {
                                     return a.size() > b.size();
                                 });
-                                
                             }
                         }
                     }
                 }
             }
-            ImGui::EndDisabled();
-            ImGui::PopStyleColor();
-
+            ImGui::Spacing();
+            ImGui::PopItemWidth();
         }
-
-        ImGui::EndChild();
-
-        //Offset counter by -1 if Div is uneven
-        if((CurEventIndex - (Div % 3 == 0)) % Div) {
-            ImUtil::SeperatorV();
-        }
+        
+        ImGui::EndDisabled();
     }
+
+
+    ImGui::EndChild();
+    return true;
 }

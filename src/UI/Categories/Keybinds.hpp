@@ -4,6 +4,7 @@
 #include "src/UI/ImGUI/ImCategory.hpp"
 #include "src/Config/Config.hpp"
 #include "src/Config/Keybinds.hpp"
+#include "src/UI/ImGui/ImWindowManager.hpp"
 
 namespace UI {
 
@@ -14,19 +15,30 @@ namespace UI {
         }
         void Draw() override;
 
-        void HandleKeys(std::string bindingStr, int CurrentIndex);
 
         private:
         const Config& Settings = Config::GetSingleton();
         Input::Keybinds& KeyMgr = Input::Keybinds::GetSingleton();
 
-        int Div = 2;
+        //UI
 
+        void DrawOptions();
+        void DrawContent();
+
+
+        int Div = 2;
         std::string SearchRes = "";
         bool HideFiltered = false;
+        volatile uint8_t ColExpState = 0;
+
+        //InputEvent Rebinding
         std::string VisualKeyString = "";
         std::vector<std::string> TempKeys = {};
         int RebindIndex = 0;
+        int CurEventIndex = 1000;
+        float Width = 0.0f;
+        bool DrawInputEvent(InputEvent& Event, std::string a_name);
+        const int HeaderFlags =  ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_AutoResizeX ;
     };
 
 }

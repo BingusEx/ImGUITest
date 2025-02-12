@@ -26,6 +26,11 @@ namespace UI {
             return 1.0f;
         }
 
+        inline void SetDisabled(bool a_Disabled) {
+            Disabled = a_Disabled;
+        }
+
+
 
         private:
         void AsyncLoad();
@@ -42,5 +47,6 @@ namespace UI {
         Input::Keybinds& KeyMgr = Input::Keybinds::GetSingleton();
         const SettingsHidden& sHidden = Config::GetHidden();
         const WindowConfSettings& sUI= Config::GetUI().SettingsWindow;
+        bool Disabled = false;
     };
 }

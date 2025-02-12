@@ -34,6 +34,8 @@ using namespace Input;
 //Not the most elegant solution but it does work...
 void WindowSettings::AsyncLoad(){
 
+    //TODO Set Plugin::Live to false for this duration...
+
     if(!Settings.LoadSettings()){
         ErrorString = "Could Not Load Settings! Check GTSPlugin.log for more info";
     }
@@ -161,6 +163,7 @@ void WindowSettings::Draw() {
     {  // Draw Sidebar
 
         ImGui::BeginChild("Sidebar", ImVec2(CatMgr.GetLongestCategory(), -Footer), true);
+        ImGui::BeginDisabled(Disabled);
         ImGui::PushFont(FontMgr.GetFont("sidebar"));
 
         // Display the categories in the sidebar
@@ -180,6 +183,7 @@ void WindowSettings::Draw() {
         }
 
         ImGui::PopFont();
+        ImGui::EndDisabled();
         ImGui::EndChild();
     }
 
@@ -202,6 +206,7 @@ void WindowSettings::Draw() {
     }
 
     ImUtil::SeperatorH();
+    ImGui::BeginDisabled(Disabled);
     
     {   //Footer - Mod Info
 
@@ -252,4 +257,5 @@ void WindowSettings::Draw() {
             FontMgr.RebuildFonts();
         }
     }
+    ImGui::EndDisabled();
 }

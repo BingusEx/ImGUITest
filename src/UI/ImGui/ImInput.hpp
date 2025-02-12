@@ -505,15 +505,15 @@ namespace UI {
 		{ ImGuiKey_LeftShift,   "LSHIFT" },
 		{ ImGuiKey_LeftCtrl,    "LCONTROL" },
 		{ ImGuiKey_LeftAlt,     "LALT" },
-		{ ImGuiKey_LeftSuper,   "LWIN" },
+		//{ ImGuiKey_LeftSuper,   "LWIN" },
 		{ ImGuiKey_RightShift,  "RSHIFT" },
 		{ ImGuiKey_RightCtrl,   "RCONTROL" },
 		{ ImGuiKey_RightAlt,    "RALT" },
-		{ ImGuiKey_RightSuper,  "RWIN" },
+		//{ ImGuiKey_RightSuper,  "RWIN" },
 
 		// Application keys
-		{ ImGuiKey_AppBack,     "BROWSER_BACK" },
-		{ ImGuiKey_AppForward,  "BROWSER_FORWARD" },
+		//{ ImGuiKey_AppBack,     "BROWSER_BACK" },
+		//{ ImGuiKey_AppForward,  "BROWSER_FORWARD" },
 
 		{ ImGuiKey_MouseLeft,    "LMB" },  // DIK_ convention: Left Mouse Button
 		{ ImGuiKey_MouseRight,   "RMB" },  // Right Mouse Button
